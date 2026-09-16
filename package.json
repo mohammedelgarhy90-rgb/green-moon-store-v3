@@ -1,0 +1,7 @@
+{
+  "name":"green-moon-store",
+  "private":true,
+  "version":"2.0.0",
+  "scripts":{"check":"node --check worker.js","dev":"wrangler dev","deploy":"wrangler deploy"},
+  "devDependencies":{"wrangler":"^4.0.0"}
+}
