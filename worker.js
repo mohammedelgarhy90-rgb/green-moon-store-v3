@@ -2,6 +2,7 @@ const PRODUCTS_KEY = 'products';
 const LOGO_KEY = 'logo';
 const SETTINGS_KEY = 'settings';
 const ORDERS_KEY = 'orders';
+const SHIPPING_KEY = 'shipping';
 
 const SEED_PRODUCTS = [
   {id:1,name:'أجلونيما بينك',details:'نبات أجلونيما بألوان وردي وأخضر مميزة، مناسب للديكور الداخلي.',price:0,image:'/assets/product-1.jpg'},
@@ -18,6 +19,7 @@ function json(data,status=200){return new Response(JSON.stringify(data),{status,
 function adminOk(request,env){const h=request.headers.get('authorization')||'';return h===`Bearer ${env.ADMIN_PASSWORD}` && !!env.ADMIN_PASSWORD}
 async function getProducts(env){let x=await env.GREEN_MOON_KV.get(PRODUCTS_KEY,'json'); if(!x){x=SEED_PRODUCTS; await env.GREEN_MOON_KV.put(PRODUCTS_KEY,JSON.stringify(x));} return x}
 async function getLogo(env){return (await env.GREEN_MOON_KV.get(LOGO_KEY))||'/assets/logo.jpg'}
+async function getShipping(env){const x=await env.GREEN_MOON_KV.get(SHIPPING_KEY,'json');return Number(x?.price)||0}
 async function getOrders(env){return (await env.GREEN_MOON_KV.get(ORDERS_KEY,'json'))||[]}
 
 export default {
@@ -37,9 +39,11 @@ export default {
     const products=await getProducts(env);
     const items=body.items.map(i=>{const p=products.find(x=>String(x.id)===String(i.productId)); const qty=Math.max(1,Number(i.quantity)||1); return p?{productId:p.id,name:p.name,price:Number(p.price)||0,quantity:qty,lineTotal:(Number(p.price)||0)*qty}:null}).filter(Boolean);
     if(!items.length) return json({error:'المنتجات المطلوبة غير موجودة'},400);
-    const total=items.reduce((s,i)=>s+i.lineTotal,0);
+    const productsTotal=items.reduce((s,i)=>s+i.lineTotal,0);
+const shipping=await getShipping(env);
+const total=productsTotal+shipping; 
     const orders=await getOrders(env);
-    const order={id:'GM-'+Date.now().toString(36).toUpperCase(),createdAt:new Date().toISOString(),status:'جديد',name:String(body.name).slice(0,120),phone:String(body.phone).slice(0,40),governorate:String(body.governorate||'').slice(0,80),area:String(body.area||'').slice(0,120),building:String(body.building||'').slice(0,40),floor:String(body.floor||'').slice(0,20),apartment:String(body.apartment||'').slice(0,20),notes:String(body.notes||'').slice(0,500),items,total};
+    const order={id:'GM-'+Date.now().toString(36).toUpperCase(),createdAt:new Date().toISOString(),status:'جديد',name:String(body.name).slice(0,120),phone:String(body.phone).slice(0,40),governorate:String(body.governorate||'').slice(0,80),area:String(body.area||'').slice(0,120),building:String(body.building||'').slice(0,40),floor:String(body.floor||'').slice(0,20),apartment:String(body.apartment||'').slice(0,20),notes:street:String(body.street||'').slice(0,160),productsTotal,shipping,notes:String(body.notes||'').slice(0,500),items,total
     orders.unshift(order);
     await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(orders));
     return json({ok:true,order});
