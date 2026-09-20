@@ -18,16 +18,16 @@ button,input,textarea,select{font:inherit}
 button{cursor:pointer;border:0}
 a{text-decoration:none;color:inherit}
 
+/* HEADER */
 header{
 position:sticky;
 top:0;
-z-index:20;
+z-index:50;
 background:#073c27ee;
 backdrop-filter:blur(12px);
-color:white;
+color:#fff;
 padding:10px 15px
 }
-
 .nav{
 max-width:1200px;
 margin:auto;
@@ -35,19 +35,16 @@ display:flex;
 align-items:center;
 gap:12px
 }
-
 .logo{
 width:50px;
 height:50px;
 border-radius:50%;
 object-fit:cover;
-background:white
+background:#fff
 }
-
 .brand{flex:1}
 .brand strong{display:block;font-size:18px}
 .brand small{opacity:.8}
-
 .cart-btn{
 background:#d8b65c;
 color:#173c2b;
@@ -56,6 +53,7 @@ border-radius:12px;
 font-weight:bold
 }
 
+/* HERO */
 .hero{
 min-height:500px;
 display:flex;
@@ -67,11 +65,7 @@ linear-gradient(90deg,#062519ee,#083c27aa),
 url("/assets/product-1.jpg") center/cover no-repeat;
 color:#fff
 }
-
-.hero.has-image{
-background:#062519
-}
-
+.hero.has-image{background:#062519}
 .hero-img{
 position:absolute;
 inset:0;
@@ -80,14 +74,12 @@ height:100%;
 object-fit:contain;
 z-index:0
 }
-
 .hero-overlay{
 position:absolute;
 inset:0;
 background:linear-gradient(90deg,#03190fcc,#06372277,#03190f55);
 z-index:1
 }
-
 .hero-content{
 position:relative;
 z-index:2;
@@ -95,19 +87,16 @@ width:min(1150px,100%);
 margin:auto;
 padding:45px 20px
 }
-
 .hero h1{
 font-size:clamp(34px,7vw,68px);
 margin:0 0 15px;
 max-width:700px
 }
-
 .hero p{
 font-size:19px;
 line-height:1.8;
 max-width:650px
 }
-
 .gold{
 display:inline-block;
 background:#d8b65c;
@@ -117,7 +106,6 @@ border-radius:14px;
 font-weight:bold;
 margin:7px
 }
-
 .outline{
 display:inline-block;
 border:1px solid #fff;
@@ -127,32 +115,21 @@ border-radius:14px;
 margin:7px
 }
 
+/* GENERAL */
 .section{
 max-width:1200px;
-margin:45px auto;
+margin:40px auto;
 padding:0 15px
 }
-
-.section-title{
-text-align:center;
-margin-bottom:25px
-}
-
-.section-title h2{
-font-size:30px;
-margin:0 0 8px
-}
-
-.section-title p{
-color:#65766d
-}
+.section-title{text-align:center;margin-bottom:25px}
+.section-title h2{font-size:30px;margin:0 0 8px}
+.section-title p{color:#65766d}
 
 .benefits{
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:12px
 }
-
 .benefit{
 background:#fff;
 padding:20px;
@@ -160,29 +137,158 @@ border-radius:18px;
 text-align:center;
 box-shadow:0 5px 22px #1231
 }
-
 .benefit b{display:block;margin-bottom:7px}
 
+/* DEALS */
+.deals-section{
+max-width:1200px;
+margin:0 auto 45px;
+padding:0 15px
+}
+.deals-head{
+text-align:center;
+margin-bottom:20px
+}
+.deals-head h2{
+font-size:34px;
+margin:0 0 8px;
+color:#0b5135
+}
+.deals-head .main-line{
+font-size:20px;
+font-weight:900;
+color:#173c2b
+}
+.deals-head small{
+display:block;
+margin-top:7px;
+color:#65766d;
+font-size:14px
+}
+.deal-card{
+position:relative;
+overflow:hidden;
+max-width:850px;
+margin:auto;
+background:#fff;
+border-radius:28px;
+box-shadow:0 15px 45px #1232;
+border:1px solid #e0e7e1
+}
+.deal-top{
+position:relative
+}
+.deal-image{
+width:100%;
+display:block;
+aspect-ratio:16/7;
+object-fit:cover;
+background:#edf3ef
+}
+.deal-badge{
+position:absolute;
+top:15px;
+right:15px;
+background:#d8b65c;
+color:#173c2b;
+padding:9px 14px;
+border-radius:999px;
+font-weight:900;
+box-shadow:0 5px 15px #0003
+}
+.deal-body{padding:22px}
+.deal-title{
+font-size:28px;
+font-weight:900;
+margin-bottom:8px
+}
+.deal-desc{
+color:#65766d;
+line-height:1.8;
+margin-bottom:14px
+}
+.deal-prices{
+display:flex;
+align-items:center;
+gap:13px;
+flex-wrap:wrap
+}
+.deal-old{
+text-decoration:line-through;
+color:#909b95;
+font-size:18px
+}
+.deal-new{
+font-size:34px;
+font-weight:900;
+color:#0b603b
+}
+.deal-discount{
+background:#0d5135;
+color:#fff;
+padding:8px 12px;
+border-radius:10px;
+font-weight:bold
+}
+.deal-timer{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin:20px 0
+}
+.timer-box{
+background:#073c27;
+color:#fff;
+border-radius:15px;
+padding:14px;
+text-align:center
+}
+.timer-box b{
+display:block;
+font-size:30px
+}
+.timer-box span{
+font-size:12px;
+opacity:.8
+}
+.deal-order{
+width:100%;
+background:#d8b65c;
+color:#173c2b;
+padding:16px;
+border-radius:14px;
+font-size:17px;
+font-weight:900;
+box-shadow:0 8px 20px #0002
+}
+.deal-order:hover{transform:translateY(-2px)}
+.deal-empty{
+background:#fff;
+border-radius:22px;
+padding:35px;
+text-align:center;
+color:#65766d;
+box-shadow:0 8px 25px #1231
+}
+
+/* PRODUCTS */
 .search{
 display:flex;
 gap:10px;
 margin-bottom:20px
 }
-
 .search input{
 flex:1;
 padding:15px;
 border:1px solid #d9dfd9;
 border-radius:14px
 }
-
 .categories{
 display:flex;
 gap:10px;
 overflow:auto;
 padding-bottom:10px
 }
-
 .cat{
 min-width:110px;
 background:#fff;
@@ -191,56 +297,37 @@ border-radius:16px;
 padding:8px;
 text-align:center
 }
-
 .cat img{
 width:75px;
 height:75px;
 border-radius:14px;
 object-fit:cover
 }
-
-.cat strong{
-display:block;
-margin-top:5px
-}
-
+.cat strong{display:block;margin-top:5px}
 .products{
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:15px
 }
-
 .product{
 background:#fff;
 border-radius:20px;
 overflow:hidden;
-box-shadow:0 7px 25px #1232;
-transition:.2s
+box-shadow:0 7px 25px #1232
 }
-
-.product:hover{transform:translateY(-3px)}
-
 .product img{
 width:100%;
-aspect-ratio:1/1;
+aspect-ratio:1;
 object-fit:cover
 }
-
-.product-body{
-padding:14px
-}
-
-.product-body h3{
-margin:0 0 8px
-}
-
+.product-body{padding:14px}
+.product-body h3{margin:0 0 8px}
 .price{
 font-size:21px;
 font-weight:bold;
 color:#0b603b;
 margin-bottom:10px
 }
-
 .product button{
 width:100%;
 background:#0d5135;
@@ -249,9 +336,9 @@ padding:12px;
 border-radius:12px
 }
 
+/* OFFER */
 .offer{
-background:
-linear-gradient(135deg,#073c27,#0d5b3b);
+background:linear-gradient(135deg,#073c27,#0d5b3b);
 color:#fff;
 padding:35px 25px;
 border-radius:25px;
@@ -261,15 +348,13 @@ justify-content:space-between;
 gap:20px
 }
 
-.offer h2{margin-top:0}
-
+/* DOCTOR */
 .doctor{
 background:#eaf3ec;
 border-radius:25px;
 padding:30px;
 text-align:center
 }
-
 .doctor button{
 background:#0d5135;
 color:#fff;
@@ -277,38 +362,26 @@ padding:13px 22px;
 border-radius:13px
 }
 
+/* ARTICLES */
 .articles{
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:15px
 }
-
 .article{
 background:#fff;
 border-radius:20px;
 overflow:hidden;
 box-shadow:0 6px 22px #1232
 }
-
 .article img{
 width:100%;
 aspect-ratio:3/2;
 object-fit:cover
 }
-
-.article-body{
-padding:15px
-}
-
-.article-body h3{
-margin:0 0 8px
-}
-
-.article-body p{
-color:#65766d;
-line-height:1.7
-}
-
+.article-body{padding:15px}
+.article-body h3{margin:0 0 8px}
+.article-body p{color:#65766d;line-height:1.7}
 .article-body button{
 background:#d8b65c;
 color:#173c2b;
@@ -316,6 +389,7 @@ padding:10px 15px;
 border-radius:10px
 }
 
+/* FOOTER */
 footer{
 background:#073c27;
 color:#fff;
@@ -323,25 +397,24 @@ padding:40px 15px;
 text-align:center;
 margin-top:50px
 }
-
 .bottom{
 position:fixed;
 bottom:0;
 left:0;
 right:0;
-z-index:25;
+z-index:40;
 background:#fff;
 border-top:1px solid #ddd;
 display:flex;
 justify-content:space-around;
 padding:10px
 }
-
 .bottom a{
 font-size:13px;
 text-align:center
 }
 
+/* MODALS */
 .modal{
 position:fixed;
 inset:0;
@@ -352,9 +425,7 @@ align-items:center;
 justify-content:center;
 padding:15px
 }
-
 .modal.hidden{display:none}
-
 .modal-box{
 background:#fff;
 width:min(700px,100%);
@@ -363,7 +434,6 @@ overflow:auto;
 border-radius:22px;
 padding:20px
 }
-
 .close{
 float:left;
 background:#eee;
@@ -371,7 +441,6 @@ border-radius:50%;
 padding:5px 12px;
 font-size:20px
 }
-
 .cart-item{
 display:flex;
 gap:10px;
@@ -379,29 +448,24 @@ align-items:center;
 padding:10px 0;
 border-bottom:1px solid #eee
 }
-
 .cart-item img{
 width:65px;
 height:65px;
 border-radius:10px;
 object-fit:cover
 }
-
 .cart-item .info{flex:1}
-
 .qty{
 display:flex;
 align-items:center;
 gap:8px
 }
-
 .qty button{
 background:#0d5135;
 color:#fff;
 border-radius:8px;
 padding:5px 10px
 }
-
 .form input,.form textarea{
 width:100%;
 padding:12px;
@@ -409,9 +473,7 @@ margin-bottom:10px;
 border:1px solid #ddd;
 border-radius:11px
 }
-
 .form textarea{min-height:80px}
-
 .total{
 background:#f0f5f0;
 padding:15px;
@@ -419,7 +481,6 @@ border-radius:14px;
 margin:15px 0;
 line-height:2
 }
-
 .full-btn{
 width:100%;
 background:#0d5135;
@@ -434,14 +495,15 @@ font-weight:bold
 .products{grid-template-columns:repeat(2,1fr)}
 .articles{grid-template-columns:1fr 1fr}
 }
-
 @media(max-width:600px){
 .hero{min-height:570px}
-.benefits{grid-template-columns:1fr 1fr}
 .products{grid-template-columns:1fr 1fr}
 .articles{grid-template-columns:1fr}
-.product-body{padding:11px}
-.product-body h3{font-size:16px}
+.deals-head h2{font-size:27px}
+.deals-head .main-line{font-size:17px}
+.deal-title{font-size:23px}
+.deal-new{font-size:27px}
+.deal-image{aspect-ratio:16/9}
 .offer{display:block}
 }
 </style>
@@ -451,53 +513,50 @@ font-weight:bold
 
 <header>
 <div class="nav">
-
 <img id="siteLogo" class="logo" src="/assets/logo.jpg">
-
 <div class="brand">
 <strong id="headerName">Green Moon Plants & Flowers</strong>
 <small>نباتات أكتر.. حياة أجمل 🌿</small>
 </div>
-
 <button class="cart-btn" onclick="openCart()">
 🛒 السلة <span id="cartCount">0</span>
 </button>
-
 </div>
 </header>
 
-
+<!-- HERO -->
 <section class="hero" id="hero">
-
 <div class="hero-overlay"></div>
-
 <img id="heroImage" class="hero-img" style="display:none">
-
 <div class="hero-content">
-
-<h1 id="heroTitle">
-خلي بيتك أخضر
-وأجمل 🌿
-</h1>
-
+<h1 id="heroTitle">خلي بيتك أخضر وأجمل 🌿</h1>
 <p id="heroSubtitle">
 اختار نباتك المفضل وخلي الطبيعة جزء من يومك مع Green Moon Plants & Flowers.
 </p>
-
-<a href="#products" class="gold">
-تسوق الآن
-</a>
-
-<a href="#articles" class="outline">
-اعرف أكتر عن نباتاتك
-</a>
-
+<a href="#products" class="gold">تسوق الآن</a>
+<a href="#articles" class="outline">اعرف أكتر عن نباتاتك</a>
 </div>
 </section>
 
+<!-- DEALS -->
+<section class="deals-section" id="deals">
 
+<div class="deals-head">
+<h2>🔥 صفقات Green Moon</h2>
+<div class="main-line">صفقة ورا صفقة… الفرصة مبتستناش!</div>
+<small>
+عروض حصرية بتتجدد تلقائيًا — الحق صفقتك قبل انتهاء الوقت ⏳
+</small>
+</div>
+
+<div id="dealsContainer">
+<div class="deal-empty">جاري تحميل الصفقات...</div>
+</div>
+
+</section>
+
+<!-- BENEFITS -->
 <section class="section">
-
 <div class="benefits">
 
 <div class="benefit">
@@ -525,35 +584,21 @@ font-weight:bold
 </div>
 
 </div>
-
 </section>
 
-
+<!-- PRODUCTS -->
 <section class="section" id="products">
 
 <div class="section-title">
-
 <h2>🌿 منتجات Green Moon</h2>
-
-<p>
-اختار النبات المناسب ليك
-</p>
-
+<p>اختار النبات المناسب ليك</p>
 </div>
-
 
 <div class="search">
-
-<input
-id="search"
-placeholder="🔎 ابحث عن نبات..."
-oninput="renderProducts()">
-
+<input id="search" placeholder="🔎 ابحث عن نبات..." oninput="renderProducts()">
 </div>
 
-
 <div id="categories" class="categories"></div>
-
 <br>
 
 <div id="productGrid" class="products">
@@ -562,105 +607,53 @@ oninput="renderProducts()">
 
 </section>
 
-
+<!-- OFFER -->
 <section class="section">
-
 <div class="offer">
-
 <div>
-
 <h2>🌿 خلي بيتك مليان حياة</h2>
-
-<p>
-اختار نباتاتك المفضلة وخلي Green Moon جزء من بيتك.
-</p>
-
+<p>اختار نباتاتك المفضلة وخلي Green Moon جزء من بيتك.</p>
 </div>
-
-<a href="#products" class="gold">
-تسوق الآن
-</a>
-
+<a href="#products" class="gold">تسوق الآن</a>
 </div>
-
 </section>
 
-
+<!-- DOCTOR -->
 <section class="section">
-
 <div class="doctor">
-
 <h2>🩺 Green Moon Doctor</h2>
-
-<p>
-عندك مشكلة في نباتك؟
-ابعتلنا صورة ونساعدك تعرف المشكلة.
-</p>
-
-<button onclick="openDoctor()">
-افحص نباتك
-</button>
-
+<p>عندك مشكلة في نباتك؟ ابعتلنا صورة ونساعدك تعرف المشكلة.</p>
+<button onclick="openDoctor()">افحص نباتك</button>
 </div>
-
 </section>
 
-
+<!-- ARTICLES -->
 <section class="section" id="articles">
-
 <div class="section-title">
-
 <h2>📝 مقالات ونصائح</h2>
-
-<p>
-معلومات بسيطة تساعدك تعتني بنباتاتك
-</p>
-
+<p>معلومات بسيطة تساعدك تعتني بنباتاتك</p>
 </div>
 
 <div id="articlesGrid" class="articles">
 جاري تحميل المقالات...
 </div>
-
 </section>
 
-
 <footer>
-
 <h2>Green Moon Plants & Flowers</h2>
-
-<p>
-نباتات أكتر.. حياة أجمل 🌿
-</p>
-
-<p>
-© Green Moon Plants and Flowers
-</p>
-
+<p>نباتات أكتر.. حياة أجمل 🌿</p>
+<p>© Green Moon Plants and Flowers</p>
 </footer>
 
-
 <div class="bottom">
-
-<a href="#products">
-🌿<br>المنتجات
-</a>
-
-<a href="#articles">
-📝<br>المقالات
-</a>
-
-<a href="#" onclick="openCart();return false">
-🛒<br>السلة
-</a>
-
+<a href="#deals">🔥<br>الصفقات</a>
+<a href="#products">🌿<br>المنتجات</a>
+<a href="#articles">📝<br>المقالات</a>
+<a href="#" onclick="openCart();return false">🛒<br>السلة</a>
 </div>
 
-
 <!-- CART -->
-
 <div id="cartModal" class="modal hidden">
-
 <div class="modal-box">
 
 <button class="close" onclick="closeCart()">×</button>
@@ -670,47 +663,23 @@ oninput="renderProducts()">
 <div id="cartItems"></div>
 
 <div class="total">
-
-<div>
-إجمالي المنتجات:
-<span id="productsTotal">0</span> ج
+<div>إجمالي المنتجات: <span id="productsTotal">0</span> ج</div>
+<div>التوصيل: <span id="shippingTotal">0</span> ج</div>
+<div><b>الإجمالي النهائي: <span id="finalTotal">0</span> ج</b></div>
 </div>
-
-<div>
-التوصيل:
-<span id="shippingTotal">0</span> ج
-</div>
-
-<div>
-<b>
-الإجمالي النهائي:
-<span id="finalTotal">0</span> ج
-</b>
-</div>
-
-</div>
-
 
 <h3>بيانات الطلب</h3>
 
 <div class="form">
 
 <input id="customerName" placeholder="الاسم">
-
 <input id="customerPhone" placeholder="رقم الهاتف">
-
 <input id="customerGovernorate" placeholder="المحافظة">
-
 <input id="customerArea" placeholder="المنطقة">
-
 <input id="customerStreet" placeholder="الشارع">
-
 <input id="customerBuilding" placeholder="رقم المبنى">
-
 <input id="customerFloor" placeholder="الدور">
-
 <input id="customerApartment" placeholder="رقم الشقة">
-
 <textarea id="customerNotes" placeholder="ملاحظات إضافية"></textarea>
 
 </div>
@@ -722,179 +691,112 @@ oninput="renderProducts()">
 <p id="orderMsg"></p>
 
 </div>
-
 </div>
-
 
 <!-- ARTICLE MODAL -->
-
 <div id="articleModal" class="modal hidden">
-
 <div class="modal-box">
-
 <button class="close" onclick="closeArticle()">×</button>
-
-<img id="articleModalImage"
-style="width:100%;border-radius:15px">
-
+<img id="articleModalImage" style="width:100%;border-radius:15px">
 <h2 id="articleModalTitle"></h2>
-
-<div id="articleModalContent"
-style="line-height:2;white-space:pre-line"></div>
-
+<div id="articleModalContent" style="line-height:2;white-space:pre-line"></div>
 </div>
-
 </div>
-
 
 <!-- DOCTOR -->
-
 <div id="doctorModal" class="modal hidden">
-
 <div class="modal-box">
 
 <button class="close" onclick="closeDoctor()">×</button>
 
 <h2>🩺 Green Moon Doctor</h2>
 
-<p>
-ارفع صورة نباتك وسنساعدك في معرفة المشكلة بشكل مبدئي.
-</p>
+<p>ارفع صورة نباتك وسنساعدك في معرفة المشكلة بشكل مبدئي.</p>
 
-<input
-type="file"
-accept="image/*"
-id="doctorImage">
+<input type="file" accept="image/*" id="doctorImage">
 
 <br><br>
 
-<img
-id="doctorPreview"
+<img id="doctorPreview"
 style="width:100%;max-height:350px;object-fit:contain;border-radius:15px;display:none">
 
-<br>
-
-<p>
-💚 لو المشكلة محتاجة تشخيص متخصص، الأفضل الرجوع لمتخصص نباتات.
-</p>
-
 </div>
-
 </div>
-
 
 <script>
 
 let settings={};
 let products=[];
 let cart=[];
-
+let activeCategory="";
+let dealsTimer=null;
 
 const $=id=>document.getElementById(id);
 
-
 async function getJSON(url){
-
 const r=await fetch(url);
-
-if(!r.ok)
-throw new Error("تعذر تحميل البيانات");
-
+if(!r.ok)throw new Error("تعذر تحميل البيانات");
 return await r.json();
-
 }
 
-
-/* LOAD ALL */
+/* STORE */
 
 async function loadStore(){
 
 try{
 
-settings=
-await getJSON("/api/settings");
+settings=await getJSON("/api/settings");
+products=await getJSON("/api/products");
 
-products=
-await getJSON("/api/products");
-
-if(!Array.isArray(products))
-products=[];
-
+if(!Array.isArray(products))products=[];
 
 applySettings();
-
 renderCategories();
-
 renderProducts();
-
 renderArticles();
-
 updateCart();
-
+renderDeals();
 
 }catch(e){
 
 console.error(e);
 
-$("productGrid").innerHTML=
-"<p>حدث خطأ أثناء تحميل المتجر.</p>";
+if($("productGrid"))
+$("productGrid").innerHTML="<p>حدث خطأ أثناء تحميل المتجر.</p>";
 
 }
 
 }
-
 
 /* SETTINGS */
 
 function applySettings(){
 
-const name=
-settings.storeName||
-"Green Moon Plants & Flowers";
+const name=settings.storeName||"Green Moon Plants & Flowers";
 
 $("headerName").textContent=name;
-
 document.title=name;
 
+if(settings.logo)
+$("siteLogo").src=settings.logo;
 
-if(settings.logo){
+if(settings.title)
+$("heroTitle").textContent=settings.title;
 
-$("siteLogo").src=
-settings.logo;
-
-}
-
-
-if(settings.title){
-
-$("heroTitle").textContent=
-settings.title;
-
-}
-
-
-if(settings.subtitle){
-
-$("heroSubtitle").textContent=
-settings.subtitle;
-
-}
-
+if(settings.subtitle)
+$("heroSubtitle").textContent=settings.subtitle;
 
 if(settings.hero){
 
 $("hero").classList.add("has-image");
 
-$("heroImage").src=
-settings.hero;
+$("heroImage").src=settings.hero;
 
-$("heroImage").style.display=
-"block";
+$("heroImage").style.display="block";
 
 }
 
 }
-
 
 /* CATEGORIES */
 
@@ -907,64 +809,35 @@ Array.isArray(settings.categories)
 ?settings.categories
 :[];
 
-
 if(!cats.length){
-
 box.innerHTML="";
-
 return;
-
 }
 
-
 box.innerHTML=
-
-`<button class="cat"
-onclick="filterCategory('')">
-
+`<button class="cat" onclick="filterCategory('')">
 <div style="font-size:30px">🌿</div>
-
 <strong>الكل</strong>
-
 </button>`+
-
 cats.map(c=>`
-
-<button
-class="cat"
+<button class="cat"
 onclick="filterCategory('${encodeURIComponent(c.name||"")}')">
-
 <img src="${c.image||"/assets/logo.jpg"}">
-
-<strong>
-${escapeHTML(c.name||"")}
-</strong>
-
+<strong>${escapeHTML(c.name||"")}</strong>
 </button>
-
 `).join("");
 
 }
 
-
-let activeCategory="";
-
-
 function filterCategory(category){
 
-activeCategory=
-decodeURIComponent(category);
+activeCategory=decodeURIComponent(category);
 
 renderProducts();
 
-document
-.getElementById("products")
-.scrollIntoView({
-behavior:"smooth"
-});
+$("products").scrollIntoView({behavior:"smooth"});
 
 }
-
 
 /* PRODUCTS */
 
@@ -973,15 +846,10 @@ function renderProducts(){
 const q=
 ($("search").value||"").trim().toLowerCase();
 
+const list=products.filter(p=>{
 
-let list=
-products.filter(p=>{
-
-const name=
-String(p.name||"").toLowerCase();
-
-const category=
-String(p.category||"");
+const name=String(p.name||"").toLowerCase();
+const category=String(p.category||"");
 
 const searchOK=
 !q||
@@ -996,7 +864,6 @@ return searchOK&&catOK;
 
 });
 
-
 if(!list.length){
 
 $("productGrid").innerHTML=
@@ -1005,7 +872,6 @@ $("productGrid").innerHTML=
 return;
 
 }
-
 
 $("productGrid").innerHTML=
 list.map(p=>`
@@ -1018,9 +884,7 @@ alt="${escapeHTML(p.name||"نبات")}">
 
 <div class="product-body">
 
-<h3>
-${escapeHTML(p.name||"منتج")}
-</h3>
+<h3>${escapeHTML(p.name||"منتج")}</h3>
 
 ${p.category?
 `<small>${escapeHTML(p.category)}</small>`:""}
@@ -1034,32 +898,295 @@ ${Number(p.price||0)} ج
 </button>
 
 </div>
-
 </div>
 
 `).join("");
 
 }
 
+/* DEALS */
+
+function dealSchedule(){
+
+const deals=
+Array.isArray(settings.deals)
+?settings.deals
+:[];
+
+const start=Date.parse(settings.dealsStartAt||"");
+
+if(!Number.isFinite(start)||!deals.length)
+return [];
+
+let time=start;
+
+return deals.map((d,i)=>{
+
+const duration=
+Math.max(1,Number(d.durationMinutes)||1)*60000;
+
+const item={
+...d,
+_index:i,
+_start:time,
+_end:time+duration
+};
+
+time+=duration;
+
+return item;
+
+});
+
+}
+
+function dealDiscount(oldPrice,newPrice){
+
+const oldN=Number(oldPrice)||0;
+const newN=Number(newPrice)||0;
+
+if(oldN<=0||newN>=oldN)
+return 0;
+
+return Math.round(((oldN-newN)/oldN)*100);
+
+}
+
+function money(value){
+
+return Number(value||0).toLocaleString("ar-EG")+" جنيه";
+
+}
+
+function renderDeals(){
+
+const box=$("dealsContainer");
+
+if(!box)return;
+
+const schedule=dealSchedule();
+
+if(!schedule.length){
+
+box.innerHTML=`
+<div class="deal-empty">
+مفيش صفقات نشطة حاليًا 🌿
+</div>`;
+
+return;
+
+}
+
+const now=Date.now();
+
+const active=schedule.find(
+d=>now>=d._start&&now<d._end
+);
+
+if(active){
+
+const remain=Math.max(0,active._end-now);
+
+const totalSeconds=Math.ceil(remain/1000);
+
+const minutes=Math.floor(totalSeconds/60);
+const seconds=totalSeconds%60;
+
+const discount=
+dealDiscount(
+active.oldPrice,
+active.price
+);
+
+box.innerHTML=`
+
+<div class="deal-card">
+
+<div class="deal-top">
+
+<img
+class="deal-image"
+src="${active.image||"/assets/logo.jpg"}"
+alt="${escapeHTML(active.title||"صفقة Green Moon")}">
+
+<div class="deal-badge">
+🔥 صفقة الآن
+</div>
+
+</div>
+
+<div class="deal-body">
+
+<div class="deal-title">
+${escapeHTML(active.title||"صفقة Green Moon")}
+</div>
+
+${active.description?
+`<div class="deal-desc">
+${escapeHTML(active.description)}
+</div>`:""}
+
+<div class="deal-prices">
+
+<span class="deal-old">
+${money(active.oldPrice)}
+</span>
+
+<span class="deal-new">
+${money(active.price)}
+</span>
+
+${discount?
+`<span class="deal-discount">
+خصم ${discount}%
+</span>`:""}
+
+</div>
+
+<div class="deal-timer">
+
+<div class="timer-box">
+<b>${String(minutes).padStart(2,"0")}</b>
+<span>دقيقة</span>
+</div>
+
+<div class="timer-box">
+<b>${String(seconds).padStart(2,"0")}</b>
+<span>ثانية</span>
+</div>
+
+</div>
+
+<button
+class="deal-order"
+onclick="addDealToCart(${active._index})">
+
+🛒 اطلب الصفقة الآن
+
+</button>
+
+</div>
+</div>
+`;
+
+}else{
+
+const next=schedule.find(d=>d._start>now);
+
+if(next){
+
+const remain=next._start-now;
+const totalSeconds=Math.ceil(remain/1000);
+const minutes=Math.floor(totalSeconds/60);
+const seconds=totalSeconds%60;
+
+box.innerHTML=`
+
+<div class="deal-empty">
+
+<div style="font-size:35px">⏳</div>
+
+<h3>الصفقة القادمة تبدأ قريبًا</h3>
+
+<strong>${escapeHTML(next.title||"الصفقة القادمة")}</strong>
+
+<div style="margin-top:15px;font-size:25px;font-weight:bold">
+${String(minutes).padStart(2,"0")} :
+${String(seconds).padStart(2,"0")}
+</div>
+
+</div>
+`;
+
+}else{
+
+box.innerHTML=`
+<div class="deal-empty">
+انتهت سلسلة الصفقات الحالية 🌿
+</div>
+`;
+
+}
+
+}
+
+}
+
+function addDealToCart(index){
+
+const schedule=dealSchedule();
+const deal=schedule[index];
+
+if(!deal){
+alert("الصفقة غير متاحة حاليًا.");
+return;
+}
+
+if(Date.now()<deal._start||Date.now()>=deal._end){
+
+alert("الصفقة انتهت أو لم تبدأ بعد.");
+return;
+
+}
+
+const product=products.find(
+p=>String(p.id)===String(deal.productId)
+);
+
+if(!product){
+
+alert("المنتج غير موجود حاليًا.");
+return;
+
+}
+
+const item=cart.find(
+x=>String(x.id)===String(product.id)
+);
+
+if(item){
+
+item.quantity++;
+item.price=Number(deal.price||0);
+
+}else{
+
+cart.push({
+
+id:product.id,
+
+name:product.name,
+
+price:Number(deal.price||0),
+
+shippingPrice:Number(product.shippingPrice||0),
+
+image:product.image||"/assets/logo.jpg",
+
+quantity:1
+
+});
+
+}
+
+updateCart();
+openCart();
+
+}
 
 /* CART */
 
 function addToCart(id){
 
-const p=
-products.find(
+const p=products.find(
 x=>String(x.id)===String(id)
 );
 
-if(!p)
-return;
+if(!p)return;
 
-
-const item=
-cart.find(
+const item=cart.find(
 x=>String(x.id)===String(id)
 );
-
 
 if(item){
 
@@ -1068,40 +1195,33 @@ item.quantity++;
 }else{
 
 cart.push({
+
 id:p.id,
 name:p.name,
 price:Number(p.price||0),
 shippingPrice:Number(p.shippingPrice||0),
 image:p.image||"/assets/logo.jpg",
 quantity:1
+
 });
 
 }
 
-
 updateCart();
-
 openCart();
 
 }
 
-
 function updateCart(){
 
 const count=
-cart.reduce(
-(s,x)=>s+x.quantity,
-0
-);
+cart.reduce((s,x)=>s+x.quantity,0);
 
 $("cartCount").textContent=count;
 
-
 if(!cart.length){
 
-$("cartItems").innerHTML=
-"<p>السلة فارغة.</p>";
-
+$("cartItems").innerHTML="<p>السلة فارغة.</p>";
 $("productsTotal").textContent="0";
 $("shippingTotal").textContent="0";
 $("finalTotal").textContent="0";
@@ -1109,7 +1229,6 @@ $("finalTotal").textContent="0";
 return;
 
 }
-
 
 $("cartItems").innerHTML=
 cart.map((x,i)=>`
@@ -1130,15 +1249,11 @@ ${x.price} ج
 
 <div class="qty">
 
-<button onclick="changeQty(${i},-1)">
-−
-</button>
+<button onclick="changeQty(${i},-1)">−</button>
 
 <span>${x.quantity}</span>
 
-<button onclick="changeQty(${i},1)">
-+
-</button>
+<button onclick="changeQty(${i},1)">+</button>
 
 </div>
 
@@ -1146,133 +1261,13 @@ ${x.price} ج
 
 `).join("");
 
-
 const productsTotal=
 cart.reduce(
 (s,x)=>s+x.price*x.quantity,
 0
 );
 
-
-const unique=
-cart.length===1;
-
 let shipping=0;
-
-
-if(unique){
-
-shipping=
-Number(cart[0].shippingPrice||0);
-
-}else{
-
-shipping=
-Number(settings.shipping||0);
-
-}
-
-
-const final=
-productsTotal+shipping;
-
-
-$("productsTotal").textContent=
-productsTotal;
-
-$("shippingTotal").textContent=
-shipping;
-
-$("finalTotal").textContent=
-final;
-
-}
-
-
-function changeQty(i,n){
-
-cart[i].quantity+=n;
-
-if(cart[i].quantity<=0)
-cart.splice(i,1);
-
-updateCart();
-
-}
-
-
-function openCart(){
-
-$("cartModal").classList.remove("hidden");
-
-updateCart();
-
-}
-
-
-function closeCart(){
-
-$("cartModal").classList.add("hidden");
-
-}
-
-
-/* ORDER */
-
-async function sendOrder(){
-
-if(!cart.length){
-
-$("orderMsg").textContent=
-"السلة فارغة.";
-
-return;
-
-}
-
-
-const name=
-$("customerName").value.trim();
-
-const phone=
-$("customerPhone").value.trim();
-
-
-if(!name||!phone){
-
-$("orderMsg").textContent=
-"من فضلك اكتب الاسم ورقم الهاتف.";
-
-return;
-
-}
-
-
-const items=
-cart.map(x=>({
-
-productId:x.id,
-
-name:x.name,
-
-price:x.price,
-
-quantity:x.quantity,
-
-lineTotal:x.price*x.quantity
-
-}));
-
-
-const productsTotal=
-items.reduce(
-(s,x)=>s+x.lineTotal,
-0
-);
-
-
-let shipping=0;
-
 
 if(cart.length===1){
 
@@ -1286,37 +1281,108 @@ Number(settings.shipping||0);
 
 }
 
+const final=productsTotal+shipping;
 
-const total=
-productsTotal+shipping;
+$("productsTotal").textContent=productsTotal;
+$("shippingTotal").textContent=shipping;
+$("finalTotal").textContent=final;
 
+}
+
+function changeQty(i,n){
+
+cart[i].quantity+=n;
+
+if(cart[i].quantity<=0)
+cart.splice(i,1);
+
+updateCart();
+
+}
+
+function openCart(){
+
+$("cartModal").classList.remove("hidden");
+updateCart();
+
+}
+
+function closeCart(){
+
+$("cartModal").classList.add("hidden");
+
+}
+
+/* ORDER */
+
+async function sendOrder(){
+
+if(!cart.length){
+
+$("orderMsg").textContent="السلة فارغة.";
+return;
+
+}
+
+const name=$("customerName").value.trim();
+const phone=$("customerPhone").value.trim();
+
+if(!name||!phone){
+
+$("orderMsg").textContent=
+"من فضلك اكتب الاسم ورقم الهاتف.";
+
+return;
+
+}
+
+const items=cart.map(x=>({
+
+productId:x.id,
+name:x.name,
+price:x.price,
+quantity:x.quantity,
+lineTotal:x.price*x.quantity
+
+}));
+
+const productsTotal=
+items.reduce((s,x)=>s+x.lineTotal,0);
+
+let shipping=0;
+
+if(cart.length===1){
+
+shipping=
+Number(cart[0].shippingPrice||0);
+
+}else{
+
+shipping=
+Number(settings.shipping||0);
+
+}
+
+const total=productsTotal+shipping;
 
 const body={
 
 name:name,
-
 phone:phone,
 
-governorate:
-$("customerGovernorate").value.trim(),
+governorate:$("customerGovernorate").value.trim(),
 
-area:
-$("customerArea").value.trim(),
+area:$("customerArea").value.trim(),
 
-street:
-$("customerStreet").value.trim(),
+street:$("customerStreet").value.trim(),
 
-building:
-$("customerBuilding").value.trim(),
+building:$("customerBuilding").value.trim(),
 
-floor:
-$("customerFloor").value.trim(),
+floor:$("customerFloor").value.trim(),
 
-apartment:
-$("customerApartment").value.trim(),
+apartment:$("customerApartment").value.trim(),
 
-notes:
-$("customerNotes").value.trim(),
+notes:$("customerNotes").value.trim(),
 
 items:items,
 
@@ -1328,15 +1394,12 @@ total:total
 
 };
 
-
 try{
 
 $("orderMsg").textContent=
 "جاري إرسال الطلب...";
 
-
-const r=
-await fetch(
+const r=await fetch(
 "/api/orders",
 {
 method:"POST",
@@ -1347,61 +1410,50 @@ body:JSON.stringify(body)
 }
 );
 
-
-const data=
-await r.json();
-
+const data=await r.json();
 
 if(!r.ok)
 throw new Error(
 data.error||"فشل إرسال الطلب"
 );
 
-
 $("orderMsg").textContent=
 "تم إرسال طلبك بنجاح 💚";
-
 
 if(data.whatsappUrl){
 
 setTimeout(()=>{
+
 window.open(
 data.whatsappUrl,
 "_blank"
 );
+
 },500);
 
 }
 
-
 cart=[];
-
 updateCart();
-
 
 }catch(e){
 
-$("orderMsg").textContent=
-e.message;
+$("orderMsg").textContent=e.message;
 
 }
 
 }
-
 
 /* ARTICLES */
 
 function renderArticles(){
 
-const box=
-$("articlesGrid");
-
+const box=$("articlesGrid");
 
 const articles=
 Array.isArray(settings.articles)
 ?settings.articles
 :[];
-
 
 if(!articles.length){
 
@@ -1411,7 +1463,6 @@ box.innerHTML=
 return;
 
 }
-
 
 box.innerHTML=
 articles.map((a,i)=>`
@@ -1424,13 +1475,9 @@ alt="${escapeHTML(a.title||"مقال")}">
 
 <div class="article-body">
 
-<h3>
-${escapeHTML(a.title||"مقال")}
-</h3>
+<h3>${escapeHTML(a.title||"مقال")}</h3>
 
-<p>
-${escapeHTML(a.excerpt||"")}
-</p>
+<p>${escapeHTML(a.excerpt||"")}</p>
 
 <button onclick="openArticle(${i})">
 اقرأ المقال
@@ -1444,15 +1491,11 @@ ${escapeHTML(a.excerpt||"")}
 
 }
 
-
 function openArticle(i){
 
-const a=
-(settings.articles||[])[i];
+const a=(settings.articles||[])[i];
 
-if(!a)
-return;
-
+if(!a)return;
 
 $("articleModalImage").src=
 a.image||"/assets/logo.jpg";
@@ -1463,69 +1506,49 @@ a.title||"";
 $("articleModalContent").textContent=
 a.content||a.excerpt||"";
 
-$("articleModal").classList.remove(
-"hidden"
-);
+$("articleModal").classList.remove("hidden");
 
 }
-
 
 function closeArticle(){
 
-$("articleModal").classList.add(
-"hidden"
-);
+$("articleModal").classList.add("hidden");
 
 }
-
 
 /* DOCTOR */
 
 function openDoctor(){
 
-$("doctorModal").classList.remove(
-"hidden"
-);
+$("doctorModal").classList.remove("hidden");
 
 }
-
 
 function closeDoctor(){
 
-$("doctorModal").classList.add(
-"hidden"
-);
+$("doctorModal").classList.add("hidden");
 
 }
 
+$("doctorImage").onchange=e=>{
 
-$("doctorImage").onchange=
-e=>{
+const file=e.target.files[0];
 
-const file=
-e.target.files[0];
+if(!file)return;
 
-if(!file)
-return;
-
-
-const reader=
-new FileReader();
-
+const reader=new FileReader();
 
 reader.onload=()=>{
-$("doctorPreview").src=
-reader.result;
 
-$("doctorPreview").style.display=
-"block";
+$("doctorPreview").src=reader.result;
+
+$("doctorPreview").style.display="block";
+
 };
-
 
 reader.readAsDataURL(file);
 
 };
-
 
 /* HELPERS */
 
@@ -1540,7 +1563,6 @@ return String(value??"")
 
 }
 
-
 function escapeJS(value){
 
 return String(value??"")
@@ -1549,539 +1571,21 @@ return String(value??"")
 
 }
 
-/* =========================
-   GREEN MOON DEALS
-========================= */
+/* DEAL TIMER */
+setInterval(()=>{
 
-(function(){
+if(Array.isArray(settings.deals)&&settings.deals.length){
 
-  const dealsStyle = document.createElement("style");
+renderDeals();
 
-  dealsStyle.textContent = `
-    #gmDealsSection{
-      padding:20px 14px;
-      margin:20px auto;
-      max-width:1100px;
-    }
+}
 
-    #gmDealsSection .gm-deals-title{
-      text-align:center;
-      margin-bottom:18px;
-    }
+},1000);
 
-    #gmDealsSection .gm-deals-title h2{
-      margin:0 0 7px;
-      font-size:28px;
-      color:#0b5135;
-    }
-
-    #gmDealsSection .gm-deals-title p{
-      margin:0;
-      color:#65766d;
-    }
-
-    .gm-deals-card{
-      background:#fff;
-      border-radius:24px;
-      overflow:hidden;
-      box-shadow:0 10px 35px rgba(0,0,0,.12);
-      border:1px solid #e1e8e3;
-      max-width:720px;
-      margin:auto;
-    }
-
-    .gm-deals-card img{
-      width:100%;
-      aspect-ratio:16/8;
-      object-fit:cover;
-      display:block;
-      background:#edf3ef;
-    }
-
-    .gm-deals-body{
-      padding:20px;
-    }
-
-    .gm-deals-badge{
-      display:inline-block;
-      background:#0d5135;
-      color:#fff;
-      padding:7px 12px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:bold;
-    }
-
-    .gm-deals-name{
-      font-size:25px;
-      font-weight:900;
-      color:#173c2b;
-      margin:12px 0 8px;
-    }
-
-    .gm-deals-desc{
-      color:#65766d;
-      line-height:1.8;
-      margin-bottom:12px;
-    }
-
-    .gm-deals-prices{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin:12px 0;
-    }
-
-    .gm-deals-old{
-      color:#8b9690;
-      text-decoration:line-through;
-      font-size:17px;
-    }
-
-    .gm-deals-new{
-      color:#0b603b;
-      font-size:31px;
-      font-weight:900;
-    }
-
-    .gm-deals-discount{
-      background:#d8b65c;
-      color:#173c2b;
-      padding:7px 10px;
-      border-radius:10px;
-      font-weight:bold;
-    }
-
-    .gm-deals-timer{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin:18px 0;
-    }
-
-    .gm-deals-time{
-      background:#073c27;
-      color:#fff;
-      border-radius:14px;
-      padding:12px;
-      text-align:center;
-    }
-
-    .gm-deals-time b{
-      display:block;
-      font-size:28px;
-      line-height:1;
-      margin-bottom:5px;
-    }
-
-    .gm-deals-time span{
-      font-size:12px;
-      opacity:.8;
-    }
-
-    .gm-deals-next{
-      text-align:center;
-      padding:25px;
-      color:#65766d;
-      background:#fff;
-      border-radius:20px;
-      box-shadow:0 8px 25px rgba(0,0,0,.08);
-    }
-
-    @media(max-width:600px){
-      #gmDealsSection .gm-deals-title h2{
-        font-size:23px;
-      }
-
-      .gm-deals-name{
-        font-size:21px;
-      }
-
-      .gm-deals-new{
-        font-size:26px;
-      }
-    }
-  `;
-
-  document.head.appendChild(dealsStyle);
-
-  let gmDealsTimer=null;
-
-  function gmEscape(value){
-    return String(value ?? "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
-  }
-
-  function gmDealSchedule(settings){
-
-    const deals = Array.isArray(settings.deals)
-      ? settings.deals
-      : [];
-
-    const start = Date.parse(settings.dealsStartAt || "");
-
-    if(!Number.isFinite(start) || !deals.length){
-      return [];
-    }
-
-    let current = start;
-
-    return deals.map((deal,index)=>{
-
-      const duration =
-        Math.max(
-          1,
-          Number(deal.durationMinutes) || 1
-        ) * 60000;
-
-      const item = {
-        ...deal,
-        _index:index,
-        _start:current,
-        _end:current + duration
-      };
-
-      current += duration;
-
-      return item;
-    });
-  }
-
-  function gmFormatMoney(value){
-    return Number(value || 0).toLocaleString("ar-EG") + " جنيه";
-  }
-
-  function gmDiscount(oldPrice,newPrice){
-
-    const oldN=Number(oldPrice)||0;
-    const newN=Number(newPrice)||0;
-
-    if(oldN<=0 || newN>=oldN){
-      return 0;
-    }
-
-    return Math.round(
-      ((oldN-newN)/oldN)*100
-    );
-  }
-
-  function gmFindContainer(){
-
-    let section=document.getElementById("gmDealsSection");
-
-    if(section){
-      return section;
-    }
-
-    section=document.createElement("section");
-    section.id="gmDealsSection";
-
-    section.innerHTML=`
-      <div class="gm-deals-title">
-        <h2>🔥 صفقات Green Moon</h2>
-        <p>صفقة وراء صفقة... والصفقة الجديدة تبدأ تلقائيًا ⏳</p>
-      </div>
-
-      <div id="gmDealsContainer">
-        <div class="gm-deals-next">
-          جاري تحميل الصفقات...
-        </div>
-      </div>
-    `;
-
-    const main=
-      document.querySelector("main") ||
-      document.body;
-
-    const firstSection=
-      main.querySelector("section");
-
-    if(firstSection){
-      main.insertBefore(section,firstSection);
-    }else{
-      main.prepend(section);
-    }
-
-    return section;
-  }
-
-  async function gmRenderDeals(){
-
-    try{
-
-      const response=
-        await fetch("/api/settings?ts="+Date.now());
-
-      if(!response.ok){
-        return;
-      }
-
-      const freshSettings=
-        await response.json();
-
-      window.settings=
-        Object.assign(
-          window.settings || {},
-          freshSettings
-        );
-
-      const section=
-        gmFindContainer();
-
-      const container=
-        document.getElementById(
-          "gmDealsContainer"
-        );
-
-      if(!container){
-        return;
-      }
-
-      const schedule=
-        gmDealSchedule(window.settings);
-
-      if(!schedule.length){
-
-        container.innerHTML=`
-          <div class="gm-deals-next">
-            مفيش صفقات نشطة حاليًا 🌿
-          </div>
-        `;
-
-        return;
-      }
-
-      const now=Date.now();
-
-      const active=
-        schedule.find(
-          deal =>
-            now >= deal._start &&
-            now < deal._end
-        );
-
-      if(active){
-
-        const remaining=
-          Math.max(
-            0,
-            active._end-now
-          );
-
-        const totalSeconds=
-          Math.ceil(
-            remaining/1000
-          );
-
-        const minutes=
-          Math.floor(
-            totalSeconds/60
-          );
-
-        const seconds=
-          totalSeconds%60;
-
-        const oldPrice=
-          Number(active.oldPrice)||0;
-
-        const newPrice=
-          Number(active.dealPrice)||0;
-
-        const discount=
-          gmDiscount(
-            oldPrice,
-            newPrice
-          );
-
-        container.innerHTML=`
-
-          <div class="gm-deals-card">
-
-            ${
-              active.image
-              ?
-              `<img
-                src="${gmEscape(active.image)}"
-                alt="${gmEscape(active.title || "صفقة Green Moon")}"
-              >`
-              :
-              ""
-            }
-
-            <div class="gm-deals-body">
-
-              <span class="gm-deals-badge">
-                🔥 صفقة الآن
-              </span>
-
-              <div class="gm-deals-name">
-                ${gmEscape(
-                  active.title ||
-                  "صفقة Green Moon"
-                )}
-              </div>
-
-              ${
-                active.description
-                ?
-                `<div class="gm-deals-desc">
-                  ${gmEscape(active.description)}
-                </div>`
-                :
-                ""
-              }
-
-              <div class="gm-deals-prices">
-
-                ${
-                  oldPrice
-                  ?
-                  `<span class="gm-deals-old">
-                    ${gmFormatMoney(oldPrice)}
-                  </span>`
-                  :
-                  ""
-                }
-
-                <span class="gm-deals-new">
-                  ${gmFormatMoney(newPrice)}
-                </span>
-
-                ${
-                  discount>0
-                  ?
-                  `<span class="gm-deals-discount">
-                    خصم ${discount}%
-                  </span>`
-                  :
-                  ""
-                }
-
-              </div>
-
-              <div class="gm-deals-timer">
-
-                <div class="gm-deals-time">
-                  <b>${String(minutes).padStart(2,"0")}</b>
-                  <span>دقيقة</span>
-                </div>
-
-                <div class="gm-deals-time">
-                  <b>${String(seconds).padStart(2,"0")}</b>
-                  <span>ثانية</span>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-        `;
-
-      }else{
-
-        const next=
-          schedule.find(
-            deal =>
-              deal._start > now
-          );
-
-        if(next){
-
-          const remaining=
-            next._start-now;
-
-          const totalSeconds=
-            Math.ceil(
-              remaining/1000
-            );
-
-          const minutes=
-            Math.floor(
-              totalSeconds/60
-            );
-
-          const seconds=
-            totalSeconds%60;
-
-          container.innerHTML=`
-
-            <div class="gm-deals-next">
-
-              <div style="font-size:28px;margin-bottom:8px">
-                ⏳
-              </div>
-
-              <strong style="font-size:20px">
-                الصفقة القادمة تبدأ قريبًا
-              </strong>
-
-              <div style="margin-top:12px">
-                ${gmEscape(
-                  next.title ||
-                  "الصفقة القادمة"
-                )}
-              </div>
-
-              <div style="margin-top:15px;font-weight:bold">
-                ${String(minutes).padStart(2,"0")}
-                :
-                ${String(seconds).padStart(2,"0")}
-              </div>
-
-            </div>
-          `;
-
-        }else{
-
-          container.innerHTML=`
-
-            <div class="gm-deals-next">
-              انتهت سلسلة الصفقات الحالية 🌿
-            </div>
-
-          `;
-        }
-      }
-
-    }catch(error){
-
-      console.error(
-        "Green Moon Deals:",
-        error
-      );
-
-    }
-  }
-
-  function gmStartDeals(){
-
-    gmRenderDeals();
-
-    if(gmDealsTimer){
-      clearInterval(gmDealsTimer);
-    }
-
-    gmDealsTimer=
-      setInterval(
-        gmRenderDeals,
-        1000
-      );
-  }
-
-  gmStartDeals();
-
-})();
-
-  
+/* START */
 loadStore();
 
 </script>
 
 </body>
-</html>
+   </html>
