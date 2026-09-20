@@ -1,96 +1,677 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Green Moon Plants & Flowers</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Green Moon Plants & Flowers</title>
 
-  <style>
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Tahoma,Arial,sans-serif;
-      background:#f5f3ec;
-      color:#173d2a;
-    }
-    button,input,select,textarea{font-family:inherit}
-    button{cursor:pointer}
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial;background:#f5f3ec;color:#173d2a}
+header{background:#123b28;color:white;padding:12px 16px}
+.nav{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:52px;height:52px;border-radius:50%;object-fit:contain;background:white}
+.brand b{display:block}.brand small{opacity:.8}
+.admin{color:white;text-decoration:none;background:#ffffff20;padding:9px 12px;border-radius:9px}
+.hero{background:linear-gradient(135deg,#174d32,#286b43);color:white;text-align:center;padding:40px 15px}
+.hero h1{margin:0 0 8px}
+.wrap{max-width:1200px;margin:auto;padding:22px 14px 100px}
+.search{width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:16px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.card{background:white;border-radius:17px;overflow:hidden;box-shadow:0 3px 14px #0001}
+.pic{width:100%;height:220px;object-fit:cover;display:block;cursor:pointer}
+.body{padding:13px}.name{font-size:18px;font-weight:bold}
+.desc{font-size:13px;color:#666;line-height:1.6;margin:7px 0}
+.price{font-size:21px;font-weight:bold;color:#176038}
+.ship{font-size:12px;color:#777;margin:7px 0 10px}
+.actions{display:flex;justify-content:space-between;align-items:center}
+.details{border:0;background:#eee8d7;padding:9px;border-radius:9px}
+.qty{display:flex;align-items:center;gap:7px;background:#f1f5f0;padding:4px;border-radius:9px}
+.qty button{border:0;background:#176038;color:white;width:31px;height:31px;border-radius:7px;font-size:19px}
+.qty span{min-width:22px;text-align:center;font-weight:bold}
+.cart{position:fixed;bottom:14px;left:14px;right:14px;max-width:600px;margin:auto;background:#123b28;color:white;border-radius:17px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;z-index:30;box-shadow:0 5px 22px #0004}
+.cart button{border:0;background:#d7b75a;padding:10px 17px;border-radius:10px;font-weight:bold}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:14px;z-index:100}
+.modal.show{display:flex}
+.box{width:min(650px,100%);max-height:92vh;overflow:auto;background:white;border-radius:20px;padding:18px;position:relative}
+.close{position:absolute;top:9px;left:9px;border:0;background:#eee;border-radius:50%;width:38px;height:38px;font-size:23px}
+.detailimg{width:100%;max-height:350px;object-fit:cover;border-radius:14px}
+.dtitle{font-size:24px;font-weight:bold;margin-top:12px}
+.care{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.care div{background:#f4f7f1;padding:10px;border-radius:10px}
+.care b{display:block;color:#176038;font-size:13px;margin-bottom:4px}
+.care span{font-size:13px;color:#555;line-height:1.6}
+.add,.submit{width:100%;border:0;background:#176038;color:white;padding:14px;border-radius:11px;font-size:16px;font-weight:bold;margin-top:14px}
+.row{display:flex;justify-content:space-between;padding:7px 0}
+.total{border-top:1px solid #ddd;margin-top:6px;padding-top:10px;font-size:18px;font-weight:bold;color:#176038}
+.field{margin:10px 0}.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:5px}
+.field input,.field textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:9px}
+.field textarea{min-height:70px}
+.empty{text-align:center;padding:45px;color:#777;grid-column:1/-1}
+footer{background:#123b28;color:white;text-align:center;padding:25px 15px 90px}
+@media(max-width:600px){
+.grid{grid-template-columns:repeat(2,1fr);gap:9px}
+.pic{height:165px}.body{padding:9px}.name{font-size:15px}.price{font-size:18px}
+.care{grid-template-columns:1fr}
+}
+</style>
+</head>
 
-    header{
-      background:#123b28;
-      color:#fff;
-      padding:12px 18px;
-      position:sticky;
-      top:0;
-      z-index:50;
-      box-shadow:0 2px 10px #0002;
-    }
+<body>
 
-    .header-inner{
-      max-width:1200px;
-      margin:auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:15px;
-    }
+<header>
+<div class="nav">
+<div class="brand">
+<img id="logo" src="/assets/logo.jpg">
+<div>
+<b>Green Moon Plants & Flowers</b>
+<small>نباتات الزينة والزهور</small>
+</div>
+</div>
+<a class="admin" href="/admin.html">لوحة التحكم</a>
+</div>
+</header>
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+<section class="hero">
+<h1 id="title">Green Moon 🌿</h1>
+<p id="subtitle">اختار نباتتك وخلي بيتك أحلى 💚</p>
+</section>
 
-    .brand img{
-      width:55px;
-      height:55px;
-      object-fit:contain;
-      border-radius:50%;
-      background:#fff;
-    }
+<main class="wrap">
+<input id="search" class="search" placeholder="🔎 ابحث عن نبات...">
+<div id="products" class="grid"></div>
+</main>
 
-    .brand-title{
-      font-size:18px;
-      font-weight:bold;
-    }
+<footer>
+Green Moon Plants & Flowers 🌿
+<br>
+نباتات طبيعية... لمسة حياة
+</footer>
 
-    .brand-sub{
-      font-size:12px;
-      opacity:.8;
-      margin-top:3px;
-    }
+<!-- تفاصيل المنتج -->
+<div id="detailModal" class="modal">
+<div class="box">
 
-    .admin-link{
-      color:#fff;
-      text-decoration:none;
-      background:#ffffff18;
-      padding:9px 12px;
-      border-radius:10px;
-      font-size:13px;
-    }
+<button class="close" onclick="closeDetail()">×</button>
 
-    .hero{
-      background:linear-gradient(135deg,#174d32,#286b43);
-      color:#fff;
-      padding:45px 20px;
-      text-align:center;
-    }
+<img id="dimg" class="detailimg">
 
-    .hero h1{
-      margin:0 0 10px;
-      font-size:32px;
-    }
+<div id="dname" class="dtitle"></div>
+<div id="dprice" class="price"></div>
+<div id="dship" class="ship"></div>
 
-    .hero p{
-      margin:0;
-      opacity:.9;
-      font-size:16px;
-    }
+<p id="ddesc" style="line-height:1.8;color:#555"></p>
 
-    .container{
-      max-width:1200px;
-      margin:auto;
-      padding:25px 15px 100px;
-    }
+<div id="care" class="care"></div>
 
-    .search
+<button id="add" class="add">
+أضف للسلة 🛒
+</button>
+
+</div>
+</div>
+
+<!-- السلة -->
+<div id="cartModal" class="modal">
+<div class="box">
+
+<button class="close" onclick="closeCart()">×</button>
+
+<h2>🛒 تأكيد الطلب</h2>
+
+<div id="cartItems"></div>
+
+<div style="background:#f4f7f1;padding:12px;border-radius:12px;margin:12px 0">
+
+<div class="row">
+<span>إجمالي المنتجات</span>
+<b id="pt">0</b>
+</div>
+
+<div class="row">
+<span>التوصيل</span>
+<b id="st">0</b>
+</div>
+
+<div class="row total">
+<span>الإجمالي النهائي</span>
+<b id="ft">0</b>
+</div>
+
+</div>
+
+<div class="field">
+<label>الاسم *</label>
+<input id="name">
+</div>
+
+<div class="field">
+<label>رقم الهاتف *</label>
+<input id="phone" type="tel">
+</div>
+
+<div class="field">
+<label>المحافظة</label>
+<input id="gov">
+</div>
+
+<div class="field">
+<label>المنطقة</label>
+<input id="area">
+</div>
+
+<div class="field">
+<label>اسم الشارع</label>
+<input id="street">
+</div>
+
+<div class="field">
+<label>رقم العمارة</label>
+<input id="building">
+</div>
+
+<div class="field">
+<label>الدور</label>
+<input id="floor">
+</div>
+
+<div class="field">
+<label>الشقة</label>
+<input id="apt">
+</div>
+
+<div class="field">
+<label>ملاحظات</label>
+<textarea id="notes"></textarea>
+</div>
+
+<button class="submit" onclick="sendOrder()">
+إرسال الطلب عبر واتساب 📱
+</button>
+
+</div>
+</div>
+
+<div class="cart">
+<span>🛒 السلة: <b id="count">0</b> قطعة</span>
+<button onclick="openCart()">عرض السلة</button>
+</div>
+
+<script>
+let products=[];
+let cart=JSON.parse(localStorage.getItem("greenMoonCart")||"{}");
+let generalShipping=0;
+let settings={};
+let currentProduct=null;
+
+const $=id=>document.getElementById(id);
+const money=n=>Number(n||0).toLocaleString("ar-EG")+" ج.م";
+
+function esc(s){
+return String(s??"").replace(/[&<>"']/g,m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m]));
+}
+
+async function load(){
+
+try{
+let r=await fetch("/api/products");
+if(r.ok) products=await r.json();
+}catch(e){}
+
+try{
+let r=await fetch("/api/shipping");
+if(r.ok){
+let x=await r.json();
+generalShipping=Number(x.shipping||0);
+}
+}catch(e){}
+
+try{
+let r=await fetch("/api/settings");
+if(r.ok){
+settings=await r.json();
+
+if(settings.title)
+$("title").textContent=settings.title;
+
+if(settings.subtitle)
+$("subtitle").textContent=settings.subtitle;
+}
+}catch(e){}
+
+try{
+let r=await fetch("/api/logo");
+if(r.ok){
+let x=await r.json();
+if(x.logo) $("logo").src=x.logo;
+}
+}catch(e){}
+
+products=(Array.isArray(products)?products:[]).map(p=>({
+...p,
+price:Number(p.price||0),
+shippingPrice:Number(p.shippingPrice||0),
+care:p.care||{}
+}));
+
+render();
+updateCart();
+}
+
+function render(){
+
+let q=$("search").value.trim().toLowerCase();
+
+let list=products.filter(p=>
+String(p.name||"").toLowerCase().includes(q)
+);
+
+let box=$("products");
+
+if(!list.length){
+box.innerHTML='<div class="empty">مفيش منتجات مطابقة للبحث 🌿</div>';
+return;
+}
+
+box.innerHTML=list.map(p=>{
+
+let qty=Number(cart[p.id]||0);
+
+return `
+<article class="card">
+
+<img
+class="pic"
+src="${esc(p.image||"/assets/logo.jpg")}"
+onclick="openDetail('${esc(p.id)}')"
+onerror="this.src='/assets/logo.jpg'"
+>
+
+<div class="body">
+
+<div class="name">${esc(p.name)}</div>
+
+<div class="desc">
+${esc(p.details||p.description||"اضغط لمعرفة التفاصيل والعناية")}
+</div>
+
+<div class="price">${money(p.price)}</div>
+
+<div class="ship">
+🚚 توصيل المنتج منفردًا:
+<b>${money(p.shippingPrice)}</b>
+</div>
+
+<div class="actions">
+
+<button class="details"
+onclick="openDetail('${esc(p.id)}')">
+التفاصيل والعناية
+</button>
+
+<div class="qty">
+
+<button onclick="changeQty('${esc(p.id)}',-1)">
+−
+</button>
+
+<span>${qty}</span>
+
+<button onclick="changeQty('${esc(p.id)}',1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+</article>
+`;
+
+}).join("");
+}
+
+function changeQty(id,delta){
+
+cart[id]=Number(cart[id]||0)+delta;
+
+if(cart[id]<=0) delete cart[id];
+
+localStorage.setItem(
+"greenMoonCart",
+JSON.stringify(cart)
+);
+
+render();
+updateCart();
+}
+
+function getItems(){
+
+return Object.keys(cart)
+.filter(id=>Number(cart[id])>0)
+.map(id=>{
+
+let p=products.find(
+x=>String(x.id)===String(id)
+);
+
+return p?{p,q:Number(cart[id])}:null;
+
+})
+.filter(Boolean);
+}
+
+function getSubtotal(){
+
+return getItems().reduce(
+(sum,x)=>sum+(Number(x.p.price)||0)*x.q,
+0
+);
+}
+
+function getShipping(){
+
+let a=getItems();
+
+if(!a.length) return 0;
+
+let ids=[...new Set(
+a.map(x=>String(x.p.id))
+)];
+
+if(ids.length===1){
+
+return Number(
+a[0].p.shippingPrice||0
+);
+
+}
+
+return Number(generalShipping||0);
+}
+
+function updateCart(){
+
+let a=getItems();
+
+let count=a.reduce(
+(sum,x)=>sum+x.q,
+0
+);
+
+let sub=getSubtotal();
+let shipping=getShipping();
+
+$("count").textContent=count;
+$("pt").textContent=money(sub);
+$("st").textContent=money(shipping);
+$("ft").textContent=money(sub+shipping);
+
+$("cartItems").innerHTML=a.length?
+
+a.map(x=>`
+<div class="row">
+<span>${esc(x.p.name)} × ${x.q}</span>
+<b>${money(x.p.price*x.q)}</b>
+</div>
+`).join("")
+
+:
+
+'<div class="empty">السلة فاضية 🛒</div>';
+}
+
+function openDetail(id){
+
+let p=products.find(
+x=>String(x.id)===String(id)
+);
+
+if(!p)return;
+
+currentProduct=p;
+
+$("dimg").src=p.image||"/assets/logo.jpg";
+$("dname").textContent=p.name||"";
+$("dprice").textContent=money(p.price);
+
+$("dship").innerHTML=
+"🚚 التوصيل للمنتج منفردًا: <b>"+
+money(p.shippingPrice)+
+"</b><br><small>عند طلب أكثر من منتج مختلف يتم تطبيق التوصيل العام.</small>";
+
+$("ddesc").textContent=
+p.details||
+p.description||
+"لا توجد تفاصيل إضافية حاليًا.";
+
+let c=p.care||{};
+
+let fields=[
+["💡","الإضاءة","light"],
+["💧","الري","water"],
+["🌡️","الحرارة","temperature"],
+["💦","الرطوبة","humidity"],
+["🌱","التربة","soil"],
+["🧪","التسميد","fertilizer"],
+["✂️","التقليم","pruning"],
+["🌿","الإكثار","propagation"],
+["⚠️","المشاكل والأمراض","problems"],
+["🐛","الآفات","pests"],
+["❌","الأخطاء الشائعة","mistakes"],
+["💚","نصائح جرين مون","tips"]
+];
+
+$("care").innerHTML=fields
+.filter(x=>String(c[x[2]]||"").trim())
+.map(x=>`
+<div>
+<b>${x[0]} ${x[1]}</b>
+<span>${esc(c[x[2]])}</span>
+</div>
+`)
+.join("");
+
+if(!$("care").innerHTML){
+$("care").innerHTML=`
+<div style="grid-column:1/-1">
+<b>🌿 العناية بالنبات</b>
+<span>
+تفاصيل العناية بهذا المنتج سيتم إضافتها من لوحة التحكم.
+</span>
+</div>`;
+}
+
+$("detailModal").classList.add("show");
+}
+
+function closeDetail(){
+$("detailModal").classList.remove("show");
+}
+
+$("add").onclick=()=>{
+
+if(!currentProduct)return;
+
+changeQty(currentProduct.id,1);
+closeDetail();
+openCart();
+};
+
+function openCart(){
+
+updateCart();
+
+if(!getItems().length){
+alert("السلة فاضية 🛒");
+return;
+}
+
+$("cartModal").classList.add("show");
+}
+
+function closeCart(){
+$("cartModal").classList.remove("show");
+}
+
+async function sendOrder(){
+
+let items=getItems();
+
+let customerName=$("name").value.trim();
+let customerPhone=$("phone").value.trim();
+
+if(!items.length){
+alert("السلة فاضية");
+return;
+}
+
+if(!customerName||!customerPhone){
+alert("من فضلك اكتب الاسم ورقم الهاتف");
+return;
+}
+
+let payload={
+
+name:customerName,
+
+phone:customerPhone,
+
+governorate:$("gov").value.trim(),
+
+area:$("area").value.trim(),
+
+street:$("street").value.trim(),
+
+building:$("building").value.trim(),
+
+floor:$("floor").value.trim(),
+
+apartment:$("apt").value.trim(),
+
+notes:$("notes").value.trim(),
+
+items:items.map(x=>({
+productId:x.p.id,
+quantity:x.q
+}))
+
+};
+
+try{
+
+let r=await fetch("/api/orders",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(payload)
+});
+
+let data=await r.json().catch(()=>({}));
+
+if(!r.ok){
+throw new Error(
+data.error||"تعذر حفظ الطلب"
+);
+}
+
+let subtotal=getSubtotal();
+let shipping=getShipping();
+
+let text=
+"🌿 طلب جديد من Green Moon\n\n"+
+"👤 الاسم: "+customerName+"\n"+
+"📱 الهاتف: "+customerPhone+"\n"+
+"📍 المحافظة: "+(payload.governorate||"-")+"\n"+
+"📍 المنطقة: "+(payload.area||"-")+"\n"+
+"🛣️ الشارع: "+(payload.street||"-")+"\n"+
+"🏢 العمارة: "+(payload.building||"-")+"\n"+
+"🏠 الدور: "+(payload.floor||"-")+"\n"+
+"🚪 الشقة: "+(payload.apartment||"-")+
+"\n\n🌱 المنتجات:\n"+
+items.map(x=>
+"• "+x.p.name+
+" × "+x.q+
+" = "+money(x.p.price*x.q)
+).join("\n")+
+"\n\n💰 إجمالي المنتجات: "+
+money(subtotal)+
+"\n🚚 التوصيل: "+
+money(shipping)+
+"\n💵 الإجمالي النهائي: "+
+money(subtotal+shipping);
+
+let whatsapp=
+settings.whatsapp||
+settings.whatsappNumber||
+"";
+
+if(whatsapp){
+
+window.open(
+"https://wa.me/"+
+String(whatsapp).replace(/\D/g,"")+
+"?text="+
+encodeURIComponent(text),
+"_blank"
+);
+
+}else{
+
+alert(
+"تم تسجيل الطلب بنجاح، لكن رقم واتساب غير مضبوط في الإعدادات."
+);
+
+}
+
+cart={};
+
+localStorage.setItem(
+"greenMoonCart",
+"{}"
+);
+
+render();
+updateCart();
+closeCart();
+
+}catch(e){
+
+alert(
+e.message||
+"حدث خطأ أثناء إرسال الطلب"
+);
+
+}
+}
+
+$("search").addEventListener(
+"input",
+render
+);
+
+document.addEventListener(
+"keydown",
+e=>{
+if(e.key==="Escape"){
+closeDetail();
+closeCart();
+}
+}
+);
+
+load();
+</script>
+
+</body>
+</html>
