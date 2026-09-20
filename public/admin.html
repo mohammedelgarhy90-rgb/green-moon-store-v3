@@ -7,17 +7,20 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
  margin:0;
  background:#f4f7f4;
  color:#173c2b;
  font-family:Arial,Tahoma,sans-serif
 }
+
 header{
  background:#083c27;
  color:#fff;
  padding:18px
 }
+
 .nav{
  max-width:1150px;
  margin:auto;
@@ -25,22 +28,32 @@ header{
  align-items:center;
  gap:14px
 }
+
 .logo{
  width:58px;
  height:58px;
  border-radius:50%;
  object-fit:cover
 }
+
 .brand{flex:1}
-.brand h1{margin:0 0 5px;font-size:22px}
+
+.brand h1{
+ margin:0 0 5px;
+ font-size:22px
+}
+
 .brand small{opacity:.8}
+
 button,a{font:inherit}
+
 button{
  border:0;
  border-radius:12px;
  padding:11px 16px;
  cursor:pointer
 }
+
 .btn{
  background:#d8b65c;
  color:#173c2b;
@@ -48,11 +61,13 @@ button{
  padding:11px 16px;
  border-radius:12px
 }
+
 .wrap{
  max-width:1150px;
  margin:22px auto;
  padding:0 14px
 }
+
 .panel{
  background:#fff;
  border-radius:20px;
@@ -60,17 +75,21 @@ button{
  margin-bottom:18px;
  box-shadow:0 8px 30px #1232
 }
+
 .grid{
  display:grid;
  grid-template-columns:repeat(2,minmax(0,1fr));
  gap:12px
 }
+
 .field{margin-bottom:12px}
+
 label{
  display:block;
  font-weight:bold;
  margin-bottom:7px
 }
+
 input,textarea,select{
  width:100%;
  padding:12px;
@@ -79,15 +98,35 @@ input,textarea,select{
  font:inherit;
  background:#fff
 }
+
 textarea{min-height:100px}
-.green{background:#0d5135;color:#fff}
-.red{background:#b3261e;color:#fff}
-.gold{background:#d8b65c;color:#173c2b}
+
+.green{
+ background:#0d5135;
+ color:#fff
+}
+
+.red{
+ background:#b3261e;
+ color:#fff
+}
+
+.gold{
+ background:#d8b65c;
+ color:#173c2b
+}
+
+.gray{
+ background:#e9efeb;
+ color:#173c2b
+}
+
 .msg{
  display:block;
  margin-top:9px;
  font-weight:bold
 }
+
 .note{
  background:#f0f6f1;
  border-right:4px solid #0d5135;
@@ -96,6 +135,7 @@ textarea{min-height:100px}
  line-height:1.9;
  margin:10px 0
 }
+
 .hero-preview{
  width:100%;
  max-width:820px;
@@ -105,23 +145,28 @@ textarea{min-height:100px}
  border-radius:16px;
  border:1px solid #ddd
 }
+
 .thumb{
  width:60px;
  height:60px;
  object-fit:cover;
  border-radius:10px
 }
+
 .table-wrap{overflow:auto}
+
 table{
  width:100%;
  border-collapse:collapse;
  min-width:720px
 }
+
 th,td{
  padding:10px;
  border-bottom:1px solid #eee;
  text-align:right
 }
+
 .category-row{
  display:flex;
  align-items:center;
@@ -129,13 +174,16 @@ th,td{
  padding:10px 0;
  border-bottom:1px solid #eee
 }
+
 .category-row img{
  width:58px;
  height:58px;
  object-fit:cover;
  border-radius:12px
 }
+
 .category-row strong{flex:1}
+
 .modal{
  position:fixed;
  inset:0;
@@ -146,7 +194,9 @@ th,td{
  padding:15px;
  z-index:50
 }
+
 .modal.hidden{display:none}
+
 .box{
  background:#fff;
  border-radius:20px;
@@ -155,6 +205,7 @@ th,td{
  overflow:auto;
  padding:20px
 }
+
 .close{
  float:left;
  border-radius:50%;
@@ -162,6 +213,7 @@ th,td{
  padding:5px 13px;
  font-size:22px
 }
+
 .order{
  border:1px solid #dce4df;
  border-radius:16px;
@@ -169,34 +221,151 @@ th,td{
  margin:12px 0;
  line-height:1.9
 }
+
 .status{
  border-top:1px solid #eee;
  margin-top:14px;
  padding-top:12px
 }
+
 .article-card{
  border:1px solid #e0e7e2;
  border-radius:16px;
  padding:12px;
  margin-top:12px
 }
+
 .article-card img{
  width:110px;
  height:75px;
  object-fit:cover;
  border-radius:10px
 }
+
 .article-head{
  display:flex;
  align-items:center;
  gap:12px
 }
+
 .article-head .info{flex:1}
+
+
+/* =========================
+   DEALS ADMIN
+========================= */
+
+.deal-admin{
+ border:1px solid #dce6df;
+ border-radius:18px;
+ padding:16px;
+ margin-top:14px;
+ background:linear-gradient(180deg,#fff,#f7fbf8);
+ box-shadow:0 5px 18px #1231
+}
+
+.deal-admin-head{
+ display:flex;
+ align-items:center;
+ gap:13px
+}
+
+.deal-admin-head .info{
+ flex:1
+}
+
+.deal-admin img{
+ width:95px;
+ height:75px;
+ object-fit:cover;
+ border-radius:12px
+}
+
+.deal-number{
+ width:36px;
+ height:36px;
+ min-width:36px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:50%;
+ background:#0d5135;
+ color:#fff;
+ font-weight:bold
+}
+
+.deal-admin h3{
+ margin:0 0 7px
+}
+
+.deal-meta{
+ color:#65736c;
+ line-height:1.8;
+ font-size:14px
+}
+
+.deal-controls{
+ display:flex;
+ gap:7px;
+ flex-wrap:wrap;
+ margin-top:13px
+}
+
+.deal-controls button{
+ padding:8px 12px;
+ font-size:13px
+}
+
+.deal-active{
+ border:2px solid #d8b65c
+}
+
+.deal-badge{
+ display:inline-block;
+ background:#d8b65c;
+ color:#173c2b;
+ padding:5px 9px;
+ border-radius:20px;
+ font-size:12px;
+ font-weight:bold;
+ margin-bottom:7px
+}
+
+.empty-box{
+ padding:20px;
+ text-align:center;
+ color:#66756d;
+ background:#f7faf8;
+ border-radius:14px
+}
+
 @media(max-width:700px){
- .grid{grid-template-columns:1fr}
- .nav{align-items:flex-start}
- .nav .btn{display:none}
- .panel{padding:15px}
+
+ .grid{
+  grid-template-columns:1fr
+ }
+
+ .nav{
+  align-items:flex-start
+ }
+
+ .nav .btn{
+  display:none
+ }
+
+ .panel{
+  padding:15px
+ }
+
+ .deal-admin-head{
+  align-items:flex-start
+ }
+
+ .deal-admin img{
+  width:75px;
+  height:60px
+ }
+
 }
 </style>
 </head>
@@ -204,18 +373,29 @@ th,td{
 <body>
 
 <header>
+
 <div class="nav">
 
-<img id="logo" class="logo" src="/assets/logo.jpg">
+<img id="logo"
+class="logo"
+src="/assets/logo.jpg">
 
 <div class="brand">
+
 <h1>لوحة تحكم Green Moon</h1>
-<small>إدارة المتجر والمنتجات والمقالات والطلبات</small>
+
+<small>
+إدارة المتجر والمنتجات والفئات والمقالات والصفقات والطلبات
+</small>
+
 </div>
 
-<a class="btn" href="/">عرض المتجر</a>
+<a class="btn" href="/">
+عرض المتجر
+</a>
 
 </div>
+
 </header>
 
 
@@ -228,11 +408,19 @@ th,td{
 <h2>🔐 الدخول للوحة التحكم</h2>
 
 <div class="field">
+
 <label>كلمة المرور</label>
-<input id="password" type="password">
+
+<input
+id="password"
+type="password"
+placeholder="اكتب كلمة المرور">
+
 </div>
 
-<button id="login" class="green">دخول</button>
+<button id="login" class="green">
+دخول
+</button>
 
 <span id="loginMsg" class="msg"></span>
 
@@ -243,7 +431,10 @@ th,td{
 
 <!-- DASHBOARD -->
 
-<main id="dashboard" class="wrap" style="display:none">
+<main
+id="dashboard"
+class="wrap"
+style="display:none">
 
 
 <!-- SETTINGS -->
@@ -255,23 +446,35 @@ th,td{
 <div class="grid">
 
 <div class="field">
+
 <label>اسم الموقع</label>
+
 <input id="storeName">
+
 </div>
 
 <div class="field">
+
 <label>العنوان الرئيسي</label>
+
 <input id="siteTitle">
+
 </div>
 
 <div class="field">
+
 <label>الوصف</label>
+
 <input id="siteSubtitle">
+
 </div>
 
 <div class="field">
+
 <label>واتساب الطلبات</label>
+
 <input id="whatsapp">
+
 </div>
 
 </div>
@@ -284,26 +487,43 @@ th,td{
 <label>🖼️ صورة الـ Hero</label>
 
 <div class="note">
-<b>المقاس الموصى به: 1920 × 1080 px</b>
+
+<b>
+المقاس الموصى به: 1920 × 1080 px
+</b>
+
 <br>
+
 النسبة 16:9 — الصورة تظهر كاملة بدون قص.
+
 </div>
 
-<input id="heroFile" type="file" accept="image/*">
+<input
+id="heroFile"
+type="file"
+accept="image/*">
 
 <br><br>
 
-<img id="heroPreview"
+<img
+id="heroPreview"
 class="hero-preview"
 src="/assets/product-1.jpg">
 
 <br><br>
 
-<button id="saveHero" class="green">
+<button
+id="saveHero"
+class="green">
+
 💾 حفظ صورة الـ Hero
+
 </button>
 
-<span id="heroMsg" class="msg"></span>
+<span
+id="heroMsg"
+class="msg">
+</span>
 
 </div>
 
@@ -312,23 +532,37 @@ src="/assets/product-1.jpg">
 
 <div class="field">
 
-<label>شعار Green Moon</label>
+<label>
+شعار Green Moon
+</label>
 
-<input id="logoFile" type="file" accept="image/*">
+<input
+id="logoFile"
+type="file"
+accept="image/*">
 
 <br><br>
 
-<img id="logoPreview"
+<img
+id="logoPreview"
 class="thumb"
 src="/assets/logo.jpg">
 
 </div>
 
-<button id="saveSettings" class="green">
+
+<button
+id="saveSettings"
+class="green">
+
 حفظ إعدادات الموقع
+
 </button>
 
-<span id="settingsMsg" class="msg"></span>
+<span
+id="settingsMsg"
+class="msg">
+</span>
 
 </div>
 
@@ -341,17 +575,28 @@ src="/assets/logo.jpg">
 
 <div class="field">
 
-<label>سعر التوصيل العام</label>
+<label>
+سعر التوصيل العام
+</label>
 
-<input id="shipping" type="number">
+<input
+id="shipping"
+type="number">
 
 </div>
 
-<button id="saveShipping" class="green">
+<button
+id="saveShipping"
+class="green">
+
 حفظ سعر التوصيل
+
 </button>
 
-<span id="shippingMsg" class="msg"></span>
+<span
+id="shippingMsg"
+class="msg">
+</span>
 
 </div>
 
@@ -360,33 +605,63 @@ src="/assets/logo.jpg">
 
 <div class="panel">
 
-<h2>🌿 إدارة فئات المنتجات</h2>
+<h2>
+🌿 إدارة فئات المنتجات
+</h2>
 
 <div class="note">
-<b>المقاس الموصى به لصورة الفئة: 800 × 800 px</b>
+
+<b>
+المقاس الموصى به لصورة الفئة: 800 × 800 px
+</b>
+
 <br>
+
 يفضل صورة مربعة واضحة.
+
 </div>
 
 <div class="grid">
 
 <div class="field">
-<label>اسم الفئة</label>
-<input id="categoryName" placeholder="مثال: البامبو">
+
+<label>
+اسم الفئة
+</label>
+
+<input
+id="categoryName"
+placeholder="مثال: البامبو">
+
 </div>
 
 <div class="field">
-<label>صورة الفئة</label>
-<input id="categoryImage" type="file" accept="image/*">
-</div>
+
+<label>
+صورة الفئة
+</label>
+
+<input
+id="categoryImage"
+type="file"
+accept="image/*">
 
 </div>
 
-<button id="addCategory" class="green">
+</div>
+
+<button
+id="addCategory"
+class="green">
+
 + إضافة الفئة
+
 </button>
 
-<span id="categoryMsg" class="msg"></span>
+<span
+id="categoryMsg"
+class="msg">
+</span>
 
 <div id="categoriesAdmin"></div>
 
@@ -399,8 +674,12 @@ src="/assets/logo.jpg">
 
 <h2>🌱 المنتجات</h2>
 
-<button id="newProduct" class="green">
+<button
+id="newProduct"
+class="green">
+
 + إضافة منتج
+
 </button>
 
 <br><br>
@@ -410,7 +689,9 @@ src="/assets/logo.jpg">
 <table>
 
 <thead>
+
 <tr>
+
 <th>الصورة</th>
 <th>المنتج</th>
 <th>الفئة</th>
@@ -418,7 +699,9 @@ src="/assets/logo.jpg">
 <th>الجملة</th>
 <th>التوصيل</th>
 <th>تعديل</th>
+
 </tr>
+
 </thead>
 
 <tbody id="products"></tbody>
@@ -430,31 +713,196 @@ src="/assets/logo.jpg">
 </div>
 
 
-<!-- ARTICLES -->
+<!-- DEALS -->
 
 <div class="panel">
 
-<h2>📝 إدارة المقالات والنصائح</h2>
+<h2>
+🔥 صفقات Green Moon
+</h2>
 
 <div class="note">
-<b>المقاس الموصى به لصورة المقال: 1200 × 800 px</b>
+
+<b>
+نظام الصفقات المتتابعة
+</b>
+
 <br>
-يفضل صورة أفقية واضحة.
+
+أضف الصفقة الأولى وحدد مدتها بالدقائق، ثم أضف باقي الصفقات بالترتيب.
+
+<br>
+
+كل صفقة تبدأ تلقائيًا بعد انتهاء الصفقة السابقة، والعميل يشاهد عدادًا بالدقائق والثواني.
+
+<br>
+
+يمكنك تجهيز عدد كبير من الصفقات مسبقًا.
+
 </div>
 
 
 <div class="grid">
 
 <div class="field">
-<label>عنوان المقال</label>
-<input id="articleTitle"
+
+<label>
+اسم الصفقة
+</label>
+
+<input
+id="dealTitle"
+placeholder="مثال: باقة بامبو فخمة">
+
+</div>
+
+
+<div class="field">
+
+<label>
+المنتج
+</label>
+
+<select id="dealProduct">
+
+<option value="">
+اختار المنتج
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+السعر قبل الخصم
+</label>
+
+<input
+id="dealOldPrice"
+type="number"
+placeholder="مثال: 899">
+
+</div>
+
+
+<div class="field">
+
+<label>
+سعر الصفقة
+</label>
+
+<input
+id="dealPrice"
+type="number"
+placeholder="مثال: 699">
+
+</div>
+
+
+<div class="field">
+
+<label>
+مدة الصفقة بالدقائق
+</label>
+
+<input
+id="dealDuration"
+type="number"
+min="1"
+value="30">
+
+</div>
+
+
+<div class="field">
+
+<label>
+وصف الصفقة
+</label>
+
+<input
+id="dealDescription"
+placeholder="الحق العرض قبل ما ينتهي">
+
+</div>
+
+</div>
+
+
+<div class="actions">
+
+<button
+id="addDeal"
+class="green">
+
+🔥 إضافة الصفقة للسلسلة
+
+</button>
+
+<span
+id="dealMsg"
+class="msg">
+</span>
+
+</div>
+
+
+<div
+id="dealsAdmin">
+</div>
+
+</div>
+
+
+<!-- ARTICLES -->
+
+<div class="panel">
+
+<h2>
+📝 إدارة المقالات والنصائح
+</h2>
+
+<div class="note">
+
+<b>
+المقاس الموصى به لصورة المقال: 1200 × 800 px
+</b>
+
+<br>
+
+يفضل صورة أفقية واضحة.
+
+</div>
+
+
+<div class="grid">
+
+<div class="field">
+
+<label>
+عنوان المقال
+</label>
+
+<input
+id="articleTitle"
 placeholder="مثال: متى يحتاج النبات إلى التسميد؟">
+
 </div>
 
+
 <div class="field">
-<label>وصف مختصر</label>
-<input id="articleExcerpt"
+
+<label>
+وصف مختصر
+</label>
+
+<input
+id="articleExcerpt"
 placeholder="الوصف الذي يظهر في بطاقة المقال">
+
 </div>
 
 </div>
@@ -462,9 +910,12 @@ placeholder="الوصف الذي يظهر في بطاقة المقال">
 
 <div class="field">
 
-<label>محتوى المقال</label>
+<label>
+محتوى المقال
+</label>
 
-<textarea id="articleContent"
+<textarea
+id="articleContent"
 style="min-height:200px"
 placeholder="اكتب محتوى المقال هنا..."></textarea>
 
@@ -473,37 +924,54 @@ placeholder="اكتب محتوى المقال هنا..."></textarea>
 
 <div class="field">
 
-<label>صورة المقال</label>
+<label>
+صورة المقال
+</label>
 
-<input id="articleImage"
+<input
+id="articleImage"
 type="file"
 accept="image/*">
 
 </div>
 
 
-<img id="articlePreview"
+<img
+id="articlePreview"
 class="hero-preview"
 style="max-width:420px;display:none;aspect-ratio:3/2">
-
 
 <br><br>
 
 
-<button id="saveArticle" class="green">
+<button
+id="saveArticle"
+class="green">
+
 + إضافة المقال
+
 </button>
 
-<button id="cancelArticle"
+
+<button
+id="cancelArticle"
 class="gold"
 style="display:none">
+
 إلغاء التعديل
+
 </button>
 
-<span id="articleMsg" class="msg"></span>
+
+<span
+id="articleMsg"
+class="msg">
+</span>
 
 
-<div id="articlesAdmin"></div>
+<div
+id="articlesAdmin">
+</div>
 
 </div>
 
@@ -514,8 +982,12 @@ style="display:none">
 
 <h2>📦 الطلبات</h2>
 
-<button id="reloadOrders" class="green">
+<button
+id="reloadOrders"
+class="green">
+
 تحديث الطلبات
+
 </button>
 
 <div id="orders">
@@ -529,11 +1001,15 @@ style="display:none">
 
 <!-- PRODUCT MODAL -->
 
-<div id="modal" class="modal hidden">
+<div
+id="modal"
+class="modal hidden">
 
 <div class="box">
 
-<button id="closeModal" class="close">
+<button
+id="closeModal"
+class="close">
 ×
 </button>
 
@@ -541,38 +1017,67 @@ style="display:none">
 إضافة منتج
 </h2>
 
-<input id="pid" type="hidden">
+<input
+id="pid"
+type="hidden">
 
 
 <div class="grid">
 
 <div class="field">
+
 <label>اسم المنتج</label>
+
 <input id="pname">
+
 </div>
 
+
 <div class="field">
+
 <label>الفئة</label>
 
 <select id="pcategory">
-<option value="">بدون فئة</option>
+
+<option value="">
+بدون فئة
+</option>
+
 </select>
 
 </div>
 
+
 <div class="field">
+
 <label>سعر البيع</label>
-<input id="pprice" type="number">
+
+<input
+id="pprice"
+type="number">
+
 </div>
 
+
 <div class="field">
+
 <label>سعر الجملة</label>
-<input id="pwholesale" type="number">
+
+<input
+id="pwholesale"
+type="number">
+
 </div>
 
+
 <div class="field">
+
 <label>سعر التوصيل</label>
-<input id="pshipping" type="number">
+
+<input
+id="pshipping"
+type="number">
+
 </div>
 
 </div>
@@ -580,7 +1085,9 @@ style="display:none">
 
 <div class="field">
 
-<label>تفاصيل المنتج</label>
+<label>
+تفاصيل المنتج
+</label>
 
 <textarea id="pdetails"></textarea>
 
@@ -589,20 +1096,27 @@ style="display:none">
 
 <div class="field">
 
-<label>صورة المنتج</label>
+<label>
+صورة المنتج
+</label>
 
-<input id="pimage"
+<input
+id="pimage"
 type="file"
 accept="image/*">
 
 </div>
 
-<img id="pimagePreview"
+
+<img
+id="pimagePreview"
 class="thumb"
 src="/assets/logo.jpg">
 
 
-<h3>🌱 العناية بالنبات</h3>
+<h3>
+🌱 العناية بالنبات
+</h3>
 
 
 <div class="grid">
@@ -670,11 +1184,18 @@ src="/assets/logo.jpg">
 </div>
 
 
-<button id="saveProduct" class="green">
+<button
+id="saveProduct"
+class="green">
+
 حفظ المنتج
+
 </button>
 
-<span id="productMsg" class="msg"></span>
+<span
+id="productMsg"
+class="msg">
+</span>
 
 </div>
 
@@ -691,9 +1212,15 @@ let currentSettings={};
 let editingArticleIndex=-1;
 
 
+/* =========================
+   AUTH
+========================= */
+
 function password(){
 
-return sessionStorage.getItem("gm_admin_password")||"";
+return sessionStorage.getItem(
+"gm_admin_password"
+)||"";
 
 }
 
@@ -701,8 +1228,13 @@ return sessionStorage.getItem("gm_admin_password")||"";
 function headers(){
 
 return {
-"Content-Type":"application/json",
-"Authorization":"Bearer "+password()
+
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer "+password()
+
 };
 
 }
@@ -724,7 +1256,9 @@ d=await r.json();
 }catch(e){}
 
 if(!r.ok)
-throw new Error(d.error||"حدث خطأ");
+throw new Error(
+d.error||"حدث خطأ"
+);
 
 return d;
 
@@ -733,7 +1267,8 @@ return d;
 
 function esc(x){
 
-return String(x??"").replace(
+return String(x??"")
+.replace(
 /[&<>"']/g,
 m=>({
 "&":"&amp;",
@@ -749,14 +1284,18 @@ m=>({
 
 function readFile(file){
 
-return new Promise((resolve,reject)=>{
+return new Promise(
+(resolve,reject)=>{
 
 if(!file)
 return resolve(null);
 
 const r=new FileReader();
 
-r.onload=()=>resolve(r.result);
+r.onload=()=>{
+resolve(r.result)
+};
+
 r.onerror=reject;
 
 r.readAsDataURL(file);
@@ -766,15 +1305,20 @@ r.readAsDataURL(file);
 }
 
 
-/* LOGIN */
+/* =========================
+   LOGIN
+========================= */
 
 async function login(){
 
-const pass=$("password").value.trim();
+const pass=$("password")
+.value
+.trim();
 
 if(!pass){
 
-$("loginMsg").textContent="اكتب كلمة المرور";
+$("loginMsg").textContent=
+"اكتب كلمة المرور";
 
 return;
 
@@ -787,10 +1331,15 @@ pass
 
 try{
 
-await api("/api/admin/products");
+await api(
+"/api/admin/products"
+);
 
-$("loginBox").style.display="none";
-$("dashboard").style.display="block";
+$("loginBox")
+.style.display="none";
+
+$("dashboard")
+.style.display="block";
 
 await loadAll();
 
@@ -800,7 +1349,8 @@ sessionStorage.removeItem(
 "gm_admin_password"
 );
 
-$("loginMsg").textContent=e.message;
+$("loginMsg").textContent=
+e.message;
 
 }
 
@@ -825,10 +1375,15 @@ return;
 
 try{
 
-await api("/api/admin/products");
+await api(
+"/api/admin/products"
+);
 
-$("loginBox").style.display="none";
-$("dashboard").style.display="block";
+$("loginBox")
+.style.display="none";
+
+$("dashboard")
+.style.display="block";
 
 await loadAll();
 
@@ -843,31 +1398,45 @@ sessionStorage.removeItem(
 }
 
 
-/* LOAD */
+/* =========================
+   LOAD ALL
+========================= */
 
 async function loadAll(){
 
 products=
-await api("/api/admin/products")||[];
+await api(
+"/api/admin/products"
+)||[];
 
 renderProducts();
 
 
 const s=
-await api("/api/admin/settings");
+await api(
+"/api/admin/settings"
+);
 
 currentSettings=s||{};
 
 
-$("storeName").value=s.storeName||"";
-$("siteTitle").value=s.title||"";
-$("siteSubtitle").value=s.subtitle||"";
-$("whatsapp").value=s.whatsapp||"";
+$("storeName").value=
+s.storeName||"";
+
+$("siteTitle").value=
+s.title||"";
+
+$("siteSubtitle").value=
+s.subtitle||"";
+
+$("whatsapp").value=
+s.whatsapp||"";
 
 
 if(s.logo){
 
 $("logo").src=s.logo;
+
 $("logoPreview").src=s.logo;
 
 }
@@ -878,13 +1447,21 @@ $("heroPreview").src=s.hero;
 
 
 renderCategories();
+
 renderArticles();
+
+renderDealProductOptions();
+
+renderDealsAdmin();
 
 
 const sh=
-await api("/api/admin/shipping");
+await api(
+"/api/admin/shipping"
+);
 
-$("shipping").value=sh.price||0;
+$("shipping").value=
+sh.price||0;
 
 
 await loadOrders();
@@ -892,619 +1469,11 @@ await loadOrders();
 }
 
 
-/* CATEGORIES */
-
-function renderCategories(){
-
-const cats=
-Array.isArray(currentSettings.categories)
-?currentSettings.categories
-:[];
-
-
-$("pcategory").innerHTML=
-'<option value="">بدون فئة</option>'+
-cats.map(c=>
-`<option value="${esc(c.name||"")}">
-${esc(c.name||"")}
-</option>`
-).join("");
-
-
-$("categoriesAdmin").innerHTML=
-
-cats.length?
-
-cats.map((c,i)=>`
-
-<div class="category-row">
-
-<img src="${c.image||"/assets/logo.jpg"}">
-
-<strong>
-${esc(c.name)}
-</strong>
-
-<button
-class="red"
-onclick="deleteCategory(${i})">
-حذف
-</button>
-
-</div>
-
-`).join("")
-
-:
-
-"<p>لا توجد فئات مضافة حتى الآن.</p>";
-
-}
-
-
-window.deleteCategory=async i=>{
-
-if(!confirm("هل تريد حذف هذه الفئة؟"))
-return;
-
-try{
-
-const s={
-...currentSettings,
-categories:[
-...(currentSettings.categories||[])
-]
-};
-
-s.categories.splice(i,1);
-
-
-await api(
-"/api/admin/settings",
-{
-method:"PUT",
-body:JSON.stringify(s)
-}
-);
-
-
-currentSettings=s;
-
-renderCategories();
-
-$("categoryMsg").textContent=
-"تم حذف الفئة";
-
-$("categoryMsg").style.color="#14743f";
-
-}catch(e){
-
-$("categoryMsg").textContent=e.message;
-
-}
-
-};
-
-
-$("addCategory").onclick=async()=>{
-
-try{
-
-const name=
-$("categoryName").value.trim();
-
-
-if(!name){
-
-$("categoryMsg").textContent=
-"اكتب اسم الفئة أولًا";
-
-return;
-
-}
-
-
-const image=
-await readFile(
-$("categoryImage").files[0]
-);
-
-
-const s={
-...currentSettings,
-categories:[
-...(currentSettings.categories||[]),
-{
-name,
-image:image||""
-}
-]
-};
-
-
-await api(
-"/api/admin/settings",
-{
-method:"PUT",
-body:JSON.stringify(s)
-}
-);
-
-
-currentSettings=s;
-
-$("categoryName").value="";
-$("categoryImage").value="";
-
-renderCategories();
-
-$("categoryMsg").textContent=
-"تمت إضافة الفئة بنجاح";
-
-$("categoryMsg").style.color="#14743f";
-
-
-}catch(e){
-
-$("categoryMsg").textContent=e.message;
-
-$("categoryMsg").style.color="#b3261e";
-
-}
-
-};
-
-
-/* ARTICLES */
-
-function renderArticles(){
-
-const arts=
-Array.isArray(currentSettings.articles)
-?currentSettings.articles
-:[];
-
-
-$("articlesAdmin").innerHTML=
-
-arts.length?
-
-arts.map((a,i)=>`
-
-<div class="article-card">
-
-<div class="article-head">
-
-<img
-class="thumb"
-src="${a.image||"/assets/logo.jpg"}">
-
-<div class="info">
-
-<b>
-${esc(a.title||"بدون عنوان")}
-</b>
-
-<br>
-
-<small>
-${esc(a.excerpt||"")}
-</small>
-
-</div>
-
-<button
-class="green"
-onclick="editArticle(${i})">
-تعديل
-</button>
-
-<button
-class="red"
-onclick="deleteArticle(${i})">
-حذف
-</button>
-
-</div>
-
-</div>
-
-`).join("")
-
-:
-
-"<p>لا توجد مقالات حتى الآن.</p>";
-
-}
-
-
-function clearArticleForm(){
-
-editingArticleIndex=-1;
-
-$("articleTitle").value="";
-$("articleExcerpt").value="";
-$("articleContent").value="";
-$("articleImage").value="";
-
-$("articlePreview").style.display="none";
-
-$("saveArticle").textContent=
-"+ إضافة المقال";
-
-$("cancelArticle").style.display=
-"none";
-
-}
-
-
-window.editArticle=i=>{
-
-const a=
-(currentSettings.articles||[])[i];
-
-if(!a)
-return;
-
-
-editingArticleIndex=i;
-
-$("articleTitle").value=
-a.title||"";
-
-$("articleExcerpt").value=
-a.excerpt||"";
-
-$("articleContent").value=
-a.content||"";
-
-$("articleImage").value="";
-
-
-if(a.image){
-
-$("articlePreview").src=a.image;
-
-$("articlePreview").style.display=
-"block";
-
-}
-
-
-$("saveArticle").textContent=
-"💾 حفظ تعديل المقال";
-
-$("cancelArticle").style.display=
-"inline-block";
-
-
-$("articleTitle").scrollIntoView({
-behavior:"smooth",
-block:"center"
-});
-
-};
-
-
-window.deleteArticle=async i=>{
-
-if(!confirm("هل تريد حذف هذا المقال؟"))
-return;
-
-
-const s={
-...currentSettings,
-articles:[
-...(currentSettings.articles||[])
-]
-};
-
-
-s.articles.splice(i,1);
-
-
-try{
-
-await api(
-"/api/admin/settings",
-{
-method:"PUT",
-body:JSON.stringify(s)
-}
-);
-
-
-currentSettings=s;
-
-renderArticles();
-
-$("articleMsg").textContent=
-"تم حذف المقال";
-
-$("articleMsg").style.color=
-"#14743f";
-
-
-if(editingArticleIndex===i)
-clearArticleForm();
-
-
-}catch(e){
-
-$("articleMsg").textContent=e.message;
-
-}
-
-};
-
-
-$("articleImage").onchange=
-async e=>{
-
-const x=
-await readFile(
-e.target.files[0]
-);
-
-if(x){
-
-$("articlePreview").src=x;
-
-$("articlePreview").style.display=
-"block";
-
-}
-
-};
-
-
-$("cancelArticle").onclick=
-clearArticleForm;
-
-
-$("saveArticle").onclick=async()=>{
-
-try{
-
-const title=
-$("articleTitle").value.trim();
-
-
-if(!title){
-
-$("articleMsg").textContent=
-"اكتب عنوان المقال أولًا";
-
-return;
-
-}
-
-
-let image="";
-
-
-if(editingArticleIndex>=0){
-
-image=
-(currentSettings.articles||[])
-[editingArticleIndex]?.image||"";
-
-}
-
-
-const f=
-$("articleImage").files[0];
-
-
-if(f)
-image=await readFile(f);
-
-
-const article={
-
-title:title,
-
-excerpt:
-$("articleExcerpt").value.trim(),
-
-content:
-$("articleContent").value.trim(),
-
-image:image
-
-};
-
-
-const arts=[
-...(currentSettings.articles||[])
-];
-
-
-if(editingArticleIndex>=0){
-
-arts[editingArticleIndex]=article;
-
-}else{
-
-arts.unshift(article);
-
-}
-
-
-const s={
-...currentSettings,
-articles:arts
-};
-
-
-await api(
-"/api/admin/settings",
-{
-method:"PUT",
-body:JSON.stringify(s)
-}
-);
-
-
-currentSettings=s;
-
-renderArticles();
-
-clearArticleForm();
-
-
-$("articleMsg").textContent=
-"تم حفظ المقال وظهر للعميل";
-
-$("articleMsg").style.color=
-"#14743f";
-
-
-}catch(e){
-
-$("articleMsg").textContent=
-e.message;
-
-$("articleMsg").style.color=
-"#b3261e";
-
-}
-
-};
-
-
-/* PRODUCTS */
-
-function renderProducts(){
-
-if(!products.length){
-
-$("products").innerHTML=
-'<tr><td colspan="7">لا توجد منتجات</td></tr>';
-
-return;
-
-}
-
-
-$("products").innerHTML=
-
-products.map(p=>`
-
-<tr>
-
-<td>
-<img
-class="thumb"
-src="${p.image||"/assets/logo.jpg"}">
-</td>
-
-<td>
-${esc(p.name)}
-</td>
-
-<td>
-${esc(p.category||"—")}
-</td>
-
-<td>
-${Number(p.price||0)} ج
-</td>
-
-<td>
-${Number(p.wholesalePrice||0)} ج
-</td>
-
-<td>
-${Number(p.shippingPrice||0)} ج
-</td>
-
-<td>
-
-<button
-class="green"
-onclick="editProduct('${esc(p.id)}')">
-تعديل
-</button>
-
-</td>
-
-</tr>
-
-`).join("");
-
-}
-
-
-function openProduct(p){
-
-editing=p||null;
-
-$("modal").classList.remove("hidden");
-
-$("modalTitle").textContent=
-p?"تعديل المنتج":"إضافة منتج";
-
-
-$("pid").value=p?.id||"";
-$("pname").value=p?.name||"";
-$("pprice").value=p?.price||0;
-$("pwholesale").value=p?.wholesalePrice||0;
-$("pshipping").value=p?.shippingPrice||0;
-
-$("pcategory").value=p?.category||"";
-
-$("pdetails").value=p?.details||"";
-
-$("pimagePreview").src=
-p?.image||"/assets/logo.jpg";
-
-
-const c=p?.care||{};
-
-
-[
-"light",
-"water",
-"temperature",
-"humidity",
-"soil",
-"fertilizer",
-"pruning",
-"propagation",
-"problems",
-"pests",
-"mistakes",
-"tips"
-].forEach(k=>{
-
-$(k).value=c[k]||"";
-
-});
-
-
-$("productMsg").textContent="";
-
-}
-
-
-window.editProduct=id=>
-openProduct(
-products.find(
-p=>String(p.id)===String(id)
-)
-);
-
-
-$("newProduct").onclick=
-()=>openProduct(null);
-
-
-$("closeModal").onclick=
-()=>$("modal").classList.add("hidden");
-
-
-$("pimage").onchange=
+/* =========================
+   SETTINGS
+========================= */
+
+$("logoFile").onchange=
 async e=>{
 
 const x=
@@ -1513,118 +1482,71 @@ e.target.files[0]
 );
 
 if(x)
-$("pimagePreview").src=x;
+$("logoPreview").src=x;
 
 };
 
 
-$("saveProduct").onclick=async()=>{
+$("saveSettings").onclick=
+async()=>{
 
 try{
 
-let image=
-$("pimagePreview").src;
-
+let logo=
+currentSettings.logo||"";
 
 const f=
-$("pimage").files[0];
-
+$("logoFile").files[0];
 
 if(f)
-image=await readFile(f);
+logo=await readFile(f);
 
 
-const body={
+const s={
 
-id:
-$("pid").value||undefined,
+...currentSettings,
 
-name:
-$("pname").value.trim(),
+storeName:
+$("storeName").value,
 
-category:
-$("pcategory").value.trim(),
+title:
+$("siteTitle").value,
 
-price:
-Number($("pprice").value)||0,
+subtitle:
+$("siteSubtitle").value,
 
-wholesalePrice:
-Number($("pwholesale").value)||0,
+whatsapp:
+$("whatsapp").value,
 
-shippingPrice:
-Number($("pshipping").value)||0,
-
-details:
-$("pdetails").value.trim(),
-
-image:image,
-
-care:{
-
-light:$("light").value,
-
-water:$("water").value,
-
-temperature:$("temperature").value,
-
-humidity:$("humidity").value,
-
-soil:$("soil").value,
-
-fertilizer:$("fertilizer").value,
-
-pruning:$("pruning").value,
-
-propagation:$("propagation").value,
-
-problems:$("problems").value,
-
-pests:$("pests").value,
-
-mistakes:$("mistakes").value,
-
-tips:$("tips").value
-
-}
+logo
 
 };
 
 
-const r=
 await api(
-"/api/admin/products",
+"/api/admin/settings",
 {
-method:editing?"PUT":"POST",
-body:JSON.stringify(body)
+method:"PUT",
+body:JSON.stringify(s)
 }
 );
 
 
-products=
-r.products||products;
-
-renderProducts();
+currentSettings=s;
 
 
-$("productMsg").textContent=
-"تم الحفظ وظهر للعميل";
+$("settingsMsg").textContent=
+"تم حفظ إعدادات الموقع";
 
-$("productMsg").style.color=
+$("settingsMsg").style.color=
 "#14743f";
-
-
-setTimeout(
-()=>$("modal").classList.add("hidden"),
-700
-);
-
 
 }catch(e){
 
-$("productMsg").textContent=
+$("settingsMsg").textContent=
 e.message;
 
-$("productMsg").style.color=
+$("settingsMsg").style.color=
 "#b3261e";
 
 }
@@ -1632,7 +1554,9 @@ $("productMsg").style.color=
 };
 
 
-/* HERO */
+/* =========================
+   HERO
+========================= */
 
 $("heroFile").onchange=
 async e=>{
@@ -1648,13 +1572,13 @@ $("heroPreview").src=x;
 };
 
 
-$("saveHero").onclick=async()=>{
+$("saveHero").onclick=
+async()=>{
 
 try{
 
 const f=
 $("heroFile").files[0];
-
 
 if(!f){
 
@@ -1724,91 +1648,12 @@ $("heroMsg").style.color=
 };
 
 
-/* SETTINGS */
+/* =========================
+   SHIPPING
+========================= */
 
-$("logoFile").onchange=
-async e=>{
-
-const x=
-await readFile(
-e.target.files[0]
-);
-
-if(x)
-$("logoPreview").src=x;
-
-};
-
-
-$("saveSettings").onclick=async()=>{
-
-try{
-
-let logo=
-currentSettings.logo||"";
-
-
-const f=
-$("logoFile").files[0];
-
-
-if(f)
-logo=await readFile(f);
-
-
-const s={
-
-...currentSettings,
-
-storeName:
-$("storeName").value,
-
-title:
-$("siteTitle").value,
-
-subtitle:
-$("siteSubtitle").value,
-
-whatsapp:
-$("whatsapp").value,
-
-logo:logo
-
-};
-
-
-await api(
-"/api/admin/settings",
-{
-method:"PUT",
-body:JSON.stringify(s)
-}
-);
-
-
-currentSettings=s;
-
-
-$("settingsMsg").textContent=
-"تم حفظ إعدادات الموقع";
-
-$("settingsMsg").style.color=
-"#14743f";
-
-
-}catch(e){
-
-$("settingsMsg").textContent=
-e.message;
-
-}
-
-};
-
-
-/* SHIPPING */
-
-$("saveShipping").onclick=async()=>{
+$("saveShipping").onclick=
+async()=>{
 
 try{
 
@@ -1818,13 +1663,17 @@ await api(
 {
 method:"PUT",
 body:JSON.stringify({
-price:Number($("shipping").value)||0
+price:
+Number(
+$("shipping").value
+)||0
 })
 }
 );
 
 
-$("shipping").value=r.price;
+$("shipping").value=
+r.price;
 
 $("shippingMsg").textContent=
 "تم حفظ سعر التوصيل";
@@ -1843,14 +1692,1427 @@ e.message;
 };
 
 
-/* ORDERS */
+/* =========================
+   CATEGORIES
+========================= */
+
+function renderCategories(){
+
+const cats=
+Array.isArray(
+currentSettings.categories
+)
+?
+currentSettings.categories
+:
+[];
+
+
+$("pcategory").innerHTML=
+'<option value="">بدون فئة</option>'+
+cats.map(c=>
+`<option value="${esc(c.name||"")}">
+${esc(c.name||"")}
+</option>`
+).join("");
+
+
+$("categoriesAdmin").innerHTML=
+
+cats.length?
+
+cats.map((c,i)=>`
+
+<div class="category-row">
+
+<img
+src="${c.image||"/assets/logo.jpg"}">
+
+<strong>
+${esc(c.name)}
+</strong>
+
+<button
+class="red"
+onclick="deleteCategory(${i})">
+حذف
+</button>
+
+</div>
+
+`).join("")
+
+:
+
+"<p>لا توجد فئات مضافة حتى الآن.</p>";
+
+}
+
+
+window.deleteCategory=
+async i=>{
+
+if(!confirm(
+"هل تريد حذف هذه الفئة؟"
+))
+return;
+
+
+const s={
+
+...currentSettings,
+
+categories:[
+...(currentSettings.categories||[])
+]
+
+};
+
+
+s.categories.splice(i,1);
+
+
+try{
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+renderCategories();
+
+$("categoryMsg").textContent=
+"تم حذف الفئة";
+
+$("categoryMsg").style.color=
+"#14743f";
+
+
+}catch(e){
+
+$("categoryMsg").textContent=
+e.message;
+
+}
+
+};
+
+
+$("addCategory").onclick=
+async()=>{
+
+try{
+
+const name=
+$("categoryName")
+.value
+.trim();
+
+
+if(!name){
+
+$("categoryMsg").textContent=
+"اكتب اسم الفئة أولًا";
+
+return;
+
+}
+
+
+const image=
+await readFile(
+$("categoryImage")
+.files[0]
+);
+
+
+const s={
+
+...currentSettings,
+
+categories:[
+...(currentSettings.categories||[]),
+
+{
+name,
+image:image||""
+}
+
+]
+
+};
+
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+$("categoryName").value="";
+$("categoryImage").value="";
+
+renderCategories();
+
+$("categoryMsg").textContent=
+"تمت إضافة الفئة بنجاح";
+
+$("categoryMsg").style.color=
+"#14743f";
+
+
+}catch(e){
+
+$("categoryMsg").textContent=
+e.message;
+
+}
+
+};
+
+
+/* =========================
+   PRODUCTS
+========================= */
+
+function renderProducts(){
+
+if(!products.length){
+
+$("products").innerHTML=
+'<tr><td colspan="7">لا توجد منتجات</td></tr>';
+
+return;
+
+}
+
+
+$("products").innerHTML=
+
+products.map(p=>`
+
+<tr>
+
+<td>
+
+<img
+class="thumb"
+src="${p.image||"/assets/logo.jpg"}">
+
+</td>
+
+<td>
+${esc(p.name)}
+</td>
+
+<td>
+${esc(p.category||"—")}
+</td>
+
+<td>
+${Number(p.price||0)} ج
+</td>
+
+<td>
+${Number(p.wholesalePrice||0)} ج
+</td>
+
+<td>
+${Number(p.shippingPrice||0)} ج
+</td>
+
+<td>
+
+<button
+class="green"
+onclick="editProduct('${esc(p.id)}')">
+
+تعديل
+
+</button>
+
+</td>
+
+</tr>
+
+`).join("");
+
+}
+
+
+function openProduct(p){
+
+editing=p||null;
+
+$("modal")
+.classList.remove("hidden");
+
+$("modalTitle").textContent=
+p?
+"تعديل المنتج":
+"إضافة منتج";
+
+
+$("pid").value=
+p?.id||"";
+
+$("pname").value=
+p?.name||"";
+
+$("pprice").value=
+p?.price||0;
+
+$("pwholesale").value=
+p?.wholesalePrice||0;
+
+$("pshipping").value=
+p?.shippingPrice||0;
+
+$("pcategory").value=
+p?.category||"";
+
+$("pdetails").value=
+p?.details||"";
+
+$("pimagePreview").src=
+p?.image||
+"/assets/logo.jpg";
+
+
+const c=
+p?.care||{};
+
+
+[
+"light",
+"water",
+"temperature",
+"humidity",
+"soil",
+"fertilizer",
+"pruning",
+"propagation",
+"problems",
+"pests",
+"mistakes",
+"tips"
+].forEach(k=>{
+
+$(k).value=
+c[k]||"";
+
+});
+
+
+$("productMsg").textContent="";
+
+}
+
+
+window.editProduct=id=>
+openProduct(
+products.find(
+p=>String(p.id)===String(id)
+)
+);
+
+
+$("newProduct").onclick=
+()=>openProduct(null);
+
+
+$("closeModal").onclick=
+()=>
+$("modal")
+.classList.add("hidden");
+
+
+$("pimage").onchange=
+async e=>{
+
+const x=
+await readFile(
+e.target.files[0]
+);
+
+if(x)
+$("pimagePreview").src=x;
+
+};
+
+
+$("saveProduct").onclick=
+async()=>{
+
+try{
+
+let image=
+$("pimagePreview").src;
+
+
+const f=
+$("pimage").files[0];
+
+if(f)
+image=await readFile(f);
+
+
+const body={
+
+id:
+$("pid").value||
+undefined,
+
+name:
+$("pname")
+.value
+.trim(),
+
+category:
+$("pcategory")
+.value
+.trim(),
+
+price:
+Number(
+$("pprice").value
+)||0,
+
+wholesalePrice:
+Number(
+$("pwholesale").value
+)||0,
+
+shippingPrice:
+Number(
+$("pshipping").value
+)||0,
+
+details:
+$("pdetails")
+.value
+.trim(),
+
+image,
+
+care:{
+
+light:$("light").value,
+
+water:$("water").value,
+
+temperature:
+$("temperature").value,
+
+humidity:
+$("humidity").value,
+
+soil:$("soil").value,
+
+fertilizer:
+$("fertilizer").value,
+
+pruning:
+$("pruning").value,
+
+propagation:
+$("propagation").value,
+
+problems:
+$("problems").value,
+
+pests:$("pests").value,
+
+mistakes:
+$("mistakes").value,
+
+tips:$("tips").value
+
+}
+
+};
+
+
+const r=
+await api(
+"/api/admin/products",
+{
+method:
+editing?
+"PUT":
+"POST",
+
+body:
+JSON.stringify(body)
+
+}
+);
+
+
+products=
+r.products||
+products;
+
+
+await loadAll();
+
+
+$("productMsg").textContent=
+"تم الحفظ وظهر للعميل";
+
+$("productMsg").style.color=
+"#14743f";
+
+
+setTimeout(
+()=>
+$("modal")
+.classList.add("hidden"),
+700
+);
+
+
+}catch(e){
+
+$("productMsg").textContent=
+e.message;
+
+$("productMsg").style.color=
+"#b3261e";
+
+}
+
+};
+
+
+/* =========================
+   DEAL PRODUCT OPTIONS
+========================= */
+
+function renderDealProductOptions(){
+
+const select=
+$("dealProduct");
+
+select.innerHTML=
+'<option value="">اختار المنتج</option>';
+
+
+products.forEach(p=>{
+
+const option=
+document.createElement("option");
+
+option.value=p.id;
+
+option.textContent=
+p.name+
+" — "+
+Number(p.price||0)+
+" جنيه";
+
+select.appendChild(option);
+
+});
+
+}
+
+
+/* =========================
+   DEALS
+========================= */
+
+function getDeals(){
+
+return Array.isArray(
+currentSettings.deals
+)
+?
+currentSettings.deals
+:
+[];
+
+}
+
+
+function dealDiscount(d){
+
+const old=
+Number(d.oldPrice)||0;
+
+const price=
+Number(d.price)||0;
+
+if(old<=0||price>=old)
+return 0;
+
+return Math.round(
+((old-price)/old)*100
+);
+
+}
+
+
+function renderDealsAdmin(){
+
+const deals=getDeals();
+
+const box=
+$("dealsAdmin");
+
+
+if(!deals.length){
+
+box.innerHTML=`
+
+<div class="empty-box">
+
+🔥 مفيش صفقات مضافة حتى الآن.
+
+<br>
+
+أضف أول صفقة من النموذج بالأعلى.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+box.innerHTML=
+deals.map((d,i)=>{
+
+const discount=
+dealDiscount(d);
+
+return `
+
+<div class="deal-admin">
+
+<div class="deal-admin-head">
+
+<div class="deal-number">
+${i+1}
+</div>
+
+${d.image?
+`
+<img
+src="${d.image}">
+`
+:
+""}
+
+<div class="info">
+
+${i===0?
+`
+<span class="deal-badge">
+الصفقة الأولى
+</span>
+`
+:
+""}
+
+<h3>
+${esc(
+d.title||
+"صفقة بدون اسم"
+)}
+</h3>
+
+<div class="deal-meta">
+
+💰 السعر:
+<b>
+${Number(d.price||0)} جنيه
+</b>
+
+<br>
+
+🏷️ قبل الخصم:
+${Number(d.oldPrice||0)} جنيه
+
+<br>
+
+🔥 الخصم:
+${discount}%
+
+<br>
+
+⏱️ المدة:
+${Number(d.durationMinutes||0)} دقيقة
+
+<br>
+
+🌱 المنتج:
+${esc(
+products.find(
+p=>String(p.id)===
+String(d.productId)
+)?.name||
+""
+)}
+
+</div>
+
+</div>
+
+</div>
+
+
+${d.description?
+`
+<div class="note">
+${esc(d.description)}
+</div>
+`
+:
+""}
+
+
+<div class="deal-controls">
+
+<button
+class="gray"
+onclick="moveDeal(${i},-1)"
+${i===0?"disabled":""}>
+
+⬆️ تقديم
+
+</button>
+
+
+<button
+class="gray"
+onclick="moveDeal(${i},1)"
+${i===deals.length-1?"disabled":""}>
+
+⬇️ تأخير
+
+</button>
+
+
+<button
+class="red"
+onclick="deleteDeal(${i})">
+
+🗑️ حذف
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+$("addDeal").onclick=
+async()=>{
+
+try{
+
+const title=
+$("dealTitle")
+.value
+.trim();
+
+const productId=
+$("dealProduct")
+.value;
+
+const oldPrice=
+Number(
+$("dealOldPrice").value
+);
+
+const price=
+Number(
+$("dealPrice").value
+);
+
+const durationMinutes=
+Number(
+$("dealDuration").value
+);
+
+const description=
+$("dealDescription")
+.value
+.trim();
+
+
+if(!productId){
+
+$("dealMsg").textContent=
+"اختار المنتج أولًا";
+
+$("dealMsg").style.color=
+"#b3261e";
+
+return;
+
+}
+
+
+if(!price||price<=0){
+
+$("dealMsg").textContent=
+"اكتب سعر الصفقة";
+
+$("dealMsg").style.color=
+"#b3261e";
+
+return;
+
+}
+
+
+if(
+!durationMinutes||
+durationMinutes<=0
+){
+
+$("dealMsg").textContent=
+"اكتب مدة الصفقة بالدقائق";
+
+$("dealMsg").style.color=
+"#b3261e";
+
+return;
+
+}
+
+
+const product=
+products.find(
+p=>String(p.id)===
+String(productId)
+);
+
+
+if(!product){
+
+$("dealMsg").textContent=
+"المنتج غير موجود";
+
+return;
+
+}
+
+
+const deals=getDeals();
+
+
+const deal={
+
+title:
+title||
+product.name,
+
+productId:
+product.id,
+
+oldPrice:
+oldPrice||
+Number(product.price||0),
+
+price,
+
+durationMinutes,
+
+description,
+
+image:
+product.image||""
+
+};
+
+
+const s={
+
+...currentSettings,
+
+deals:[
+...deals,
+deal
+]
+
+};
+
+
+if(!deals.length){
+
+s.dealsStartAt=
+new Date().toISOString();
+
+}
+
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+
+$("dealTitle").value="";
+
+$("dealProduct").value="";
+
+$("dealOldPrice").value="";
+
+$("dealPrice").value="";
+
+$("dealDuration").value="30";
+
+$("dealDescription").value="";
+
+
+renderDealsAdmin();
+
+
+$("dealMsg").textContent=
+"🔥 تمت إضافة الصفقة للسلسلة بنجاح";
+
+$("dealMsg").style.color=
+"#14743f";
+
+
+}catch(e){
+
+$("dealMsg").textContent=
+e.message;
+
+$("dealMsg").style.color=
+"#b3261e";
+
+}
+
+};
+
+
+window.deleteDeal=
+async i=>{
+
+if(!confirm(
+"هل تريد حذف هذه الصفقة من السلسلة؟"
+))
+return;
+
+
+const deals=[
+...getDeals()
+];
+
+deals.splice(i,1);
+
+
+const s={
+
+...currentSettings,
+
+deals
+
+};
+
+
+if(!deals.length){
+
+s.dealsStartAt=null;
+
+}
+
+
+try{
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+renderDealsAdmin();
+
+
+$("dealMsg").textContent=
+"تم حذف الصفقة";
+
+$("dealMsg").style.color=
+"#14743f";
+
+
+}catch(e){
+
+$("dealMsg").textContent=
+e.message;
+
+}
+
+};
+
+
+window.moveDeal=
+async(i,direction)=>{
+
+const deals=[
+...getDeals()
+];
+
+const target=
+i+direction;
+
+
+if(
+target<0||
+target>=deals.length
+)
+return;
+
+
+const temp=
+deals[i];
+
+deals[i]=
+deals[target];
+
+deals[target]=
+temp;
+
+
+const s={
+
+...currentSettings,
+
+deals
+
+};
+
+
+try{
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+renderDealsAdmin();
+
+
+}catch(e){
+
+$("dealMsg").textContent=
+e.message;
+
+}
+
+};
+
+
+/* =========================
+   ARTICLES
+========================= */
+
+function renderArticles(){
+
+const arts=
+Array.isArray(
+currentSettings.articles
+)
+?
+currentSettings.articles
+:
+[];
+
+
+$("articlesAdmin").innerHTML=
+
+arts.length?
+
+arts.map((a,i)=>`
+
+<div class="article-card">
+
+<div class="article-head">
+
+<img
+class="thumb"
+src="${a.image||"/assets/logo.jpg"}">
+
+<div class="info">
+
+<b>
+${esc(
+a.title||
+"بدون عنوان"
+)}
+</b>
+
+<br>
+
+<small>
+${esc(a.excerpt||"")}
+</small>
+
+</div>
+
+<button
+class="green"
+onclick="editArticle(${i})">
+
+تعديل
+
+</button>
+
+<button
+class="red"
+onclick="deleteArticle(${i})">
+
+حذف
+
+</button>
+
+</div>
+
+</div>
+
+`).join("")
+
+:
+
+"<p>لا توجد مقالات حتى الآن.</p>";
+
+}
+
+
+function clearArticleForm(){
+
+editingArticleIndex=-1;
+
+$("articleTitle").value="";
+
+$("articleExcerpt").value="";
+
+$("articleContent").value="";
+
+$("articleImage").value="";
+
+$("articlePreview").style.display=
+"none";
+
+$("saveArticle").textContent=
+"+ إضافة المقال";
+
+$("cancelArticle").style.display=
+"none";
+
+}
+
+
+window.editArticle=i=>{
+
+const a=
+(currentSettings.articles||[])[i];
+
+if(!a)
+return;
+
+
+editingArticleIndex=i;
+
+$("articleTitle").value=
+a.title||"";
+
+$("articleExcerpt").value=
+a.excerpt||"";
+
+$("articleContent").value=
+a.content||"";
+
+$("articleImage").value="";
+
+
+if(a.image){
+
+$("articlePreview").src=
+a.image;
+
+$("articlePreview").style.display=
+"block";
+
+}
+
+
+$("saveArticle").textContent=
+"💾 حفظ تعديل المقال";
+
+$("cancelArticle").style.display=
+"inline-block";
+
+
+$("articleTitle")
+.scrollIntoView({
+behavior:"smooth",
+block:"center"
+});
+
+};
+
+
+window.deleteArticle=
+async i=>{
+
+if(!confirm(
+"هل تريد حذف هذا المقال؟"
+))
+return;
+
+
+const s={
+
+...currentSettings,
+
+articles:[
+...(currentSettings.articles||[])
+]
+
+};
+
+
+s.articles.splice(i,1);
+
+
+try{
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+renderArticles();
+
+$("articleMsg").textContent=
+"تم حذف المقال";
+
+$("articleMsg").style.color=
+"#14743f";
+
+
+if(editingArticleIndex===i)
+clearArticleForm();
+
+
+}catch(e){
+
+$("articleMsg").textContent=
+e.message;
+
+}
+
+};
+
+
+$("articleImage").onchange=
+async e=>{
+
+const x=
+await readFile(
+e.target.files[0]
+);
+
+if(x){
+
+$("articlePreview").src=x;
+
+$("articlePreview").style.display=
+"block";
+
+}
+
+};
+
+
+$("cancelArticle").onclick=
+clearArticleForm;
+
+
+$("saveArticle").onclick=
+async()=>{
+
+try{
+
+const title=
+$("articleTitle")
+.value
+.trim();
+
+
+if(!title){
+
+$("articleMsg").textContent=
+"اكتب عنوان المقال أولًا";
+
+return;
+
+}
+
+
+let image="";
+
+
+if(editingArticleIndex>=0){
+
+image=
+(currentSettings.articles||[])
+[editingArticleIndex]
+?.image||"";
+
+}
+
+
+const f=
+$("articleImage")
+.files[0];
+
+if(f)
+image=
+await readFile(f);
+
+
+const article={
+
+title,
+
+excerpt:
+$("articleExcerpt")
+.value
+.trim(),
+
+content:
+$("articleContent")
+.value
+.trim(),
+
+image
+
+};
+
+
+const arts=[
+...(currentSettings.articles||[])
+];
+
+
+if(editingArticleIndex>=0){
+
+arts[editingArticleIndex]=
+article;
+
+}else{
+
+arts.unshift(article);
+
+}
+
+
+const s={
+
+...currentSettings,
+
+articles:arts
+
+};
+
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+renderArticles();
+
+clearArticleForm();
+
+
+$("articleMsg").textContent=
+"تم حفظ المقال وظهر للعميل";
+
+$("articleMsg").style.color=
+"#14743f";
+
+
+}catch(e){
+
+$("articleMsg").textContent=
+e.message;
+
+$("articleMsg").style.color=
+"#b3261e";
+
+}
+
+};
+
+
+/* =========================
+   ORDERS
+========================= */
 
 async function loadOrders(){
 
 try{
 
 const orders=
-await api("/api/admin/orders");
+await api(
+"/api/admin/orders"
+);
 
 
 if(!orders.length){
@@ -1884,7 +3146,9 @@ o.floor?
 o.apartment?
 "شقة "+o.apartment:""
 
-].filter(Boolean).join("، ");
+]
+.filter(Boolean)
+.join("، ");
 
 
 const items=
@@ -1901,7 +3165,8 @@ ${Number(i.lineTotal||0)} ج
 
 
 const st=
-o.status||"جديد";
+o.status||
+"جديد";
 
 
 return `
@@ -1946,20 +3211,26 @@ ${Number(o.shipping||0)} ج
 
 <b>
 الإجمالي النهائي:
-${Number(o.total||0)} ج
+${Number(
+o.total||
+o.finalTotal||
+0
+)} ج
 </b>
 
 
 <div class="status">
 
-<b>حالة الطلب</b>
+<b>
+حالة الطلب
+</b>
 
 <br>
 
-<select id="status_${esc(o.id)}">
+<select
+id="status_${esc(o.id)}">
 
-${
-[
+${[
 "جديد",
 "تم التأكيد",
 "جاري التجهيز",
@@ -1968,12 +3239,12 @@ ${
 "ملغي"
 ]
 .map(x=>
-`<option ${st===x?"selected":""}>
+`<option
+${st===x?"selected":""}>
 ${x}
 </option>`
 )
-.join("")
-}
+.join("")}
 
 </select>
 
@@ -1981,7 +3252,9 @@ ${x}
 <button
 class="green"
 onclick="updateStatus('${esc(o.id)}')">
+
 حفظ الحالة
+
 </button>
 
 </div>
@@ -2003,7 +3276,8 @@ e.message;
 }
 
 
-window.updateStatus=async id=>{
+window.updateStatus=
+async id=>{
 
 try{
 
@@ -2012,14 +3286,22 @@ await api(
 {
 method:"PUT",
 body:JSON.stringify({
+
 id:id,
-status:$("status_"+id).value
+
+status:
+$("status_"+id)
+.value
+
 })
 }
 );
 
 
-alert("تم تحديث حالة الطلب");
+alert(
+"تم تحديث حالة الطلب"
+);
+
 
 await loadOrders();
 
@@ -2036,6 +3318,10 @@ alert(e.message);
 $("reloadOrders").onclick=
 loadOrders;
 
+
+/* =========================
+   START
+========================= */
 
 start();
 
