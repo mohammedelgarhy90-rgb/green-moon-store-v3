@@ -8,7 +8,7 @@ binding = "ASSETS"
 
 [[kv_namespaces]]
 binding = "GREEN_MOON_KV"
-id = "PUT_YOUR_KV_NAMESPACE_ID_HERE"
+id = "fcc82f6add084ccb875865171252f4d1"
 
 [vars]
 # لا تضع كلمة المرور هنا. استخدم:
