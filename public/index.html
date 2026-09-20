@@ -1549,7 +1549,536 @@ return String(value??"")
 
 }
 
+/* =========================
+   GREEN MOON DEALS
+========================= */
 
+(function(){
+
+  const dealsStyle = document.createElement("style");
+
+  dealsStyle.textContent = `
+    #gmDealsSection{
+      padding:20px 14px;
+      margin:20px auto;
+      max-width:1100px;
+    }
+
+    #gmDealsSection .gm-deals-title{
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    #gmDealsSection .gm-deals-title h2{
+      margin:0 0 7px;
+      font-size:28px;
+      color:#0b5135;
+    }
+
+    #gmDealsSection .gm-deals-title p{
+      margin:0;
+      color:#65766d;
+    }
+
+    .gm-deals-card{
+      background:#fff;
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:0 10px 35px rgba(0,0,0,.12);
+      border:1px solid #e1e8e3;
+      max-width:720px;
+      margin:auto;
+    }
+
+    .gm-deals-card img{
+      width:100%;
+      aspect-ratio:16/8;
+      object-fit:cover;
+      display:block;
+      background:#edf3ef;
+    }
+
+    .gm-deals-body{
+      padding:20px;
+    }
+
+    .gm-deals-badge{
+      display:inline-block;
+      background:#0d5135;
+      color:#fff;
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .gm-deals-name{
+      font-size:25px;
+      font-weight:900;
+      color:#173c2b;
+      margin:12px 0 8px;
+    }
+
+    .gm-deals-desc{
+      color:#65766d;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+
+    .gm-deals-prices{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:12px 0;
+    }
+
+    .gm-deals-old{
+      color:#8b9690;
+      text-decoration:line-through;
+      font-size:17px;
+    }
+
+    .gm-deals-new{
+      color:#0b603b;
+      font-size:31px;
+      font-weight:900;
+    }
+
+    .gm-deals-discount{
+      background:#d8b65c;
+      color:#173c2b;
+      padding:7px 10px;
+      border-radius:10px;
+      font-weight:bold;
+    }
+
+    .gm-deals-timer{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin:18px 0;
+    }
+
+    .gm-deals-time{
+      background:#073c27;
+      color:#fff;
+      border-radius:14px;
+      padding:12px;
+      text-align:center;
+    }
+
+    .gm-deals-time b{
+      display:block;
+      font-size:28px;
+      line-height:1;
+      margin-bottom:5px;
+    }
+
+    .gm-deals-time span{
+      font-size:12px;
+      opacity:.8;
+    }
+
+    .gm-deals-next{
+      text-align:center;
+      padding:25px;
+      color:#65766d;
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 8px 25px rgba(0,0,0,.08);
+    }
+
+    @media(max-width:600px){
+      #gmDealsSection .gm-deals-title h2{
+        font-size:23px;
+      }
+
+      .gm-deals-name{
+        font-size:21px;
+      }
+
+      .gm-deals-new{
+        font-size:26px;
+      }
+    }
+  `;
+
+  document.head.appendChild(dealsStyle);
+
+  let gmDealsTimer=null;
+
+  function gmEscape(value){
+    return String(value ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+
+  function gmDealSchedule(settings){
+
+    const deals = Array.isArray(settings.deals)
+      ? settings.deals
+      : [];
+
+    const start = Date.parse(settings.dealsStartAt || "");
+
+    if(!Number.isFinite(start) || !deals.length){
+      return [];
+    }
+
+    let current = start;
+
+    return deals.map((deal,index)=>{
+
+      const duration =
+        Math.max(
+          1,
+          Number(deal.durationMinutes) || 1
+        ) * 60000;
+
+      const item = {
+        ...deal,
+        _index:index,
+        _start:current,
+        _end:current + duration
+      };
+
+      current += duration;
+
+      return item;
+    });
+  }
+
+  function gmFormatMoney(value){
+    return Number(value || 0).toLocaleString("ar-EG") + " جنيه";
+  }
+
+  function gmDiscount(oldPrice,newPrice){
+
+    const oldN=Number(oldPrice)||0;
+    const newN=Number(newPrice)||0;
+
+    if(oldN<=0 || newN>=oldN){
+      return 0;
+    }
+
+    return Math.round(
+      ((oldN-newN)/oldN)*100
+    );
+  }
+
+  function gmFindContainer(){
+
+    let section=document.getElementById("gmDealsSection");
+
+    if(section){
+      return section;
+    }
+
+    section=document.createElement("section");
+    section.id="gmDealsSection";
+
+    section.innerHTML=`
+      <div class="gm-deals-title">
+        <h2>🔥 صفقات Green Moon</h2>
+        <p>صفقة وراء صفقة... والصفقة الجديدة تبدأ تلقائيًا ⏳</p>
+      </div>
+
+      <div id="gmDealsContainer">
+        <div class="gm-deals-next">
+          جاري تحميل الصفقات...
+        </div>
+      </div>
+    `;
+
+    const main=
+      document.querySelector("main") ||
+      document.body;
+
+    const firstSection=
+      main.querySelector("section");
+
+    if(firstSection){
+      main.insertBefore(section,firstSection);
+    }else{
+      main.prepend(section);
+    }
+
+    return section;
+  }
+
+  async function gmRenderDeals(){
+
+    try{
+
+      const response=
+        await fetch("/api/settings?ts="+Date.now());
+
+      if(!response.ok){
+        return;
+      }
+
+      const freshSettings=
+        await response.json();
+
+      window.settings=
+        Object.assign(
+          window.settings || {},
+          freshSettings
+        );
+
+      const section=
+        gmFindContainer();
+
+      const container=
+        document.getElementById(
+          "gmDealsContainer"
+        );
+
+      if(!container){
+        return;
+      }
+
+      const schedule=
+        gmDealSchedule(window.settings);
+
+      if(!schedule.length){
+
+        container.innerHTML=`
+          <div class="gm-deals-next">
+            مفيش صفقات نشطة حاليًا 🌿
+          </div>
+        `;
+
+        return;
+      }
+
+      const now=Date.now();
+
+      const active=
+        schedule.find(
+          deal =>
+            now >= deal._start &&
+            now < deal._end
+        );
+
+      if(active){
+
+        const remaining=
+          Math.max(
+            0,
+            active._end-now
+          );
+
+        const totalSeconds=
+          Math.ceil(
+            remaining/1000
+          );
+
+        const minutes=
+          Math.floor(
+            totalSeconds/60
+          );
+
+        const seconds=
+          totalSeconds%60;
+
+        const oldPrice=
+          Number(active.oldPrice)||0;
+
+        const newPrice=
+          Number(active.dealPrice)||0;
+
+        const discount=
+          gmDiscount(
+            oldPrice,
+            newPrice
+          );
+
+        container.innerHTML=`
+
+          <div class="gm-deals-card">
+
+            ${
+              active.image
+              ?
+              `<img
+                src="${gmEscape(active.image)}"
+                alt="${gmEscape(active.title || "صفقة Green Moon")}"
+              >`
+              :
+              ""
+            }
+
+            <div class="gm-deals-body">
+
+              <span class="gm-deals-badge">
+                🔥 صفقة الآن
+              </span>
+
+              <div class="gm-deals-name">
+                ${gmEscape(
+                  active.title ||
+                  "صفقة Green Moon"
+                )}
+              </div>
+
+              ${
+                active.description
+                ?
+                `<div class="gm-deals-desc">
+                  ${gmEscape(active.description)}
+                </div>`
+                :
+                ""
+              }
+
+              <div class="gm-deals-prices">
+
+                ${
+                  oldPrice
+                  ?
+                  `<span class="gm-deals-old">
+                    ${gmFormatMoney(oldPrice)}
+                  </span>`
+                  :
+                  ""
+                }
+
+                <span class="gm-deals-new">
+                  ${gmFormatMoney(newPrice)}
+                </span>
+
+                ${
+                  discount>0
+                  ?
+                  `<span class="gm-deals-discount">
+                    خصم ${discount}%
+                  </span>`
+                  :
+                  ""
+                }
+
+              </div>
+
+              <div class="gm-deals-timer">
+
+                <div class="gm-deals-time">
+                  <b>${String(minutes).padStart(2,"0")}</b>
+                  <span>دقيقة</span>
+                </div>
+
+                <div class="gm-deals-time">
+                  <b>${String(seconds).padStart(2,"0")}</b>
+                  <span>ثانية</span>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        `;
+
+      }else{
+
+        const next=
+          schedule.find(
+            deal =>
+              deal._start > now
+          );
+
+        if(next){
+
+          const remaining=
+            next._start-now;
+
+          const totalSeconds=
+            Math.ceil(
+              remaining/1000
+            );
+
+          const minutes=
+            Math.floor(
+              totalSeconds/60
+            );
+
+          const seconds=
+            totalSeconds%60;
+
+          container.innerHTML=`
+
+            <div class="gm-deals-next">
+
+              <div style="font-size:28px;margin-bottom:8px">
+                ⏳
+              </div>
+
+              <strong style="font-size:20px">
+                الصفقة القادمة تبدأ قريبًا
+              </strong>
+
+              <div style="margin-top:12px">
+                ${gmEscape(
+                  next.title ||
+                  "الصفقة القادمة"
+                )}
+              </div>
+
+              <div style="margin-top:15px;font-weight:bold">
+                ${String(minutes).padStart(2,"0")}
+                :
+                ${String(seconds).padStart(2,"0")}
+              </div>
+
+            </div>
+          `;
+
+        }else{
+
+          container.innerHTML=`
+
+            <div class="gm-deals-next">
+              انتهت سلسلة الصفقات الحالية 🌿
+            </div>
+
+          `;
+        }
+      }
+
+    }catch(error){
+
+      console.error(
+        "Green Moon Deals:",
+        error
+      );
+
+    }
+  }
+
+  function gmStartDeals(){
+
+    gmRenderDeals();
+
+    if(gmDealsTimer){
+      clearInterval(gmDealsTimer);
+    }
+
+    gmDealsTimer=
+      setInterval(
+        gmRenderDeals,
+        1000
+      );
+  }
+
+  gmStartDeals();
+
+})();
+
+  
 loadStore();
 
 </script>
