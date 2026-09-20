@@ -4,46 +4,199 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Green Moon - لوحة التحكم</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f4f7f4;color:#173c2b;font-family:Arial,Tahoma,sans-serif}
-header{background:#083c27;color:#fff;padding:18px}
-.nav{max-width:1150px;margin:auto;display:flex;align-items:center;gap:14px}
-.logo{width:58px;height:58px;border-radius:50%;object-fit:cover}
-.brand{flex:1}.brand h1{margin:0 0 5px;font-size:22px}.brand small{opacity:.8}
-a,.btn,button{font:inherit}
-.btn,button{border:0;border-radius:12px;padding:11px 16px;cursor:pointer}
-.btn{background:#d8b65c;color:#173c2b;text-decoration:none}
-.wrap{max-width:1150px;margin:22px auto;padding:0 14px}
-.panel{background:#fff;border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:0 8px 30px #1232}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.field{margin:0 0 12px}
-label{display:block;font-weight:bold;margin-bottom:7px}
-input,textarea,select{width:100%;padding:12px;border:1px solid #d8dfda;border-radius:11px;font:inherit;background:#fff}
-textarea{min-height:90px}
-.green{background:#0d5135;color:#fff}.red{background:#b3261e;color:#fff}
+body{
+ margin:0;
+ background:#f4f7f4;
+ color:#173c2b;
+ font-family:Arial,Tahoma,sans-serif
+}
+header{
+ background:#083c27;
+ color:#fff;
+ padding:18px
+}
+.nav{
+ max-width:1150px;
+ margin:auto;
+ display:flex;
+ align-items:center;
+ gap:14px
+}
+.logo{
+ width:58px;
+ height:58px;
+ border-radius:50%;
+ object-fit:cover
+}
+.brand{flex:1}
+.brand h1{margin:0 0 5px;font-size:22px}
+.brand small{opacity:.8}
+button,a{font:inherit}
+button{
+ border:0;
+ border-radius:12px;
+ padding:11px 16px;
+ cursor:pointer
+}
+.btn{
+ background:#d8b65c;
+ color:#173c2b;
+ text-decoration:none;
+ padding:11px 16px;
+ border-radius:12px
+}
+.wrap{
+ max-width:1150px;
+ margin:22px auto;
+ padding:0 14px
+}
+.panel{
+ background:#fff;
+ border-radius:20px;
+ padding:20px;
+ margin-bottom:18px;
+ box-shadow:0 8px 30px #1232
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px
+}
+.field{margin-bottom:12px}
+label{
+ display:block;
+ font-weight:bold;
+ margin-bottom:7px
+}
+input,textarea,select{
+ width:100%;
+ padding:12px;
+ border:1px solid #d8dfda;
+ border-radius:11px;
+ font:inherit;
+ background:#fff
+}
+textarea{min-height:100px}
+.green{background:#0d5135;color:#fff}
+.red{background:#b3261e;color:#fff}
 .gold{background:#d8b65c;color:#173c2b}
-.msg{display:block;margin-top:9px;font-weight:bold}
-.note{background:#f0f6f1;border-right:4px solid #0d5135;padding:12px;border-radius:12px;line-height:1.9;margin:10px 0}
-.hero-preview{width:100%;max-width:820px;aspect-ratio:16/9;object-fit:contain;background:#eef2ef;border-radius:16px;border:1px solid #ddd}
-.thumb{width:60px;height:60px;object-fit:cover;border-radius:10px}
+.msg{
+ display:block;
+ margin-top:9px;
+ font-weight:bold
+}
+.note{
+ background:#f0f6f1;
+ border-right:4px solid #0d5135;
+ padding:12px;
+ border-radius:12px;
+ line-height:1.9;
+ margin:10px 0
+}
+.hero-preview{
+ width:100%;
+ max-width:820px;
+ aspect-ratio:16/9;
+ object-fit:contain;
+ background:#eef2ef;
+ border-radius:16px;
+ border:1px solid #ddd
+}
+.thumb{
+ width:60px;
+ height:60px;
+ object-fit:cover;
+ border-radius:10px
+}
 .table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:720px}
-th,td{padding:10px;border-bottom:1px solid #eee;text-align:right}
-.category-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eee}
-.category-row img{width:58px;height:58px;object-fit:cover;border-radius:12px}
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:720px
+}
+th,td{
+ padding:10px;
+ border-bottom:1px solid #eee;
+ text-align:right
+}
+.category-row{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:10px 0;
+ border-bottom:1px solid #eee
+}
+.category-row img{
+ width:58px;
+ height:58px;
+ object-fit:cover;
+ border-radius:12px
+}
 .category-row strong{flex:1}
-.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:50}
+.modal{
+ position:fixed;
+ inset:0;
+ background:#0008;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:15px;
+ z-index:50
+}
 .modal.hidden{display:none}
-.box{background:#fff;border-radius:20px;width:min(850px,100%);max-height:92vh;overflow:auto;padding:20px}
-.close{float:left;border-radius:50%;background:#eee;padding:5px 13px;font-size:22px}
-.order{border:1px solid #dce4df;border-radius:16px;padding:15px;margin:12px 0;line-height:1.9}
-.status{border-top:1px solid #eee;margin-top:14px;padding-top:12px}
+.box{
+ background:#fff;
+ border-radius:20px;
+ width:min(850px,100%);
+ max-height:92vh;
+ overflow:auto;
+ padding:20px
+}
+.close{
+ float:left;
+ border-radius:50%;
+ background:#eee;
+ padding:5px 13px;
+ font-size:22px
+}
+.order{
+ border:1px solid #dce4df;
+ border-radius:16px;
+ padding:15px;
+ margin:12px 0;
+ line-height:1.9
+}
+.status{
+ border-top:1px solid #eee;
+ margin-top:14px;
+ padding-top:12px
+}
+.article-card{
+ border:1px solid #e0e7e2;
+ border-radius:16px;
+ padding:12px;
+ margin-top:12px
+}
+.article-card img{
+ width:110px;
+ height:75px;
+ object-fit:cover;
+ border-radius:10px
+}
+.article-head{
+ display:flex;
+ align-items:center;
+ gap:12px
+}
+.article-head .info{flex:1}
 @media(max-width:700px){
-.grid{grid-template-columns:1fr}
-.nav{align-items:flex-start}
-.nav .btn{display:none}
-.panel{padding:15px}
+ .grid{grid-template-columns:1fr}
+ .nav{align-items:flex-start}
+ .nav .btn{display:none}
+ .panel{padding:15px}
 }
 </style>
 </head>
@@ -52,17 +205,26 @@ th,td{padding:10px;border-bottom:1px solid #eee;text-align:right}
 
 <header>
 <div class="nav">
+
 <img id="logo" class="logo" src="/assets/logo.jpg">
+
 <div class="brand">
 <h1>لوحة تحكم Green Moon</h1>
-<small>إدارة المتجر والمنتجات والطلبات</small>
+<small>إدارة المتجر والمنتجات والمقالات والطلبات</small>
 </div>
+
 <a class="btn" href="/">عرض المتجر</a>
+
 </div>
 </header>
 
+
+<!-- LOGIN -->
+
 <main id="loginBox" class="wrap">
+
 <div class="panel">
+
 <h2>🔐 الدخول للوحة التحكم</h2>
 
 <div class="field">
@@ -71,13 +233,23 @@ th,td{padding:10px;border-bottom:1px solid #eee;text-align:right}
 </div>
 
 <button id="login" class="green">دخول</button>
+
 <span id="loginMsg" class="msg"></span>
+
 </div>
+
 </main>
+
+
+<!-- DASHBOARD -->
 
 <main id="dashboard" class="wrap" style="display:none">
 
+
+<!-- SETTINGS -->
+
 <div class="panel">
+
 <h2>⚙️ إعدادات الموقع</h2>
 
 <div class="grid">
@@ -103,6 +275,9 @@ th,td{padding:10px;border-bottom:1px solid #eee;text-align:right}
 </div>
 
 </div>
+
+
+<!-- HERO -->
 
 <div class="field">
 
@@ -132,6 +307,9 @@ src="/assets/product-1.jpg">
 
 </div>
 
+
+<!-- LOGO -->
+
 <div class="field">
 
 <label>شعار Green Moon</label>
@@ -154,13 +332,19 @@ src="/assets/logo.jpg">
 
 </div>
 
+
+<!-- SHIPPING -->
+
 <div class="panel">
 
 <h2>🚚 التوصيل</h2>
 
 <div class="field">
+
 <label>سعر التوصيل العام</label>
+
 <input id="shipping" type="number">
+
 </div>
 
 <button id="saveShipping" class="green">
@@ -170,6 +354,9 @@ src="/assets/logo.jpg">
 <span id="shippingMsg" class="msg"></span>
 
 </div>
+
+
+<!-- CATEGORIES -->
 
 <div class="panel">
 
@@ -205,6 +392,9 @@ src="/assets/logo.jpg">
 
 </div>
 
+
+<!-- PRODUCTS -->
+
 <div class="panel">
 
 <h2>🌱 المنتجات</h2>
@@ -239,6 +429,87 @@ src="/assets/logo.jpg">
 
 </div>
 
+
+<!-- ARTICLES -->
+
+<div class="panel">
+
+<h2>📝 إدارة المقالات والنصائح</h2>
+
+<div class="note">
+<b>المقاس الموصى به لصورة المقال: 1200 × 800 px</b>
+<br>
+يفضل صورة أفقية واضحة.
+</div>
+
+
+<div class="grid">
+
+<div class="field">
+<label>عنوان المقال</label>
+<input id="articleTitle"
+placeholder="مثال: متى يحتاج النبات إلى التسميد؟">
+</div>
+
+<div class="field">
+<label>وصف مختصر</label>
+<input id="articleExcerpt"
+placeholder="الوصف الذي يظهر في بطاقة المقال">
+</div>
+
+</div>
+
+
+<div class="field">
+
+<label>محتوى المقال</label>
+
+<textarea id="articleContent"
+style="min-height:200px"
+placeholder="اكتب محتوى المقال هنا..."></textarea>
+
+</div>
+
+
+<div class="field">
+
+<label>صورة المقال</label>
+
+<input id="articleImage"
+type="file"
+accept="image/*">
+
+</div>
+
+
+<img id="articlePreview"
+class="hero-preview"
+style="max-width:420px;display:none;aspect-ratio:3/2">
+
+
+<br><br>
+
+
+<button id="saveArticle" class="green">
++ إضافة المقال
+</button>
+
+<button id="cancelArticle"
+class="gold"
+style="display:none">
+إلغاء التعديل
+</button>
+
+<span id="articleMsg" class="msg"></span>
+
+
+<div id="articlesAdmin"></div>
+
+</div>
+
+
+<!-- ORDERS -->
+
 <div class="panel">
 
 <h2>📦 الطلبات</h2>
@@ -255,6 +526,9 @@ src="/assets/logo.jpg">
 
 </main>
 
+
+<!-- PRODUCT MODAL -->
+
 <div id="modal" class="modal hidden">
 
 <div class="box">
@@ -269,6 +543,7 @@ src="/assets/logo.jpg">
 
 <input id="pid" type="hidden">
 
+
 <div class="grid">
 
 <div class="field">
@@ -278,9 +553,11 @@ src="/assets/logo.jpg">
 
 <div class="field">
 <label>الفئة</label>
+
 <select id="pcategory">
 <option value="">بدون فئة</option>
 </select>
+
 </div>
 
 <div class="field">
@@ -300,21 +577,33 @@ src="/assets/logo.jpg">
 
 </div>
 
-<div class="field">
-<label>تفاصيل المنتج</label>
-<textarea id="pdetails"></textarea>
-</div>
 
 <div class="field">
+
+<label>تفاصيل المنتج</label>
+
+<textarea id="pdetails"></textarea>
+
+</div>
+
+
+<div class="field">
+
 <label>صورة المنتج</label>
-<input id="pimage" type="file" accept="image/*">
+
+<input id="pimage"
+type="file"
+accept="image/*">
+
 </div>
 
 <img id="pimagePreview"
 class="thumb"
 src="/assets/logo.jpg">
 
+
 <h3>🌱 العناية بالنبات</h3>
+
 
 <div class="grid">
 
@@ -380,6 +669,7 @@ src="/assets/logo.jpg">
 
 </div>
 
+
 <button id="saveProduct" class="green">
 حفظ المنتج
 </button>
@@ -387,7 +677,9 @@ src="/assets/logo.jpg">
 <span id="productMsg" class="msg"></span>
 
 </div>
+
 </div>
+
 
 <script>
 
@@ -396,19 +688,28 @@ const $=id=>document.getElementById(id);
 let products=[];
 let editing=null;
 let currentSettings={};
+let editingArticleIndex=-1;
+
 
 function password(){
+
 return sessionStorage.getItem("gm_admin_password")||"";
+
 }
 
+
 function headers(){
+
 return {
 "Content-Type":"application/json",
 "Authorization":"Bearer "+password()
 };
+
 }
 
+
 async function api(url,opt={}){
+
 opt.headers={
 ...(opt.headers||{}),
 ...headers()
@@ -426,17 +727,25 @@ if(!r.ok)
 throw new Error(d.error||"حدث خطأ");
 
 return d;
+
 }
 
+
 function esc(x){
-return String(x??"").replace(/[&<>"']/g,m=>({
+
+return String(x??"").replace(
+/[&<>"']/g,
+m=>({
 "&":"&amp;",
 "<":"&lt;",
 ">":"&gt;",
 '"':"&quot;",
 "'":"&#39;"
-}[m]));
+}[m])
+);
+
 }
+
 
 function readFile(file){
 
@@ -456,6 +765,9 @@ r.readAsDataURL(file);
 
 }
 
+
+/* LOGIN */
+
 async function login(){
 
 const pass=$("password").value.trim();
@@ -468,7 +780,10 @@ return;
 
 }
 
-sessionStorage.setItem("gm_admin_password",pass);
+sessionStorage.setItem(
+"gm_admin_password",
+pass
+);
 
 try{
 
@@ -481,7 +796,9 @@ await loadAll();
 
 }catch(e){
 
-sessionStorage.removeItem("gm_admin_password");
+sessionStorage.removeItem(
+"gm_admin_password"
+);
 
 $("loginMsg").textContent=e.message;
 
@@ -489,12 +806,17 @@ $("loginMsg").textContent=e.message;
 
 }
 
+
 $("login").onclick=login;
 
+
 $("password").onkeydown=e=>{
+
 if(e.key==="Enter")
 login();
+
 };
+
 
 async function start(){
 
@@ -512,26 +834,36 @@ await loadAll();
 
 }catch(e){
 
-sessionStorage.removeItem("gm_admin_password");
+sessionStorage.removeItem(
+"gm_admin_password"
+);
 
 }
 
 }
+
+
+/* LOAD */
 
 async function loadAll(){
 
-products=await api("/api/admin/products")||[];
+products=
+await api("/api/admin/products")||[];
 
 renderProducts();
 
-const s=await api("/api/admin/settings");
+
+const s=
+await api("/api/admin/settings");
 
 currentSettings=s||{};
+
 
 $("storeName").value=s.storeName||"";
 $("siteTitle").value=s.title||"";
 $("siteSubtitle").value=s.subtitle||"";
 $("whatsapp").value=s.whatsapp||"";
+
 
 if(s.logo){
 
@@ -540,32 +872,48 @@ $("logoPreview").src=s.logo;
 
 }
 
+
 if(s.hero)
 $("heroPreview").src=s.hero;
 
-renderCategories();
 
-const sh=await api("/api/admin/shipping");
+renderCategories();
+renderArticles();
+
+
+const sh=
+await api("/api/admin/shipping");
 
 $("shipping").value=sh.price||0;
+
 
 await loadOrders();
 
 }
 
+
+/* CATEGORIES */
+
 function renderCategories(){
 
-const cats=Array.isArray(currentSettings.categories)
+const cats=
+Array.isArray(currentSettings.categories)
 ?currentSettings.categories
 :[];
+
 
 $("pcategory").innerHTML=
 '<option value="">بدون فئة</option>'+
 cats.map(c=>
-`<option value="${esc(c.name||"")}">${esc(c.name||"")}</option>`
+`<option value="${esc(c.name||"")}">
+${esc(c.name||"")}
+</option>`
 ).join("");
 
-$("categoriesAdmin").innerHTML=cats.length?
+
+$("categoriesAdmin").innerHTML=
+
+cats.length?
 
 cats.map((c,i)=>`
 
@@ -573,9 +921,12 @@ cats.map((c,i)=>`
 
 <img src="${c.image||"/assets/logo.jpg"}">
 
-<strong>${esc(c.name)}</strong>
+<strong>
+${esc(c.name)}
+</strong>
 
-<button class="red"
+<button
+class="red"
 onclick="deleteCategory(${i})">
 حذف
 </button>
@@ -589,6 +940,7 @@ onclick="deleteCategory(${i})">
 "<p>لا توجد فئات مضافة حتى الآن.</p>";
 
 }
+
 
 window.deleteCategory=async i=>{
 
@@ -606,6 +958,7 @@ categories:[
 
 s.categories.splice(i,1);
 
+
 await api(
 "/api/admin/settings",
 {
@@ -614,11 +967,14 @@ body:JSON.stringify(s)
 }
 );
 
+
 currentSettings=s;
 
 renderCategories();
 
-$("categoryMsg").textContent="تم حذف الفئة";
+$("categoryMsg").textContent=
+"تم حذف الفئة";
+
 $("categoryMsg").style.color="#14743f";
 
 }catch(e){
@@ -629,11 +985,14 @@ $("categoryMsg").textContent=e.message;
 
 };
 
+
 $("addCategory").onclick=async()=>{
 
 try{
 
-const name=$("categoryName").value.trim();
+const name=
+$("categoryName").value.trim();
+
 
 if(!name){
 
@@ -644,10 +1003,12 @@ return;
 
 }
 
+
 const image=
 await readFile(
 $("categoryImage").files[0]
 );
+
 
 const s={
 ...currentSettings,
@@ -660,6 +1021,7 @@ image:image||""
 ]
 };
 
+
 await api(
 "/api/admin/settings",
 {
@@ -667,6 +1029,7 @@ method:"PUT",
 body:JSON.stringify(s)
 }
 );
+
 
 currentSettings=s;
 
@@ -680,14 +1043,337 @@ $("categoryMsg").textContent=
 
 $("categoryMsg").style.color="#14743f";
 
+
 }catch(e){
 
 $("categoryMsg").textContent=e.message;
+
 $("categoryMsg").style.color="#b3261e";
 
 }
 
 };
+
+
+/* ARTICLES */
+
+function renderArticles(){
+
+const arts=
+Array.isArray(currentSettings.articles)
+?currentSettings.articles
+:[];
+
+
+$("articlesAdmin").innerHTML=
+
+arts.length?
+
+arts.map((a,i)=>`
+
+<div class="article-card">
+
+<div class="article-head">
+
+<img
+class="thumb"
+src="${a.image||"/assets/logo.jpg"}">
+
+<div class="info">
+
+<b>
+${esc(a.title||"بدون عنوان")}
+</b>
+
+<br>
+
+<small>
+${esc(a.excerpt||"")}
+</small>
+
+</div>
+
+<button
+class="green"
+onclick="editArticle(${i})">
+تعديل
+</button>
+
+<button
+class="red"
+onclick="deleteArticle(${i})">
+حذف
+</button>
+
+</div>
+
+</div>
+
+`).join("")
+
+:
+
+"<p>لا توجد مقالات حتى الآن.</p>";
+
+}
+
+
+function clearArticleForm(){
+
+editingArticleIndex=-1;
+
+$("articleTitle").value="";
+$("articleExcerpt").value="";
+$("articleContent").value="";
+$("articleImage").value="";
+
+$("articlePreview").style.display="none";
+
+$("saveArticle").textContent=
+"+ إضافة المقال";
+
+$("cancelArticle").style.display=
+"none";
+
+}
+
+
+window.editArticle=i=>{
+
+const a=
+(currentSettings.articles||[])[i];
+
+if(!a)
+return;
+
+
+editingArticleIndex=i;
+
+$("articleTitle").value=
+a.title||"";
+
+$("articleExcerpt").value=
+a.excerpt||"";
+
+$("articleContent").value=
+a.content||"";
+
+$("articleImage").value="";
+
+
+if(a.image){
+
+$("articlePreview").src=a.image;
+
+$("articlePreview").style.display=
+"block";
+
+}
+
+
+$("saveArticle").textContent=
+"💾 حفظ تعديل المقال";
+
+$("cancelArticle").style.display=
+"inline-block";
+
+
+$("articleTitle").scrollIntoView({
+behavior:"smooth",
+block:"center"
+});
+
+};
+
+
+window.deleteArticle=async i=>{
+
+if(!confirm("هل تريد حذف هذا المقال؟"))
+return;
+
+
+const s={
+...currentSettings,
+articles:[
+...(currentSettings.articles||[])
+]
+};
+
+
+s.articles.splice(i,1);
+
+
+try{
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+renderArticles();
+
+$("articleMsg").textContent=
+"تم حذف المقال";
+
+$("articleMsg").style.color=
+"#14743f";
+
+
+if(editingArticleIndex===i)
+clearArticleForm();
+
+
+}catch(e){
+
+$("articleMsg").textContent=e.message;
+
+}
+
+};
+
+
+$("articleImage").onchange=
+async e=>{
+
+const x=
+await readFile(
+e.target.files[0]
+);
+
+if(x){
+
+$("articlePreview").src=x;
+
+$("articlePreview").style.display=
+"block";
+
+}
+
+};
+
+
+$("cancelArticle").onclick=
+clearArticleForm;
+
+
+$("saveArticle").onclick=async()=>{
+
+try{
+
+const title=
+$("articleTitle").value.trim();
+
+
+if(!title){
+
+$("articleMsg").textContent=
+"اكتب عنوان المقال أولًا";
+
+return;
+
+}
+
+
+let image="";
+
+
+if(editingArticleIndex>=0){
+
+image=
+(currentSettings.articles||[])
+[editingArticleIndex]?.image||"";
+
+}
+
+
+const f=
+$("articleImage").files[0];
+
+
+if(f)
+image=await readFile(f);
+
+
+const article={
+
+title:title,
+
+excerpt:
+$("articleExcerpt").value.trim(),
+
+content:
+$("articleContent").value.trim(),
+
+image:image
+
+};
+
+
+const arts=[
+...(currentSettings.articles||[])
+];
+
+
+if(editingArticleIndex>=0){
+
+arts[editingArticleIndex]=article;
+
+}else{
+
+arts.unshift(article);
+
+}
+
+
+const s={
+...currentSettings,
+articles:arts
+};
+
+
+await api(
+"/api/admin/settings",
+{
+method:"PUT",
+body:JSON.stringify(s)
+}
+);
+
+
+currentSettings=s;
+
+renderArticles();
+
+clearArticleForm();
+
+
+$("articleMsg").textContent=
+"تم حفظ المقال وظهر للعميل";
+
+$("articleMsg").style.color=
+"#14743f";
+
+
+}catch(e){
+
+$("articleMsg").textContent=
+e.message;
+
+$("articleMsg").style.color=
+"#b3261e";
+
+}
+
+};
+
+
+/* PRODUCTS */
 
 function renderProducts(){
 
@@ -700,6 +1386,7 @@ return;
 
 }
 
+
 $("products").innerHTML=
 
 products.map(p=>`
@@ -707,25 +1394,39 @@ products.map(p=>`
 <tr>
 
 <td>
-<img class="thumb"
+<img
+class="thumb"
 src="${p.image||"/assets/logo.jpg"}">
 </td>
 
-<td>${esc(p.name)}</td>
-
-<td>${esc(p.category||"—")}</td>
-
-<td>${Number(p.price||0)} ج</td>
-
-<td>${Number(p.wholesalePrice||0)} ج</td>
-
-<td>${Number(p.shippingPrice||0)} ج</td>
+<td>
+${esc(p.name)}
+</td>
 
 <td>
-<button class="green"
+${esc(p.category||"—")}
+</td>
+
+<td>
+${Number(p.price||0)} ج
+</td>
+
+<td>
+${Number(p.wholesalePrice||0)} ج
+</td>
+
+<td>
+${Number(p.shippingPrice||0)} ج
+</td>
+
+<td>
+
+<button
+class="green"
 onclick="editProduct('${esc(p.id)}')">
 تعديل
 </button>
+
 </td>
 
 </tr>
@@ -733,6 +1434,7 @@ onclick="editProduct('${esc(p.id)}')">
 `).join("");
 
 }
+
 
 function openProduct(p){
 
@@ -742,6 +1444,7 @@ $("modal").classList.remove("hidden");
 
 $("modalTitle").textContent=
 p?"تعديل المنتج":"إضافة منتج";
+
 
 $("pid").value=p?.id||"";
 $("pname").value=p?.name||"";
@@ -756,7 +1459,9 @@ $("pdetails").value=p?.details||"";
 $("pimagePreview").src=
 p?.image||"/assets/logo.jpg";
 
+
 const c=p?.care||{};
+
 
 [
 "light",
@@ -772,12 +1477,16 @@ const c=p?.care||{};
 "mistakes",
 "tips"
 ].forEach(k=>{
+
 $(k).value=c[k]||"";
+
 });
+
 
 $("productMsg").textContent="";
 
 }
+
 
 window.editProduct=id=>
 openProduct(
@@ -786,13 +1495,17 @@ p=>String(p.id)===String(id)
 )
 );
 
-$("newProduct").onclick=()=>
-openProduct(null);
 
-$("closeModal").onclick=()=>
-$("modal").classList.add("hidden");
+$("newProduct").onclick=
+()=>openProduct(null);
 
-$("pimage").onchange=async e=>{
+
+$("closeModal").onclick=
+()=>$("modal").classList.add("hidden");
+
+
+$("pimage").onchange=
+async e=>{
 
 const x=
 await readFile(
@@ -804,26 +1517,36 @@ $("pimagePreview").src=x;
 
 };
 
+
 $("saveProduct").onclick=async()=>{
 
 try{
 
-let image=$("pimagePreview").src;
+let image=
+$("pimagePreview").src;
 
-const f=$("pimage").files[0];
+
+const f=
+$("pimage").files[0];
+
 
 if(f)
 image=await readFile(f);
 
+
 const body={
 
-id:$("pid").value||undefined,
+id:
+$("pid").value||undefined,
 
-name:$("pname").value.trim(),
+name:
+$("pname").value.trim(),
 
-category:$("pcategory").value.trim(),
+category:
+$("pcategory").value.trim(),
 
-price:Number($("pprice").value)||0,
+price:
+Number($("pprice").value)||0,
 
 wholesalePrice:
 Number($("pwholesale").value)||0,
@@ -831,9 +1554,10 @@ Number($("pwholesale").value)||0,
 shippingPrice:
 Number($("pshipping").value)||0,
 
-details:$("pdetails").value.trim(),
+details:
+$("pdetails").value.trim(),
 
-image,
+image:image,
 
 care:{
 
@@ -865,7 +1589,9 @@ tips:$("tips").value
 
 };
 
-const r=await api(
+
+const r=
+await api(
 "/api/admin/products",
 {
 method:editing?"PUT":"POST",
@@ -873,31 +1599,43 @@ body:JSON.stringify(body)
 }
 );
 
-products=r.products||products;
+
+products=
+r.products||products;
 
 renderProducts();
+
 
 $("productMsg").textContent=
 "تم الحفظ وظهر للعميل";
 
-$("productMsg").style.color="#14743f";
+$("productMsg").style.color=
+"#14743f";
+
 
 setTimeout(
 ()=>$("modal").classList.add("hidden"),
 700
 );
 
+
 }catch(e){
 
-$("productMsg").textContent=e.message;
+$("productMsg").textContent=
+e.message;
 
-$("productMsg").style.color="#b3261e";
+$("productMsg").style.color=
+"#b3261e";
 
 }
 
 };
 
-$("heroFile").onchange=async e=>{
+
+/* HERO */
+
+$("heroFile").onchange=
+async e=>{
 
 const x=
 await readFile(
@@ -909,11 +1647,14 @@ $("heroPreview").src=x;
 
 };
 
+
 $("saveHero").onclick=async()=>{
 
 try{
 
-const f=$("heroFile").files[0];
+const f=
+$("heroFile").files[0];
+
 
 if(!f){
 
@@ -924,17 +1665,31 @@ return;
 
 }
 
+
 const image=
 await readFile(f);
 
+
 const s={
+
 ...currentSettings,
-storeName:$("storeName").value,
-title:$("siteTitle").value,
-subtitle:$("siteSubtitle").value,
-whatsapp:$("whatsapp").value,
+
+storeName:
+$("storeName").value,
+
+title:
+$("siteTitle").value,
+
+subtitle:
+$("siteSubtitle").value,
+
+whatsapp:
+$("whatsapp").value,
+
 hero:image
+
 };
+
 
 await api(
 "/api/admin/settings",
@@ -944,6 +1699,7 @@ body:JSON.stringify(s)
 }
 );
 
+
 currentSettings=s;
 
 $("heroPreview").src=image;
@@ -951,18 +1707,27 @@ $("heroPreview").src=image;
 $("heroMsg").textContent=
 "تم حفظ صورة الـ Hero بنجاح";
 
-$("heroMsg").style.color="#14743f";
+$("heroMsg").style.color=
+"#14743f";
+
 
 }catch(e){
 
-$("heroMsg").textContent=e.message;
-$("heroMsg").style.color="#b3261e";
+$("heroMsg").textContent=
+e.message;
+
+$("heroMsg").style.color=
+"#b3261e";
 
 }
 
 };
 
-$("logoFile").onchange=async e=>{
+
+/* SETTINGS */
+
+$("logoFile").onchange=
+async e=>{
 
 const x=
 await readFile(
@@ -974,32 +1739,43 @@ $("logoPreview").src=x;
 
 };
 
+
 $("saveSettings").onclick=async()=>{
 
 try{
 
-let logo=currentSettings.logo||"";
+let logo=
+currentSettings.logo||"";
 
-const f=$("logoFile").files[0];
+
+const f=
+$("logoFile").files[0];
+
 
 if(f)
 logo=await readFile(f);
+
 
 const s={
 
 ...currentSettings,
 
-storeName:$("storeName").value,
+storeName:
+$("storeName").value,
 
-title:$("siteTitle").value,
+title:
+$("siteTitle").value,
 
-subtitle:$("siteSubtitle").value,
+subtitle:
+$("siteSubtitle").value,
 
-whatsapp:$("whatsapp").value,
+whatsapp:
+$("whatsapp").value,
 
-logo
+logo:logo
 
 };
+
 
 await api(
 "/api/admin/settings",
@@ -1009,26 +1785,35 @@ body:JSON.stringify(s)
 }
 );
 
+
 currentSettings=s;
+
 
 $("settingsMsg").textContent=
 "تم حفظ إعدادات الموقع";
 
-$("settingsMsg").style.color="#14743f";
+$("settingsMsg").style.color=
+"#14743f";
+
 
 }catch(e){
 
-$("settingsMsg").textContent=e.message;
+$("settingsMsg").textContent=
+e.message;
 
 }
 
 };
 
+
+/* SHIPPING */
+
 $("saveShipping").onclick=async()=>{
 
 try{
 
-const r=await api(
+const r=
+await api(
 "/api/admin/shipping",
 {
 method:"PUT",
@@ -1038,20 +1823,27 @@ price:Number($("shipping").value)||0
 }
 );
 
+
 $("shipping").value=r.price;
 
 $("shippingMsg").textContent=
 "تم حفظ سعر التوصيل";
 
-$("shippingMsg").style.color="#14743f";
+$("shippingMsg").style.color=
+"#14743f";
+
 
 }catch(e){
 
-$("shippingMsg").textContent=e.message;
+$("shippingMsg").textContent=
+e.message;
 
 }
 
 };
+
+
+/* ORDERS */
 
 async function loadOrders(){
 
@@ -1059,6 +1851,7 @@ try{
 
 const orders=
 await api("/api/admin/orders");
+
 
 if(!orders.length){
 
@@ -1068,6 +1861,7 @@ $("orders").innerHTML=
 return;
 
 }
+
 
 $("orders").innerHTML=
 
@@ -1092,8 +1886,9 @@ o.apartment?
 
 ].filter(Boolean).join("، ");
 
-const items=(o.items||[])
 
+const items=
+(o.items||[])
 .map(i=>
 `<div>
 ${esc(i.name)}
@@ -1102,10 +1897,12 @@ ${esc(i.name)}
 ${Number(i.lineTotal||0)} ج
 </div>`
 )
-
 .join("");
 
-const st=o.status||"جديد";
+
+const st=
+o.status||"جديد";
+
 
 return `
 
@@ -1152,6 +1949,7 @@ ${Number(o.shipping||0)} ج
 ${Number(o.total||0)} ج
 </b>
 
+
 <div class="status">
 
 <b>حالة الطلب</b>
@@ -1170,12 +1968,15 @@ ${
 "ملغي"
 ]
 .map(x=>
-`<option ${st===x?"selected":""}>${x}</option>`
+`<option ${st===x?"selected":""}>
+${x}
+</option>`
 )
 .join("")
 }
 
 </select>
+
 
 <button
 class="green"
@@ -1191,13 +1992,16 @@ onclick="updateStatus('${esc(o.id)}')">
 
 }).join("");
 
+
 }catch(e){
 
-$("orders").textContent=e.message;
+$("orders").textContent=
+e.message;
 
 }
 
 }
+
 
 window.updateStatus=async id=>{
 
@@ -1208,15 +2012,17 @@ await api(
 {
 method:"PUT",
 body:JSON.stringify({
-id,
+id:id,
 status:$("status_"+id).value
 })
 }
 );
 
+
 alert("تم تحديث حالة الطلب");
 
 await loadOrders();
+
 
 }catch(e){
 
@@ -1226,7 +2032,10 @@ alert(e.message);
 
 };
 
-$("reloadOrders").onclick=loadOrders;
+
+$("reloadOrders").onclick=
+loadOrders;
+
 
 start();
 
