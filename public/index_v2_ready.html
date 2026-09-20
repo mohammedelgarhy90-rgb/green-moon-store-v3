@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d3b29">
+<meta name="description" content="Green Moon Plants & Flowers - نباتات الزينة والزهور والعناية بالنباتات">
+<title>Green Moon Plants & Flowers</title>
+<style>
+:root{--g:#123b28;--g2:#1d6742;--gold:#d7b75a;--bg:#f3f6f1;--muted:#6d776f;--shadow:0 12px 35px #123b2812}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(#f8f8f3,#edf4ee);color:#173d2a}button,input,textarea{font:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:50;background:#123b28f5;backdrop-filter:blur(12px);color:#fff;box-shadow:0 4px 22px #0002}.nav{max-width:1250px;margin:auto;min-height:72px;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px}.brand img{width:50px;height:50px;border-radius:15px;object-fit:contain;background:#fff}.brand b{display:block;font-size:16px}.brand small{opacity:.75}.admin{color:#fff;text-decoration:none;background:#ffffff16;border:1px solid #ffffff25;padding:10px 13px;border-radius:12px}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 20% 20%,#5da77755,transparent 35%),linear-gradient(135deg,#0c2d1e,#1f7048);color:#fff;text-align:center;padding:65px 16px 58px}.hero h1{margin:0 0 10px;font-size:clamp(30px,6vw,54px)}.hero p{margin:0 auto 24px;max-width:650px;color:#e5f1e8;font-size:17px;line-height:1.8}.hero-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.hero-btn{border:0;padding:13px 20px;border-radius:14px;font-weight:bold;text-decoration:none}.primary{background:var(--gold);color:#173d2a}.secondary{background:#ffffff18;color:#fff;border:1px solid #ffffff30}
+.wrap{max-width:1250px;margin:auto;padding:25px 15px 115px}.tools{display:flex;gap:10px;margin-bottom:12px}.search-wrap{position:relative;flex:1}.search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%)}.search{width:100%;padding:14px 43px 14px 14px;border:1px solid #dbe2dc;background:#fff;border-radius:15px;font-size:16px;outline:none;box-shadow:0 5px 18px #00000008}.search:focus{border-color:#5b9672;box-shadow:0 0 0 4px #5b96721a}
+.quick{display:flex;gap:9px;overflow:auto;padding:2px 0 16px;scrollbar-width:none}.quick::-webkit-scrollbar{display:none}.quick button{white-space:nowrap;border:1px solid #dce5dd;background:#fff;color:var(--g);padding:9px 13px;border-radius:999px}.quick button.active{background:var(--g);color:#fff}
+.section-head{display:flex;align-items:end;justify-content:space-between;margin:7px 0 15px}.section-head h2{margin:0;font-size:24px}.section-head span{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:18px}
+.card{background:#fff;border:1px solid #e5ebe5;border-radius:22px;overflow:hidden;box-shadow:var(--shadow);transition:.2s}.card:hover{transform:translateY(-3px);box-shadow:0 17px 40px #123b2818}.pic-wrap{position:relative;background:#eef3ed}.pic{width:100%;height:235px;object-fit:cover;display:block;cursor:pointer}.badge{position:absolute;top:12px;right:12px;background:#fff;color:var(--g);padding:6px 9px;border-radius:999px;font-size:11px;font-weight:bold;box-shadow:0 4px 12px #0002}.body{padding:14px}.name{font-size:18px;font-weight:bold}.desc{font-size:13px;color:#6b746d;line-height:1.65;margin:7px 0;height:43px;overflow:hidden}.price{font-size:22px;font-weight:900;color:#176038}.ship{font-size:12px;color:#788078;margin:6px 0 11px}.actions{display:flex;justify-content:space-between;align-items:center;gap:8px}.details{border:0;background:#f0eadb;color:#493e24;padding:10px 11px;border-radius:11px;font-weight:bold}.qty{display:flex;align-items:center;gap:6px;background:#f1f5f0;padding:4px;border-radius:11px}.qty button{border:0;background:#176038;color:#fff;width:32px;height:32px;border-radius:8px;font-size:19px}.qty span{min-width:22px;text-align:center;font-weight:bold}
+.cart{position:fixed;bottom:14px;left:14px;right:14px;max-width:650px;margin:auto;background:#123b28f7;color:#fff;border-radius:18px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:60;box-shadow:0 8px 30px #0005}.cart button{border:0;background:var(--gold);color:#173d2a;padding:11px 17px;border-radius:11px;font-weight:900}
+.modal{position:fixed;inset:0;background:#06140dcc;display:none;align-items:center;justify-content:center;padding:14px;z-index:100}.modal.show{display:flex}.box{width:min(700px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:24px;padding:19px;position:relative}.close{position:absolute;top:10px;left:10px;border:0;background:#edf0ed;border-radius:50%;width:39px;height:39px;font-size:23px;z-index:2}.detailimg{width:100%;max-height:390px;object-fit:cover;border-radius:17px}.dtitle{font-size:27px;font-weight:900;margin-top:13px}.care{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.care div{background:#f2f7f2;padding:11px;border-radius:12px}.care b{display:block;color:#176038;font-size:13px;margin-bottom:4px}.care span{font-size:13px;color:#555;line-height:1.65}.add,.submit{width:100%;border:0;background:#176038;color:#fff;padding:14px;border-radius:12px;font-size:16px;font-weight:bold;margin-top:15px}.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0}.total{border-top:1px solid #ddd;margin-top:6px;padding-top:11px;font-size:19px;font-weight:bold;color:#176038}.field{margin:10px 0}.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:5px}.field input,.field textarea{width:100%;padding:12px;border:1px solid #dce2dc;border-radius:10px;outline:none}.field textarea{min-height:75px}.empty{text-align:center;padding:55px 15px;color:#777;grid-column:1/-1;background:#fff;border-radius:18px}footer{background:#0d3021;color:#dce9df;text-align:center;padding:30px 15px 100px}
+@media(max-width:650px){.nav{min-height:64px}.brand img{width:44px;height:44px}.brand b{font-size:14px}.brand small{font-size:10px}.admin{font-size:12px;padding:8px}.hero{padding:48px 14px}.hero h1{font-size:32px}.hero p{font-size:14px}.wrap{padding:18px 10px 110px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pic{height:170px}.body{padding:10px}.name{font-size:15px}.desc{font-size:12px;height:39px}.price{font-size:18px}.ship{font-size:10px}.details{font-size:11px;padding:8px}.qty button{width:29px;height:29px}.care{grid-template-columns:1fr}.box{padding:15px}.dtitle{font-size:23px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand"><img id="logo" src="/assets/logo.jpg" onerror="this.src='/assets/logo.jpg'"><div><b>Green Moon Plants & Flowers</b><small>نباتات الزينة والزهور</small></div></div><a class="admin" href="/admin.html">⚙️ لوحة التحكم</a></div></header>
+<section class="hero">
+<h1 id="title">Green Moon 🌿</h1>
+<p id="subtitle">اختار نباتتك وخلي بيتك أحلى 💚</p>
+<div class="hero-actions">
+<a class="hero-btn primary" href="#productsSection">🌿 اكتشف النباتات</a>
+<button class="hero-btn secondary" type="button" onclick="openCart()">🛒 عرض السلة</button>
+</div>
+</section>
+
+<main class="wrap">
+<div class="tools"><div class="search-wrap"><span class="search-icon">🔎</span><input id="search" class="search" placeholder="ابحث عن اسم النبات..." autocomplete="off"></div></div>
+<div class="quick">
+<button type="button" class="active" onclick="quickFilter(this,'')">كل النباتات</button>
+<button type="button" onclick="quickFilter(this,'بامبو')">🎋 بامبو</button>
+<button type="button" onclick="quickFilter(this,'بوتس')">🌿 بوتس</button>
+<button type="button" onclick="quickFilter(this,'مونستيرا')">🍃 مونستيرا</button>
+<button type="button" onclick="quickFilter(this,'ورد')">🌹 زهور</button>
+</div>
+<section id="productsSection">
+<div class="section-head"><h2>🌱 منتجات Green Moon</h2><span id="resultCount"></span></div>
+<div id="products" class="grid"></div>
+</section>
+</main>
+<footer><div class="footer-title">Green Moon Plants & Flowers 🌿</div><div class="footer-sub">نباتات طبيعية... لمسة حياة</div></footer>
+<div id="detailModal" class="modal"><div class="box"><button class="close" onclick="closeDetail()">×</button><img id="dimg" class="detailimg"><div id="dname" class="dtitle"></div><div id="dprice" class="price"></div><div id="dship" class="ship"></div><p id="ddesc" style="line-height:1.9;color:#59635c"></p><div id="care" class="care"></div><button id="add" class="add">أضف للسلة 🛒</button></div></div>
+<div id="cartModal" class="modal"><div class="box"><button class="close" onclick="closeCart()">×</button><h2>🛒 تأكيد الطلب</h2><div id="cartItems"></div><div style="background:#f3f7f2;padding:12px;border-radius:13px;margin:12px 0"><div class="row"><span>إجمالي المنتجات</span><b id="pt">0</b></div><div class="row"><span>التوصيل</span><b id="st">0</b></div><div class="row total"><span>الإجمالي النهائي</span><b id="ft">0</b></div></div><div class="field"><label>الاسم *</label><input id="name"></div><div class="field"><label>رقم الهاتف *</label><input id="phone" type="tel"></div><div class="field"><label>المحافظة</label><input id="gov"></div><div class="field"><label>المنطقة</label><input id="area"></div><div class="field"><label>اسم الشارع</label><input id="street"></div><div class="field"><label>رقم العمارة</label><input id="building"></div><div class="field"><label>الدور</label><input id="floor"></div><div class="field"><label>الشقة</label><input id="apt"></div><div class="field"><label>ملاحظات</label><textarea id="notes"></textarea></div><button class="submit" onclick="sendOrder()">إرسال الطلب عبر واتساب 📱</button></div></div>
+<div class="cart"><span>🛒 السلة: <b id="count">0</b> قطعة</span><button onclick="openCart()">عرض السلة</button></div>
+<script>
+function setSearch(v){$('search').value=v;render();document.getElementById('products').scrollIntoView({behavior:'smooth',block:'start'})}
+
+let products=[];
+let cart=JSON.parse(localStorage.getItem("greenMoonCart")||"{}");
+let generalShipping=0;
+let settings={};
+let currentProduct=null;
+
+const $=id=>document.getElementById(id);
+const money=n=>Number(n||0).toLocaleString("ar-EG")+" ج.م";
+
+function esc(s){
+return String(s??"").replace(/[&<>"']/g,m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m]));
+}
+
+async function load(){
+
+try{
+let r=await fetch("/api/products");
+if(r.ok) products=await r.json();
+}catch(e){}
+
+try{
+let r=await fetch("/api/shipping");
+if(r.ok){
+let x=await r.json();
+generalShipping=Number(x.shipping||0);
+}
+}catch(e){}
+
+try{
+let r=await fetch("/api/settings");
+if(r.ok){
+settings=await r.json();
+
+if(settings.title)
+$("title").textContent=settings.title;
+
+if(settings.subtitle)
+$("subtitle").textContent=settings.subtitle;
+}
+}catch(e){}
+
+try{
+let r=await fetch("/api/logo");
+if(r.ok){
+let x=await r.json();
+if(x.logo) $("logo").src=x.logo;
+}
+}catch(e){}
+
+products=(Array.isArray(products)?products:[]).map(p=>({
+...p,
+price:Number(p.price||0),
+shippingPrice:Number(p.shippingPrice||0),
+care:p.care||{}
+}));
+
+render();
+updateCart();
+}
+
+function render(){
+
+let q=$("search").value.trim().toLowerCase();
+
+let list=products.filter(p=>
+String(p.name||"").toLowerCase().includes(q)
+);
+
+let box=$("products");
+$("resultCount").textContent=list.length?`عدد المنتجات: ${list.length}`:"";
+
+if(!list.length){
+box.innerHTML='<div class="empty">مفيش منتجات مطابقة للبحث 🌿</div>';
+return;
+}
+
+box.innerHTML=list.map(p=>{
+
+let qty=Number(cart[p.id]||0);
+
+return `
+<article class="card">
+<div class="pic-wrap">
+<img class="pic" src="${esc(p.image||"/assets/logo.jpg")}" onclick="openDetail('${esc(p.id)}')" onerror="this.src='/assets/logo.jpg'" alt="${esc(p.name||"نبات Green Moon")}">
+<span class="badge">🌿 متاح الآن</span>
+</div>
+
+<div class="body">
+
+<div class="name">${esc(p.name)}</div>
+
+<div class="desc">
+${esc(p.details||p.description||"اضغط لمعرفة التفاصيل والعناية")}
+</div>
+
+<div class="price">${money(p.price)}</div>
+
+<div class="ship">
+🚚 توصيل المنتج منفردًا:
+<b>${money(p.shippingPrice)}</b>
+</div>
+
+<div class="actions">
+
+<button class="details"
+onclick="openDetail('${esc(p.id)}')">
+التفاصيل والعناية
+</button>
+
+<div class="qty">
+
+<button onclick="changeQty('${esc(p.id)}',-1)">
+−
+</button>
+
+<span>${qty}</span>
+
+<button onclick="changeQty('${esc(p.id)}',1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+</article>
+`;
+
+}).join("");
+}
+
+function quickFilter(btn,value){
+document.querySelectorAll(".quick button").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");$("search").value=value;render();
+document.getElementById("productsSection").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function changeQty(id,delta){
+
+cart[id]=Number(cart[id]||0)+delta;
+
+if(cart[id]<=0) delete cart[id];
+
+localStorage.setItem(
+"greenMoonCart",
+JSON.stringify(cart)
+);
+
+render();
+updateCart();
+}
+
+function getItems(){
+
+return Object.keys(cart)
+.filter(id=>Number(cart[id])>0)
+.map(id=>{
+
+let p=products.find(
+x=>String(x.id)===String(id)
+);
+
+return p?{p,q:Number(cart[id])}:null;
+
+})
+.filter(Boolean);
+}
+
+function getSubtotal(){
+
+return getItems().reduce(
+(sum,x)=>sum+(Number(x.p.price)||0)*x.q,
+0
+);
+}
+
+function getShipping(){
+
+let a=getItems();
+
+if(!a.length) return 0;
+
+let ids=[...new Set(
+a.map(x=>String(x.p.id))
+)];
+
+if(ids.length===1){
+
+return Number(
+a[0].p.shippingPrice||0
+);
+
+}
+
+return Number(generalShipping||0);
+}
+
+function updateCart(){
+
+let a=getItems();
+
+let count=a.reduce(
+(sum,x)=>sum+x.q,
+0
+);
+
+let sub=getSubtotal();
+let shipping=getShipping();
+
+$("count").textContent=count;
+$("pt").textContent=money(sub);
+$("st").textContent=money(shipping);
+$("ft").textContent=money(sub+shipping);
+
+$("cartItems").innerHTML=a.length?
+
+a.map(x=>`
+<div class="row">
+<span>${esc(x.p.name)} × ${x.q}</span>
+<b>${money(x.p.price*x.q)}</b>
+</div>
+`).join("")
+
+:
+
+'<div class="empty">السلة فاضية 🛒</div>';
+}
+
+function openDetail(id){
+
+let p=products.find(
+x=>String(x.id)===String(id)
+);
+
+if(!p)return;
+
+currentProduct=p;
+
+$("dimg").src=p.image||"/assets/logo.jpg";
+$("dname").textContent=p.name||"";
+$("dprice").textContent=money(p.price);
+
+$("dship").innerHTML=
+"🚚 التوصيل للمنتج منفردًا: <b>"+
+money(p.shippingPrice)+
+"</b><br><small>عند طلب أكثر من منتج مختلف يتم تطبيق التوصيل العام.</small>";
+
+$("ddesc").textContent=
+p.details||
+p.description||
+"لا توجد تفاصيل إضافية حاليًا.";
+
+let c=p.care||{};
+
+let fields=[
+["💡","الإضاءة","light"],
+["💧","الري","water"],
+["🌡️","الحرارة","temperature"],
+["💦","الرطوبة","humidity"],
+["🌱","التربة","soil"],
+["🧪","التسميد","fertilizer"],
+["✂️","التقليم","pruning"],
+["🌿","الإكثار","propagation"],
+["⚠️","المشاكل والأمراض","problems"],
+["🐛","الآفات","pests"],
+["❌","الأخطاء الشائعة","mistakes"],
+["💚","نصائح جرين مون","tips"]
+];
+
+$("care").innerHTML=fields
+.filter(x=>String(c[x[2]]||"").trim())
+.map(x=>`
+<div>
+<b>${x[0]} ${x[1]}</b>
+<span>${esc(c[x[2]])}</span>
+</div>
+`)
+.join("");
+
+if(!$("care").innerHTML){
+$("care").innerHTML=`
+<div style="grid-column:1/-1">
+<b>🌿 العناية بالنبات</b>
+<span>
+تفاصيل العناية بهذا المنتج سيتم إضافتها من لوحة التحكم.
+</span>
+</div>`;
+}
+
+$("detailModal").classList.add("show");
+}
+
+function closeDetail(){
+$("detailModal").classList.remove("show");
+}
+
+$("add").onclick=()=>{
+
+if(!currentProduct)return;
+
+changeQty(currentProduct.id,1);
+closeDetail();
+openCart();
+};
+
+function openCart(){
+
+updateCart();
+
+if(!getItems().length){
+alert("السلة فاضية 🛒");
+return;
+}
+
+$("cartModal").classList.add("show");
+}
+
+function closeCart(){
+$("cartModal").classList.remove("show");
+}
+
+async function sendOrder(){
+
+let items=getItems();
+
+let customerName=$("name").value.trim();
+let customerPhone=$("phone").value.trim();
+
+if(!items.length){
+alert("السلة فاضية");
+return;
+}
+
+if(!customerName||!customerPhone){
+alert("من فضلك اكتب الاسم ورقم الهاتف");
+return;
+}
+
+let payload={
+
+name:customerName,
+
+phone:customerPhone,
+
+governorate:$("gov").value.trim(),
+
+area:$("area").value.trim(),
+
+street:$("street").value.trim(),
+
+building:$("building").value.trim(),
+
+floor:$("floor").value.trim(),
+
+apartment:$("apt").value.trim(),
+
+notes:$("notes").value.trim(),
+
+items:items.map(x=>({
+productId:x.p.id,
+quantity:x.q
+}))
+
+};
+
+try{
+
+let r=await fetch("/api/orders",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(payload)
+});
+
+let data=await r.json().catch(()=>({}));
+
+if(!r.ok){
+throw new Error(
+data.error||"تعذر حفظ الطلب"
+);
+}
+
+let subtotal=getSubtotal();
+let shipping=getShipping();
+
+let text=
+"🌿 طلب جديد من Green Moon\n\n"+
+"👤 الاسم: "+customerName+"\n"+
+"📱 الهاتف: "+customerPhone+"\n"+
+"📍 المحافظة: "+(payload.governorate||"-")+"\n"+
+"📍 المنطقة: "+(payload.area||"-")+"\n"+
+"🛣️ الشارع: "+(payload.street||"-")+"\n"+
+"🏢 العمارة: "+(payload.building||"-")+"\n"+
+"🏠 الدور: "+(payload.floor||"-")+"\n"+
+"🚪 الشقة: "+(payload.apartment||"-")+
+"\n\n🌱 المنتجات:\n"+
+items.map(x=>
+"• "+x.p.name+
+" × "+x.q+
+" = "+money(x.p.price*x.q)
+).join("\n")+
+"\n\n💰 إجمالي المنتجات: "+
+money(subtotal)+
+"\n🚚 التوصيل: "+
+money(shipping)+
+"\n💵 الإجمالي النهائي: "+
+money(subtotal+shipping);
+
+let whatsapp=
+settings.whatsapp||
+settings.whatsappNumber||
+"";
+
+if(whatsapp){
+
+window.open(
+"https://wa.me/"+
+String(whatsapp).replace(/\D/g,"")+
+"?text="+
+encodeURIComponent(text),
+"_blank"
+);
+
+}else{
+
+alert(
+"تم تسجيل الطلب بنجاح، لكن رقم واتساب غير مضبوط في الإعدادات."
+);
+
+}
+
+cart={};
+
+localStorage.setItem(
+"greenMoonCart",
+"{}"
+);
+
+render();
+updateCart();
+closeCart();
+
+}catch(e){
+
+alert(
+e.message||
+"حدث خطأ أثناء إرسال الطلب"
+);
+
+}
+}
+
+$("search").addEventListener(
+"input",
+render
+);
+
+document.addEventListener(
+"keydown",
+e=>{
+if(e.key==="Escape"){
+closeDetail();
+closeCart();
+}
+}
+);
+
+load();
+</script>
+</body></html>
