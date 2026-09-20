@@ -1,870 +1,96 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Green Moon Plants and Flowers</title>
-<link rel="stylesheet" href="/style.css">
-</head>
-
-<body>
-
-<header>
-<div class="nav">
-<img id="siteLogo" class="logo">
-
-<div class="brand">
-<h1 id="storeName">Green Moon Plants and Flowers</h1>
-<small>نباتات وزهور طبيعية</small>
-</div>
-
-<a class="btn gold" href="/admin.html">
-لوحة التحكم
-</a>
-</div>
-</header>
-
-
-<section class="hero">
-<h2>Green Moon Plants and Flowers 🌿</h2>
-<p>اختار نباتاتك وحدد الكمية اللي محتاجها من كل منتج.</p>
-</section>
-
-
-<main class="wrap">
-
-<div class="toolbar">
-<input
-id="search"
-class="search"
-placeholder="ابحث عن نبات..."
->
-</div>
-
-<section id="products" class="grid"></section>
-
-</main>
-
-
-<div id="cartbar" class="cartbar">
-
-<span>
-السلة:
-<b id="cartCount">0</b> قطعة
-</span>
-
-<span id="cartTotal">0 ج.م</span>
-
-<button class="btn light" id="viewCart">
-عرض الطلب
-</button>
-
-</div>
-
-
-<div id="cartModal" class="modal">
-
-<div class="modalbox">
-
-<h2>طلبك</h2>
-
-<div id="cartItems"></div>
-
-
-<div class="row">
-
-<div class="field">
-<label>الاسم</label>
-<input id="custName">
-</div>
-
-<div class="field">
-<label>رقم الهاتف</label>
-<input id="custPhone">
-</div>
-
-</div>
-
-
-<div class="row">
-
-<div class="field">
-<label>المحافظة</label>
-<input id="custGov">
-</div>
-
-<div class="field">
-<label>المنطقة</label>
-<input id="custArea">
-</div>
-
-</div>
-
-
-<div class="field">
-<label>اسم الشارع</label>
-<input id="custStreet">
-</div>
-
-
-<div class="row">
-
-<div class="field">
-<label>رقم المبنى</label>
-<input id="custBuilding">
-</div>
-
-<div class="field">
-<label>الدور</label>
-<input id="custFloor">
-</div>
-
-<div class="field">
-<label>الشقة</label>
-<input id="custApartment">
-</div>
-
-</div>
-
-
-<div class="field">
-
-<label>ملاحظات</label>
-
-<textarea
-id="custNotes"
-placeholder="أي ملاحظات على الطلب أو التوصيل"
-></textarea>
-
-</div>
-
-
-<div
-id="orderSummary"
-style="
-margin:15px 0;
-padding:15px;
-background:#f5f5f5;
-border-radius:10px;
-line-height:2;
-"
-></div>
-
-
-<div class="admin-actions">
-
-<button class="btn green" id="submitOrder">
-تأكيد الطلب
-</button>
-
-<button class="btn" id="closeCart">
-إغلاق
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<footer>
-© Green Moon Plants and Flowers
-</footer>
-
-
-<script>
-
-const FALLBACK = [
-
-{
-id:1,
-name:'أجلونيما بينك',
-details:'نبات أجلونيما بألوان وردي وأخضر مميزة، مناسب للديكور الداخلي.',
-price:0,
-image:'/assets/product-1.jpg'
-},
-
-{
-id:2,
-name:'أجلونيما بينك سبوت',
-details:'أوراق وردية كثيفة بتوزيعات خضراء جميلة.',
-price:0,
-image:'/assets/product-2.jpg'
-},
-
-{
-id:3,
-name:'أجلونيما بينك جرين',
-details:'أجلونيما بأوراق وردية زاهية وتفاصيل خضراء.',
-price:0,
-image:'/assets/product-3.jpg'
-},
-
-{
-id:4,
-name:'تشكيلة أجلونيما',
-details:'مجموعة من نباتات أجلونيما بألوان ونقوش مختلفة.',
-price:0,
-image:'/assets/product-4.jpg'
-},
-
-{
-id:5,
-name:'أجلونيما بينك فين',
-details:'أوراق خضراء بنقوش وردية وعروق وردية واضحة.',
-price:0,
-image:'/assets/product-5.jpg'
-},
-
-{
-id:6,
-name:'أجلونيما وايت',
-details:'أجلونيما بأوراق خضراء وبيضاء، مناسبة للمكاتب والبيوت.',
-price:0,
-image:'/assets/product-6.jpg'
-},
-
-{
-id:7,
-name:'بوتس مبرقش',
-details:'بوتس أخضر بتبرقش فاتح، نبات سهل العناية وسريع النمو.',
-price:0,
-image:'/assets/product-7.jpg'
-},
-
-{
-id:8,
-name:'أنثوريوم أبيض',
-details:'أنثوريوم بأزهار بيضاء وأوراق خضراء أنيقة.',
-price:0,
-image:'/assets/product-8.jpg'
-}
-
-];
-
-
-let products = FALLBACK;
-
-let cart =
-JSON.parse(
-localStorage.getItem('gmCart') || '{}'
-);
-
-let settings = {
-whatsapp:'',
-storeName:
-'Green Moon Plants and Flowers'
-};
-
-let shipping = 0;
-
-
-const $ =
-s => document.querySelector(s);
-
-
-const esc =
-s =>
-String(s ?? '')
-.replace(
-/[&<>"']/g,
-m => ({
-'&':'&amp;',
-'<':'&lt;',
-'>':'&gt;',
-'"':'&quot;',
-"'":'&#039;'
-}[m])
-);
-
-
-const money =
-v =>
-Number(v || 0)
-.toLocaleString('ar-EG')
-+
-' ج.م';
-
-
-async function load(){
-
-try{
-
-const [
-p,
-l,
-s,
-sh
-] =
-await Promise.all([
-
-fetch('/api/products')
-.then(r=>r.json()),
-
-fetch('/api/logo')
-.then(r=>r.json()),
-
-fetch('/api/settings')
-.then(r=>r.json()),
-
-fetch('/api/shipping')
-.then(r=>r.json())
-
-]);
-
-
-if(Array.isArray(p)){
-products = p;
-}
-
-
-$('#siteLogo').src =
-l.logo || '/assets/logo.jpg';
-
-
-settings =
-s || settings;
-
-
-shipping =
-Number(sh.shipping) || 0;
-
-
-$('#storeName').textContent =
-settings.storeName ||
-'Green Moon Plants and Flowers';
-
-
-}catch(e){
-
-$('#siteLogo').src =
-'/assets/logo.jpg';
-
-}
-
-
-render();
-
-}
-
-
-function render(){
-
-const q =
-($('#search').value || '')
-.toLowerCase();
-
-
-const list =
-products.filter(
-p =>
-(p.name+' '+p.details)
-.toLowerCase()
-.includes(q)
-);
-
-
-$('#products').innerHTML =
-
-list.map(p => `
-
-<article class="card">
-
-<img
-src="${esc(p.image)}"
-alt="${esc(p.name)}"
->
-
-<div class="cardbody">
-
-<h3>
-${esc(p.name)}
-</h3>
-
-<div class="details">
-${esc(p.details)}
-</div>
-
-
-<div class="price">
-
-${
-Number(p.price) > 0
-? money(p.price)
-: 'السعر يحدد من المتجر'
-}
-
-</div>
-
-
-<div
-style="
-margin-top:8px;
-padding:7px 10px;
-background:#f5f5f5;
-border-radius:8px;
-font-size:14px;
-"
->
-
-🚚 التوصيل:
-<b>${money(shipping)}</b>
-
-</div>
-
-
-<div class="qty">
-
-<button
-class="qbtn"
-onclick="changeQty(${p.id},-1)"
->
-−
-</button>
-
-<span class="qnum">
-${cart[p.id] || 0}
-</span>
-
-<button
-class="qbtn"
-onclick="changeQty(${p.id},1)"
->
-+
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-`).join('')
-
-||
-
-'<p>لا توجد منتجات مطابقة.</p>';
-
-
-updateCart();
-
-}
-
-
-function changeQty(id,d){
-
-cart[id] =
-Math.max(
-0,
-(cart[id] || 0) + d
-);
-
-
-if(!cart[id]){
-delete cart[id];
-}
-
-
-localStorage.setItem(
-'gmCart',
-JSON.stringify(cart)
-);
-
-
-render();
-
-}
-
-
-function getProductsTotal(){
-
-return Object.entries(cart)
-.reduce(
-(total,[id,qty]) => {
-
-const p =
-products.find(
-x => x.id == id
-);
-
-return total +
-(Number(p?.price) || 0) *
-qty;
-
-},
-0
-);
-
-}
-
-
-function updateCart(){
-
-const count =
-Object.values(cart)
-.reduce(
-(a,b) => a+b,
-0
-);
-
-
-const total =
-getProductsTotal();
-
-
-$('#cartCount')
-.textContent =
-count;
-
-
-$('#cartTotal')
-.textContent =
-money(total);
-
-
-$('#cartbar')
-.classList.toggle(
-'show',
-count > 0
-);
-
-}
-
-
-function openCart(){
-
-const rows =
-Object.entries(cart)
-.map(
-([id,q]) => {
-
-const p =
-products.find(
-x => x.id == id
-);
-
-return `
-
-<div
-style="
-display:flex;
-justify-content:space-between;
-border-bottom:1px solid #eee;
-padding:10px 0
-"
->
-
-<span>
-${esc(p.name)} × ${q}
-</span>
-
-<b>
-${money(
-(Number(p.price)||0)*q
-)}
-</b>
-
-</div>
-
-`;
-
-}
-)
-.join('');
-
-
-$('#cartItems').innerHTML =
-rows || 'السلة فارغة';
-
-
-const productsTotal =
-getProductsTotal();
-
-
-const finalTotal =
-productsTotal + shipping;
-
-
-$('#orderSummary').innerHTML = `
-
-<div>
-<b>إجمالي المنتجات:</b>
-${money(productsTotal)}
-</div>
-
-<div>
-<b>التوصيل:</b>
-${money(shipping)}
-</div>
-
-<hr>
-
-<div>
-<b>الإجمالي النهائي:</b>
-${money(finalTotal)}
-</div>
-
-`;
-
-
-$('#cartModal')
-.classList.add('show');
-
-}
-
-
-async function submitOrder(){
-
-const name =
-$('#custName')
-.value
-.trim();
-
-
-const phone =
-$('#custPhone')
-.value
-.trim();
-
-
-if(!name || !phone){
-
-alert(
-'اكتب الاسم ورقم الهاتف'
-);
-
-return;
-
-}
-
-
-const items =
-Object.entries(cart)
-.map(
-([id,q]) => ({
-productId:id,
-quantity:q
-})
-);
-
-
-if(!items.length){
-
-alert('السلة فارغة');
-
-return;
-
-}
-
-
-const payload = {
-
-name,
-
-phone,
-
-governorate:
-$('#custGov')
-.value
-.trim(),
-
-area:
-$('#custArea')
-.value
-.trim(),
-
-street:
-$('#custStreet')
-.value
-.trim(),
-
-building:
-$('#custBuilding')
-.value
-.trim(),
-
-floor:
-$('#custFloor')
-.value
-.trim(),
-
-apartment:
-$('#custApartment')
-.value
-.trim(),
-
-notes:
-$('#custNotes')
-.value
-.trim(),
-
-items
-
-};
-
-
-let saved;
-
-
-try{
-
-const response =
-await fetch(
-'/api/orders',
-{
-method:'POST',
-
-headers:{
-'content-type':
-'application/json'
-},
-
-body:
-JSON.stringify(payload)
-
-}
-);
-
-
-saved =
-await response.json();
-
-
-if(!response.ok){
-
-throw new Error(
-saved.error ||
-'تعذر حفظ الطلب'
-);
-
-}
-
-
-}catch(e){
-
-alert(e.message);
-
-return;
-
-}
-
-
-const order =
-saved.order;
-
-
-const text =
-
-`طلب جديد من ${settings.storeName}
-
-رقم الطلب: ${order.id}
-
-الاسم: ${name}
-
-الهاتف: ${phone}
-
-المحافظة: ${payload.governorate}
-
-المنطقة: ${payload.area}
-
-الشارع: ${payload.street}
-
-المبنى: ${payload.building}
-
-الدور: ${payload.floor}
-
-الشقة: ${payload.apartment}
-
-
-${order.items
-.map(
-i =>
-`${i.name} × ${i.quantity} — ${money(i.lineTotal)}`
-)
-.join('\n')}
-
-
-إجمالي المنتجات: ${money(order.productsTotal)}
-
-التوصيل: ${money(order.shipping)}
-
-الإجمالي النهائي: ${money(order.total)}
-
-${payload.notes
-? 'ملاحظات: '+payload.notes
-: ''
-}`;
-
-
-if(settings.whatsapp){
-
-location.href =
-'https://wa.me/' +
-settings.whatsapp.replace(/\D/g,'') +
-'?text=' +
-encodeURIComponent(text);
-
-}else{
-
-if(navigator.clipboard){
-
-navigator.clipboard
-.writeText(text);
-
-}
-
-alert(
-'تم تسجيل الطلب بنجاح رقم ' +
-order.id
-);
-
-}
-
-
-cart = {};
-
-localStorage.removeItem(
-'gmCart'
-);
-
-
-render();
-
-
-$('#cartModal')
-.classList.remove('show');
-
-}
-
-
-$('#search')
-.addEventListener(
-'input',
-render
-);
-
-
-$('#viewCart')
-.onclick =
-openCart;
-
-
-$('#closeCart')
-.onclick =
-() =>
-$('#cartModal')
-.classList.remove('show');
-
-
-$('#submitOrder')
-.onclick =
-submitOrder;
-
-
-load();
-
-</script>
-
-</body>
-</html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Moon Plants & Flowers</title>
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Tahoma,Arial,sans-serif;
+      background:#f5f3ec;
+      color:#173d2a;
+    }
+    button,input,select,textarea{font-family:inherit}
+    button{cursor:pointer}
+
+    header{
+      background:#123b28;
+      color:#fff;
+      padding:12px 18px;
+      position:sticky;
+      top:0;
+      z-index:50;
+      box-shadow:0 2px 10px #0002;
+    }
+
+    .header-inner{
+      max-width:1200px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .brand img{
+      width:55px;
+      height:55px;
+      object-fit:contain;
+      border-radius:50%;
+      background:#fff;
+    }
+
+    .brand-title{
+      font-size:18px;
+      font-weight:bold;
+    }
+
+    .brand-sub{
+      font-size:12px;
+      opacity:.8;
+      margin-top:3px;
+    }
+
+    .admin-link{
+      color:#fff;
+      text-decoration:none;
+      background:#ffffff18;
+      padding:9px 12px;
+      border-radius:10px;
+      font-size:13px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#174d32,#286b43);
+      color:#fff;
+      padding:45px 20px;
+      text-align:center;
+    }
+
+    .hero h1{
+      margin:0 0 10px;
+      font-size:32px;
+    }
+
+    .hero p{
+      margin:0;
+      opacity:.9;
+      font-size:16px;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:auto;
+      padding:25px 15px 100px;
+    }
+
+    .search
