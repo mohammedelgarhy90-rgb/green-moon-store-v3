@@ -11,7 +11,6 @@
 
 <header>
 <div class="nav">
-
 <img id="siteLogo" class="logo">
 
 <div class="brand">
@@ -22,71 +21,48 @@
 <a class="btn gold" href="/admin.html">
 لوحة التحكم
 </a>
-
 </div>
 </header>
 
 
 <section class="hero">
-
 <h2>Green Moon Plants and Flowers 🌿</h2>
-
-<p>
-اختار نباتاتك وحدد الكمية اللي محتاجها من كل منتج.
-</p>
-
+<p>اختار نباتاتك وحدد الكمية اللي محتاجها من كل منتج.</p>
 </section>
 
 
 <main class="wrap">
 
 <div class="toolbar">
-
 <input
 id="search"
 class="search"
 placeholder="ابحث عن نبات..."
 >
-
 </div>
 
-<section
-id="products"
-class="grid"
-></section>
+<section id="products" class="grid"></section>
 
 </main>
 
 
-<div
-id="cartbar"
-class="cartbar"
->
+<div id="cartbar" class="cartbar">
 
 <span>
 السلة:
-<b id="cartCount">0</b>
-قطعة
+<b id="cartCount">0</b> قطعة
 </span>
 
-<span id="cartTotal">
-0 ج.م
-</span>
+<span id="cartTotal">0 ج.م</span>
 
-<button
-class="btn light"
-id="viewCart"
->
+<button class="btn light" id="viewCart">
 عرض الطلب
 </button>
 
 </div>
 
 
-<div
-id="cartModal"
-class="modal"
->
+<div id="cartModal" class="modal">
 
 <div class="modalbox">
 
@@ -98,20 +74,13 @@ class="modal"
 <div class="row">
 
 <div class="field">
-
 <label>الاسم</label>
-
 <input id="custName">
-
 </div>
 
-
 <div class="field">
-
 <label>رقم الهاتف</label>
-
 <input id="custPhone">
-
 </div>
 
 </div>
@@ -120,60 +89,39 @@ class="modal"
 <div class="row">
 
 <div class="field">
-
 <label>المحافظة</label>
-
 <input id="custGov">
-
 </div>
 
-
 <div class="field">
-
 <label>المنطقة</label>
-
 <input id="custArea">
-
 </div>
 
 </div>
 
 
 <div class="field">
-
 <label>اسم الشارع</label>
-
 <input id="custStreet">
-
 </div>
 
 
 <div class="row">
 
 <div class="field">
-
 <label>رقم المبنى</label>
-
 <input id="custBuilding">
-
 </div>
 
-
 <div class="field">
-
 <label>الدور</label>
-
 <input id="custFloor">
-
 </div>
 
-
 <div class="field">
-
 <label>الشقة</label>
-
 <input id="custApartment">
-
 </div>
 
 </div>
@@ -200,23 +148,16 @@ background:#f5f5f5;
 border-radius:10px;
 line-height:2;
 "
->
-</div>
+></div>
 
 
 <div class="admin-actions">
 
-<button
-class="btn green"
-id="submitOrder"
->
+<button class="btn green" id="submitOrder">
 تأكيد الطلب
 </button>
 
-<button
-class="btn"
-id="closeCart"
->
+<button class="btn" id="closeCart">
 إغلاق
 </button>
 
@@ -378,13 +319,8 @@ products = p;
 }
 
 
-if(l.logo){
 $('#siteLogo').src =
-l.logo;
-}else{
-$('#siteLogo').src =
-'/assets/logo.jpg';
-}
+l.logo || '/assets/logo.jpg';
 
 
 settings =
@@ -450,6 +386,7 @@ ${esc(p.name)}
 ${esc(p.details)}
 </div>
 
+
 <div class="price">
 
 ${
@@ -457,6 +394,22 @@ Number(p.price) > 0
 ? money(p.price)
 : 'السعر يحدد من المتجر'
 }
+
+</div>
+
+
+<div
+style="
+margin-top:8px;
+padding:7px 10px;
+background:#f5f5f5;
+border-radius:8px;
+font-size:14px;
+"
+>
+
+🚚 التوصيل:
+<b>${money(shipping)}</b>
 
 </div>
 
