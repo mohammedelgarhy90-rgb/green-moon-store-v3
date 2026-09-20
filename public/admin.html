@@ -5,23 +5,39 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>لوحة تحكم - Green Moon</title>
 <link rel="stylesheet" href="/style.css">
+
 <style>
-body{background:#f5f7f4}.wrap{max-width:1100px;margin:25px auto;padding:0 15px}
+body{background:#f5f7f4}
+.wrap{max-width:1100px;margin:25px auto;padding:0 15px}
 .panel{background:#fff;border-radius:20px;padding:22px;margin-bottom:20px;box-shadow:0 5px 20px #00000010}
-h2{color:#174d31}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.field{margin-bottom:12px}.field label{display:block;font-weight:700;margin-bottom:6px}
+h2{color:#174d31}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.field{margin-bottom:12px}
+.field label{display:block;font-weight:700;margin-bottom:6px}
 input,textarea,select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:10px;font:inherit}
-textarea{min-height:80px}.btn{border:0;border-radius:10px;padding:11px 18px;cursor:pointer;font:inherit}
-.green{background:#14743f;color:#fff}.light{background:#fff;color:#174d31}.danger{background:#b3261e;color:#fff}
-.muted{color:#777}.msg{display:block;margin-top:10px}.table-wrap{overflow:auto}
-.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:right;white-space:nowrap}
-.thumb{width:60px;height:60px;object-fit:cover;border-radius:10px}.actions{display:flex;gap:6px}
-.care{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.hidden{display:none!important}
+textarea{min-height:80px}
+.btn{border:0;border-radius:10px;padding:11px 18px;cursor:pointer;font:inherit}
+.green{background:#14743f;color:#fff}
+.light{background:#fff;color:#174d31}
+.danger{background:#b3261e;color:#fff}
+.muted{color:#777}
+.msg{display:block;margin-top:10px}
+.table-wrap{overflow:auto}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:right;white-space:nowrap}
+.thumb{width:60px;height:60px;object-fit:cover;border-radius:10px}
+.actions{display:flex;gap:6px}
+.care{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.hidden{display:none!important}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:50}
 .modal-card{background:#fff;border-radius:20px;padding:20px;width:min(900px,100%);max-height:92vh;overflow:auto}
 .close{float:left;background:#eee;border:0;border-radius:50%;width:38px;height:38px;font-size:20px}
-@media(max-width:700px){.grid,.care{grid-template-columns:1fr}.table th,.table td{font-size:13px}}
+.order-card{border:1px solid #eee;border-radius:15px;padding:15px;margin:10px 0}
+@media(max-width:700px){
+.grid,.care{grid-template-columns:1fr}
+.table th,.table td{font-size:13px}
+}
 </style>
 </head>
 
@@ -29,37 +45,66 @@ textarea{min-height:80px}.btn{border:0;border-radius:10px;padding:11px 18px;curs
 
 <header>
 <div class="nav">
+
 <img id="adminLogo" class="logo" src="/assets/logo.jpg">
+
 <div class="brand">
 <h1>لوحة تحكم Green Moon</h1>
 <small>التعديلات تظهر للعملاء بعد الحفظ</small>
 </div>
+
 <a class="btn light" href="/">عرض المتجر</a>
+
 </div>
 </header>
 
+
+<!-- تسجيل الدخول -->
+
 <main id="loginBox" class="wrap">
+
 <div class="panel">
+
 <h2>الدخول للوحة التحكم</h2>
 
 <div class="field">
 <label>كلمة مرور لوحة التحكم</label>
-<input id="password" type="password" placeholder="اكتب كلمة المرور">
+<input
+id="password"
+type="password"
+placeholder="اكتب كلمة المرور">
 </div>
 
-<button class="btn green" id="login">دخول</button>
+<button class="btn green" id="login">
+دخول
+</button>
+
 <span id="loginMsg" class="msg"></span>
 
 </div>
+
 </main>
+
+
+<!-- لوحة التحكم -->
 
 <main id="panel" class="wrap hidden">
 
+
+<!-- إعدادات الموقع -->
+
 <div class="panel">
+
 <div class="top">
-<h2>إعدادات الموقع</h2>
-<button class="btn danger" id="logout">تسجيل خروج</button>
+
+<h2>⚙️ إعدادات الموقع</h2>
+
+<button class="btn danger" id="logout">
+تسجيل خروج
+</button>
+
 </div>
+
 
 <div class="grid">
 
@@ -68,4 +113,1513 @@ textarea{min-height:80px}.btn{border:0;border-radius:10px;padding:11px 18px;curs
 <input id="storeName">
 </div>
 
-<div class="field
+<div class="field">
+<label>العنوان الرئيسي</label>
+<input id="siteTitle">
+</div>
+
+<div class="field">
+<label>الوصف الفرعي</label>
+<input id="siteSubtitle">
+</div>
+
+<div class="field">
+<label>رقم واتساب استقبال الطلبات</label>
+<input
+id="whatsapp"
+placeholder="مثال: 2010xxxxxxxx">
+</div>
+
+</div>
+
+
+<div class="field">
+
+<label>تغيير اللوجو</label>
+
+<input
+id="logoFile"
+type="file"
+accept="image/*">
+
+</div>
+
+
+<img
+id="logoPreview"
+class="thumb"
+src="/assets/logo.jpg">
+
+
+<br><br>
+
+
+<button
+class="btn green"
+id="saveSettings">
+
+حفظ إعدادات الموقع
+
+</button>
+
+<span
+id="settingsMsg"
+class="msg">
+</span>
+
+</div>
+
+
+<!-- التوصيل -->
+
+<div class="panel">
+
+<h2>🚚 إعدادات التوصيل</h2>
+
+<p class="muted">
+
+عند شراء منتج واحد فقط:
+يتم استخدام سعر توصيل المنتج.
+
+عند شراء أكثر من منتج مختلف:
+يتم استخدام سعر التوصيل العام.
+
+</p>
+
+
+<div class="field">
+
+<label>سعر التوصيل العام</label>
+
+<input
+id="generalShipping"
+type="number"
+min="0"
+placeholder="مثال: 70">
+
+</div>
+
+
+<button
+class="btn green"
+id="saveShipping">
+
+حفظ سعر التوصيل
+
+</button>
+
+<span
+id="shippingMsg"
+class="msg">
+</span>
+
+</div>
+
+
+<!-- المنتجات -->
+
+<div class="panel">
+
+<div class="top">
+
+<h2>🌿 المنتجات</h2>
+
+<button
+class="btn green"
+id="newProduct">
+
++ إضافة منتج
+
+</button>
+
+</div>
+
+
+<div class="table-wrap">
+
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>الصورة</th>
+<th>المنتج</th>
+<th>السعر</th>
+<th>الجملة</th>
+<th>توصيل المنتج</th>
+<th>إجراء</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="productsTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- الطلبات -->
+
+<div class="panel">
+
+<div class="top">
+
+<h2>📦 الطلبات</h2>
+
+<button
+class="btn green"
+id="reloadOrders">
+
+تحديث
+
+</button>
+
+</div>
+
+
+<div
+id="ordersList"
+class="muted">
+
+جاري تحميل الطلبات...
+
+</div>
+
+</div>
+
+
+</main>
+
+
+<!-- نافذة تعديل المنتج -->
+
+<div
+id="modal"
+class="modal hidden">
+
+<div class="modal-card">
+
+<button
+class="close"
+id="closeModal">
+
+×
+
+</button>
+
+
+<h2 id="modalTitle">
+تعديل المنتج
+</h2>
+
+
+<input
+id="pId"
+type="hidden">
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>اسم المنتج</label>
+
+<input id="pName">
+
+</div>
+
+
+<div class="field">
+
+<label>سعر البيع</label>
+
+<input
+id="pPrice"
+type="number"
+min="0">
+
+</div>
+
+
+<div class="field">
+
+<label>سعر الجملة</label>
+
+<input
+id="pWholesale"
+type="number"
+min="0">
+
+</div>
+
+
+<div class="field">
+
+<label>🚚 سعر توصيل هذا المنتج</label>
+
+<input
+id="pShipping"
+type="number"
+min="0">
+
+</div>
+
+
+</div>
+
+
+<div class="field">
+
+<label>تفاصيل المنتج</label>
+
+<textarea id="pDetails"></textarea>
+
+</div>
+
+
+<div class="field">
+
+<label>صورة المنتج</label>
+
+<input
+id="pImageFile"
+type="file"
+accept="image/*">
+
+</div>
+
+
+<img
+id="pPreview"
+class="thumb"
+src="/assets/logo.jpg">
+
+
+<h3>🌱 تعليمات العناية</h3>
+
+
+<div class="care">
+
+
+<div class="field">
+<label>الإضاءة</label>
+<input id="cLight">
+</div>
+
+
+<div class="field">
+<label>الري</label>
+<input id="cWater">
+</div>
+
+
+<div class="field">
+<label>درجة الحرارة</label>
+<input id="cTemperature">
+</div>
+
+
+<div class="field">
+<label>الرطوبة</label>
+<input id="cHumidity">
+</div>
+
+
+<div class="field">
+<label>التربة</label>
+<input id="cSoil">
+</div>
+
+
+<div class="field">
+<label>التسميد</label>
+<input id="cFertilizer">
+</div>
+
+
+<div class="field">
+<label>التقليم</label>
+<input id="cPruning">
+</div>
+
+
+<div class="field">
+<label>الإكثار</label>
+<input id="cPropagation">
+</div>
+
+
+<div class="field">
+<label>المشاكل والأمراض</label>
+<input id="cProblems">
+</div>
+
+
+<div class="field">
+<label>الآفات</label>
+<input id="cPests">
+</div>
+
+
+<div class="field">
+<label>الأخطاء الشائعة</label>
+<input id="cMistakes">
+</div>
+
+
+<div class="field">
+<label>نصائح Green Moon</label>
+<input id="cTips">
+</div>
+
+
+</div>
+
+
+<button
+class="btn green"
+id="saveProduct">
+
+حفظ المنتج
+
+</button>
+
+
+<span
+id="productMsg"
+class="msg">
+</span>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+let products = [];
+let editing = null;
+
+
+/* =========================
+   تسجيل الدخول
+========================= */
+
+function auth(){
+
+return sessionStorage.getItem(
+'gm_admin_password'
+) || '';
+
+}
+
+
+function headers(){
+
+return {
+
+'Content-Type':
+'application/json',
+
+'Authorization':
+'Bearer ' + auth()
+
+};
+
+}
+
+
+async function api(path,options={}){
+
+options.headers = {
+
+...(options.headers || {}),
+
+...headers()
+
+};
+
+
+const response =
+await fetch(path,options);
+
+
+let data = {};
+
+try{
+
+data =
+await response.json();
+
+}catch(e){}
+
+
+if(response.status === 401){
+
+throw new Error(
+'كلمة المرور غير صحيحة أو انتهت الجلسة'
+);
+
+}
+
+
+if(!response.ok){
+
+throw new Error(
+data.error || 'حدث خطأ'
+);
+
+}
+
+
+return data;
+
+}
+
+
+/* =========================
+   الرسائل
+========================= */
+
+function showMessage(
+element,
+text,
+success=false
+){
+
+$(element).textContent =
+text;
+
+$(element).style.color =
+success
+? '#14743f'
+: '#b3261e';
+
+}
+
+
+/* =========================
+   قراءة الصور
+========================= */
+
+function readFile(file){
+
+return new Promise(
+(resolve,reject)=>{
+
+if(!file){
+
+resolve(null);
+return;
+
+}
+
+const reader =
+new FileReader();
+
+reader.onload = () =>
+resolve(reader.result);
+
+reader.onerror = reject;
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+
+/* =========================
+   تشغيل لوحة التحكم
+========================= */
+
+async function start(){
+
+if(!auth()){
+
+return;
+
+}
+
+
+try{
+
+await api(
+'/api/admin/products'
+);
+
+
+$('loginBox')
+.classList
+.add('hidden');
+
+
+$('panel')
+.classList
+.remove('hidden');
+
+
+await loadAll();
+
+
+}catch(error){
+
+sessionStorage.removeItem(
+'gm_admin_password'
+);
+
+}
+
+}
+
+
+/* =========================
+   زر الدخول
+========================= */
+
+$('login').onclick =
+async function(){
+
+const password =
+$('password')
+.value
+.trim();
+
+
+if(!password){
+
+showMessage(
+'loginMsg',
+'اكتب كلمة المرور'
+);
+
+return;
+
+}
+
+
+sessionStorage.setItem(
+'gm_admin_password',
+password
+);
+
+
+try{
+
+await api(
+'/api/admin/products'
+);
+
+
+$('loginBox')
+.classList
+.add('hidden');
+
+
+$('panel')
+.classList
+.remove('hidden');
+
+
+showMessage(
+'loginMsg',
+'',
+true
+);
+
+
+await loadAll();
+
+
+}catch(error){
+
+sessionStorage.removeItem(
+'gm_admin_password'
+);
+
+
+showMessage(
+'loginMsg',
+error.message
+);
+
+}
+
+};
+
+
+$('password')
+.addEventListener(
+'keydown',
+function(event){
+
+if(event.key === 'Enter'){
+
+$('login').click();
+
+}
+
+});
+
+
+/* =========================
+   تسجيل الخروج
+========================= */
+
+$('logout').onclick =
+function(){
+
+sessionStorage.removeItem(
+'gm_admin_password'
+);
+
+location.reload();
+
+};
+
+
+/* =========================
+   تحميل كل البيانات
+========================= */
+
+async function loadAll(){
+
+const productData =
+await api(
+'/api/admin/products'
+);
+
+
+products =
+productData || [];
+
+
+renderProducts();
+
+
+try{
+
+const settings =
+await api(
+'/api/admin/settings'
+);
+
+
+$('storeName').value =
+settings.storeName || '';
+
+
+$('siteTitle').value =
+settings.title || '';
+
+
+$('siteSubtitle').value =
+settings.subtitle || '';
+
+
+$('whatsapp').value =
+settings.whatsapp ||
+settings.whatsappNumber ||
+'';
+
+
+}catch(error){
+
+console.log(error);
+
+}
+
+
+try{
+
+const shipping =
+await api(
+'/api/admin/shipping'
+);
+
+
+$('generalShipping').value =
+shipping.price || 0;
+
+
+}catch(error){
+
+console.log(error);
+
+}
+
+
+await loadOrders();
+
+}
+
+
+/* =========================
+   عرض المنتجات
+========================= */
+
+function renderProducts(){
+
+if(!products.length){
+
+$('productsTable').innerHTML =
+'<tr><td colspan="6">لا توجد منتجات</td></tr>';
+
+return;
+
+}
+
+
+$('productsTable').innerHTML =
+products.map(function(product){
+
+return `
+
+<tr>
+
+<td>
+
+<img
+class="thumb"
+src="${product.image || '/assets/logo.jpg'}">
+
+</td>
+
+
+<td>
+${escapeHtml(product.name || '')}
+</td>
+
+
+<td>
+${Number(product.price || 0)} ج
+</td>
+
+
+<td>
+${Number(product.wholesalePrice || 0)} ج
+</td>
+
+
+<td>
+${Number(product.shippingPrice || 0)} ج
+</td>
+
+
+<td>
+
+<div class="actions">
+
+<button
+class="btn green"
+onclick="editProduct('${product.id}')">
+
+تعديل
+
+</button>
+
+</div>
+
+</td>
+
+</tr>
+
+`;
+
+}).join('');
+
+}
+
+
+/* =========================
+   حماية النصوص
+========================= */
+
+function escapeHtml(value){
+
+return String(value)
+.replace(/&/g,'&amp;')
+.replace(/</g,'&lt;')
+.replace(/>/g,'&gt;')
+.replace(/"/g,'&quot;')
+.replace(/'/g,'&#39;');
+
+}
+
+
+/* =========================
+   فتح المنتج
+========================= */
+
+function openProductModal(product){
+
+editing =
+product || null;
+
+
+$('modal')
+.classList
+.remove('hidden');
+
+
+$('modalTitle')
+.textContent =
+product
+? 'تعديل المنتج'
+: 'إضافة منتج';
+
+
+$('pId').value =
+product?.id || '';
+
+
+$('pName').value =
+product?.name || '';
+
+
+$('pPrice').value =
+product?.price || 0;
+
+
+$('pWholesale').value =
+product?.wholesalePrice || 0;
+
+
+$('pShipping').value =
+product?.shippingPrice || 0;
+
+
+$('pDetails').value =
+product?.details || '';
+
+
+$('pPreview').src =
+product?.image ||
+'/assets/logo.jpg';
+
+
+$('pImageFile').value = '';
+
+
+$('productMsg').textContent = '';
+
+
+const care =
+product?.care || {};
+
+
+$('cLight').value =
+care.light || '';
+
+
+$('cWater').value =
+care.water || '';
+
+
+$('cTemperature').value =
+care.temperature || '';
+
+
+$('cHumidity').value =
+care.humidity || '';
+
+
+$('cSoil').value =
+care.soil || '';
+
+
+$('cFertilizer').value =
+care.fertilizer || '';
+
+
+$('cPruning').value =
+care.pruning || '';
+
+
+$('cPropagation').value =
+care.propagation || '';
+
+
+$('cProblems').value =
+care.problems || '';
+
+
+$('cPests').value =
+care.pests || '';
+
+
+$('cMistakes').value =
+care.mistakes || '';
+
+
+$('cTips').value =
+care.tips || '';
+
+}
+
+
+/* =========================
+   تعديل منتج
+========================= */
+
+window.editProduct =
+function(id){
+
+const product =
+products.find(
+item =>
+String(item.id) ===
+String(id)
+);
+
+openProductModal(product);
+
+};
+
+
+/* =========================
+   إضافة منتج
+========================= */
+
+$('newProduct').onclick =
+function(){
+
+openProductModal(null);
+
+};
+
+
+/* =========================
+   إغلاق النافذة
+========================= */
+
+$('closeModal').onclick =
+function(){
+
+$('modal')
+.classList
+.add('hidden');
+
+};
+
+
+$('modal').onclick =
+function(event){
+
+if(event.target === $('modal')){
+
+$('modal')
+.classList
+.add('hidden');
+
+}
+
+};
+
+
+/* =========================
+   صورة المنتج
+========================= */
+
+$('pImageFile').onchange =
+async function(event){
+
+const image =
+await readFile(
+event.target.files[0]
+);
+
+if(image){
+
+$('pPreview').src =
+image;
+
+}
+
+};
+
+
+/* =========================
+   صورة اللوجو
+========================= */
+
+$('logoFile').onchange =
+async function(event){
+
+const image =
+await readFile(
+event.target.files[0]
+);
+
+if(image){
+
+$('logoPreview').src =
+image;
+
+}
+
+};
+
+
+/* =========================
+   حفظ المنتج
+========================= */
+
+$('saveProduct').onclick =
+async function(){
+
+try{
+
+const care = {
+
+light:
+$('cLight').value.trim(),
+
+water:
+$('cWater').value.trim(),
+
+temperature:
+$('cTemperature')
+.value.trim(),
+
+humidity:
+$('cHumidity')
+.value.trim(),
+
+soil:
+$('cSoil').value.trim(),
+
+fertilizer:
+$('cFertilizer')
+.value.trim(),
+
+pruning:
+$('cPruning').value.trim(),
+
+propagation:
+$('cPropagation')
+.value.trim(),
+
+problems:
+$('cProblems').value.trim(),
+
+pests:
+$('cPests').value.trim(),
+
+mistakes:
+$('cMistakes').value.trim(),
+
+tips:
+$('cTips').value.trim()
+
+};
+
+
+const selectedImage =
+await readFile(
+$('pImageFile').files[0]
+);
+
+
+const image =
+selectedImage ||
+$('pPreview').src;
+
+
+const body = {
+
+id:
+$('pId').value || undefined,
+
+name:
+$('pName').value.trim(),
+
+price:
+Number($('pPrice').value) || 0,
+
+wholesalePrice:
+Number($('pWholesale').value) || 0,
+
+shippingPrice:
+Number($('pShipping').value) || 0,
+
+details:
+$('pDetails').value.trim(),
+
+image:
+
+image,
+
+care:
+
+care
+
+};
+
+
+const result =
+await api(
+'/api/admin/products',
+{
+
+method:
+editing
+? 'PUT'
+: 'POST',
+
+body:
+JSON.stringify(body)
+
+}
+);
+
+
+products =
+result.products ||
+products;
+
+
+renderProducts();
+
+
+showMessage(
+'productMsg',
+'تم حفظ المنتج بنجاح',
+true
+);
+
+
+setTimeout(
+function(){
+
+$('modal')
+.classList
+.add('hidden');
+
+},
+700
+);
+
+
+}catch(error){
+
+showMessage(
+'productMsg',
+error.message
+);
+
+}
+
+};
+
+
+/* =========================
+   حفظ التوصيل
+========================= */
+
+$('saveShipping').onclick =
+async function(){
+
+try{
+
+const price =
+Number(
+$('generalShipping').value
+) || 0;
+
+
+const result =
+await api(
+'/api/admin/shipping',
+{
+
+method:'PUT',
+
+body:
+JSON.stringify({
+price:price
+})
+
+}
+);
+
+
+$('generalShipping').value =
+result.price;
+
+
+showMessage(
+'shippingMsg',
+'تم حفظ سعر التوصيل',
+true
+);
+
+
+}catch(error){
+
+showMessage(
+'shippingMsg',
+error.message
+);
+
+}
+
+};
+
+
+/* =========================
+   حفظ إعدادات الموقع
+========================= */
+
+$('saveSettings').onclick =
+async function(){
+
+try{
+
+const file =
+$('logoFile').files[0];
+
+
+if(file){
+
+const logo =
+await readFile(file);
+
+
+await api(
+'/api/admin/logo',
+{
+
+method:'PUT',
+
+body:
+JSON.stringify({
+logo:logo
+})
+
+}
+);
+
+}
+
+
+const settings = {
+
+storeName:
+$('storeName').value,
+
+title:
+$('siteTitle').value,
+
+subtitle:
+$('siteSubtitle').value,
+
+whatsapp:
+$('whatsapp').value
+
+};
+
+
+await api(
+'/api/admin/settings',
+{
+
+method:'PUT',
+
+body:
+JSON.stringify(settings)
+
+}
+);
+
+
+showMessage(
+'settingsMsg',
+'تم حفظ الإعدادات بنجاح',
+true
+);
+
+
+}catch(error){
+
+showMessage(
+'settingsMsg',
+error.message
+);
+
+}
+
+};
+
+
+/* =========================
+   تحميل الطلبات
+========================= */
+
+async function loadOrders(){
+
+try{
+
+const orders =
+await api(
+'/api/admin/orders'
+);
+
+
+if(!orders.length){
+
+$('ordersList').innerHTML =
+'<p>لا توجد طلبات حتى الآن</p>';
+
+return;
+
+}
+
+
+$('ordersList').innerHTML =
+orders.map(function(order){
+
+const address = [
+
+order.governorate,
+
+order.area,
+
+order.street,
+
+order.building
+? 'مبنى ' + order.building
+: '',
+
+order.floor
+? 'دور ' + order.floor
+: '',
+
+order.apartment
+? 'شقة ' + order.apartment
+: ''
+
+]
+.filter(Boolean)
+.join('، ');
+
+
+const items =
+(order.items || [])
+.map(function(item){
+
+return `
+<div>
+${escapeHtml(item.name || '')}
+× ${Number(item.quantity || 1)}
+= ${Number(item.lineTotal || 0)} ج
+</div>
+`;
+
+})
+.join('');
+
+
+return `
+
+<div class="order-card">
+
+<strong>
+رقم الطلب:
+${escapeHtml(order.id || '')}
+</strong>
+
+<br>
+
+العميل:
+${escapeHtml(order.name || '')}
+
+<br>
+
+الهاتف:
+${escapeHtml(order.phone || '')}
+
+<br>
+
+العنوان:
+${escapeHtml(address)}
+
+<br><br>
+
+<strong>المنتجات:</strong>
+
+${items}
+
+<br>
+
+إجمالي المنتجات:
+${Number(order.productsTotal || 0)} ج
+
+<br>
+
+التوصيل:
+${Number(order.shipping || 0)} ج
+
+<br>
+
+<strong>
+الإجمالي النهائي:
+${Number(order.total || 0)} ج
+</strong>
+
+<br>
+
+الحالة:
+${escapeHtml(order.status || 'جديد')}
+
+</div>
+
+`;
+
+}).join('');
+
+
+}catch(error){
+
+$('ordersList').textContent =
+error.message;
+
+}
+
+}
+
+
+/* =========================
+   تحديث الطلبات
+========================= */
+
+$('reloadOrders').onclick =
+function(){
+
+loadOrders();
+
+};
+
+
+/* =========================
+   بدء التطبيق
+========================= */
+
+start();
+
+</script>
+
+</body>
+</html>
