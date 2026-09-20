@@ -5,101 +5,67 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>لوحة تحكم - Green Moon</title>
 <link rel="stylesheet" href="/style.css">
-
 <style>
-.care-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-
-.care-grid .field{
-  margin:0;
-}
-
-@media(max-width:700px){
-  .care-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-.help{
-  display:block;
-  margin-top:5px;
-  color:#777;
-  font-size:12px;
-}
-
-.section-title{
-  margin:20px 0 10px;
-  padding-bottom:8px;
-  border-bottom:1px solid #ddd;
-}
+body{background:#f5f7f4}.wrap{max-width:1100px;margin:25px auto;padding:0 15px}
+.panel{background:#fff;border-radius:20px;padding:22px;margin-bottom:20px;box-shadow:0 5px 20px #00000010}
+h2{color:#174d31}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.field{margin-bottom:12px}.field label{display:block;font-weight:700;margin-bottom:6px}
+input,textarea,select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:10px;font:inherit}
+textarea{min-height:80px}.btn{border:0;border-radius:10px;padding:11px 18px;cursor:pointer;font:inherit}
+.green{background:#14743f;color:#fff}.light{background:#fff;color:#174d31}.danger{background:#b3261e;color:#fff}
+.muted{color:#777}.msg{display:block;margin-top:10px}.table-wrap{overflow:auto}
+.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:right;white-space:nowrap}
+.thumb{width:60px;height:60px;object-fit:cover;border-radius:10px}.actions{display:flex;gap:6px}
+.care{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.hidden{display:none!important}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:50}
+.modal-card{background:#fff;border-radius:20px;padding:20px;width:min(900px,100%);max-height:92vh;overflow:auto}
+.close{float:left;background:#eee;border:0;border-radius:50%;width:38px;height:38px;font-size:20px}
+@media(max-width:700px){.grid,.care{grid-template-columns:1fr}.table th,.table td{font-size:13px}}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="nav">
-    <img id="adminLogo" class="logo" src="/assets/logo.jpg">
-
-    <div class="brand">
-      <h1>لوحة تحكم Green Moon</h1>
-      <small>التعديلات تظهر للعملاء بعد الحفظ</small>
-    </div>
-
-    <a class="btn light" href="/">عرض المتجر</a>
-  </div>
+<div class="nav">
+<img id="adminLogo" class="logo" src="/assets/logo.jpg">
+<div class="brand">
+<h1>لوحة تحكم Green Moon</h1>
+<small>التعديلات تظهر للعملاء بعد الحفظ</small>
+</div>
+<a class="btn light" href="/">عرض المتجر</a>
+</div>
 </header>
 
+<main id="loginBox" class="wrap">
+<div class="panel">
+<h2>الدخول للوحة التحكم</h2>
 
-<main id="loginBox">
-  <div class="panel">
+<div class="field">
+<label>كلمة مرور لوحة التحكم</label>
+<input id="password" type="password" placeholder="اكتب كلمة المرور">
+</div>
 
-    <h2>الدخول للوحة التحكم</h2>
+<button class="btn green" id="login">دخول</button>
+<span id="loginMsg" class="msg"></span>
 
-    <div class="field">
-      <label>كلمة مرور لوحة التحكم</label>
-      <input
-        id="password"
-        type="password"
-        placeholder="اكتب كلمة المرور"
-      >
-    </div>
-
-    <button class="btn green" id="login">
-      دخول
-    </button>
-
-    <span id="loginMsg"></span>
-
-  </div>
+</div>
 </main>
 
+<main id="panel" class="wrap hidden">
 
-<main id="panel" style="display:none">
+<div class="panel">
+<div class="top">
+<h2>إعدادات الموقع</h2>
+<button class="btn danger" id="logout">تسجيل خروج</button>
+</div>
 
-  <!-- إعدادات الموقع -->
+<div class="grid">
 
-  <div class="panel">
+<div class="field">
+<label>اسم الموقع</label>
+<input id="storeName">
+</div>
 
-    <h2>إعدادات الموقع</h2>
-
-    <img
-      id="logoPreview"
-      class="adminlogo"
-      src="/assets/logo.jpg"
-    >
-
-    <div class="field">
-      <label>تغيير اللوجو</label>
-      <input
-        id="logoFile"
-        type="file"
-        accept="image/*"
-      >
-    </div>
-
-    <div class="field">
-      <label>اسم الموقع</
+<div class="field
