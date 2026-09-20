@@ -1,20 +1,284 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Green Moon Plants and Flowers</title><link rel="stylesheet" href="/style.css"></head><body>
-<header><div class="nav"><img id="siteLogo" class="logo"><div class="brand"><h1 id="storeName">Green Moon Plants and Flowers</h1><small>نباتات وزهور طبيعية</small></div><a class="btn gold" href="/admin.html">لوحة التحكم</a></div></header>
-<section class="hero"><h2>Green Moon Plants and Flowers 🌿</h2><p>اختار نباتاتك وحدد الكمية اللي محتاجها من كل منتج.</p></section>
-<main class="wrap"><div class="toolbar"><input id="search" class="search" placeholder="ابحث عن نبات..."></div><section id="products" class="grid"></section></main>
-<div id="cartbar" class="cartbar"><span>السلة: <b id="cartCount">0</b> قطعة</span><span id="cartTotal">0 ج.م</span><button class="btn light" id="viewCart">عرض الطلب</button></div>
-<div id="cartModal" class="modal"><div class="modalbox"><h2>طلبك</h2><div id="cartItems"></div><div class="row"><div class="field"><label>الاسم</label><input id="custName"></div><div class="field"><label>رقم الهاتف</label><input id="custPhone"></div></div><div class="row"><div class="field"><label>المحافظة</label><input id="custGov"></div><div class="field"><label>المنطقة</label><input id="custArea"></div></div><div class="row"><div class="field"><label>رقم المبنى</label><input id="custBuilding"></div><div class="field"><label>الدور</label><input id="custFloor"></div><div class="field"><label>الشقة</label><input id="custApartment"></div></div><div class="field"><label>ملاحظات</label><textarea id="custNotes" placeholder="أي ملاحظات على الطلب أو التوصيل"></textarea></div><div class="admin-actions"><button class="btn green" id="submitOrder">تأكيد الطلب</button><button class="btn" id="closeCart">إغلاق</button></div></div></div>
-<footer>© Green Moon Plants and Flowers</footer>
-<script>
-const FALLBACK=[{id:1,name:'أجلونيما بينك',details:'نبات أجلونيما بألوان وردي وأخضر مميزة، مناسب للديكور الداخلي.',price:0,image:'/assets/product-1.jpg'},{id:2,name:'أجلونيما بينك سبوت',details:'أوراق وردية كثيفة بتوزيعات خضراء جميلة.',price:0,image:'/assets/product-2.jpg'},{id:3,name:'أجلونيما بينك جرين',details:'أجلونيما بأوراق وردية زاهية وتفاصيل خضراء.',price:0,image:'/assets/product-3.jpg'},{id:4,name:'تشكيلة أجلونيما',details:'مجموعة من نباتات أجلونيما بألوان ونقوش مختلفة.',price:0,image:'/assets/product-4.jpg'},{id:5,name:'أجلونيما بينك فين',details:'أوراق خضراء بنقوش وردية وعروق وردية واضحة.',price:0,image:'/assets/product-5.jpg'},{id:6,name:'أجلونيما وايت',details:'أجلونيما بأوراق خضراء وبيضاء، مناسبة للمكاتب والبيوت.',price:0,image:'/assets/product-6.jpg'},{id:7,name:'بوتس مبرقش',details:'بوتس أخضر بتبرقش فاتح، نبات سهل العناية وسريع النمو.',price:0,image:'/assets/product-7.jpg'},{id:8,name:'أنثوريوم أبيض',details:'أنثوريوم بأزهار بيضاء وأوراق خضراء أنيقة.',price:0,image:'/assets/product-8.jpg'}];
-let products=FALLBACK,cart=JSON.parse(localStorage.getItem('gmCart')||'{}'),settings={whatsapp:'',storeName:'Green Moon Plants and Flowers'};
-const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const money=v=>Number(v||0).toLocaleString('ar-EG')+' ج.م';
-async function load(){try{let [p,l,s]=await Promise.all([fetch('/api/products').then(r=>r.json()),fetch('/api/logo').then(r=>r.json()),fetch('/api/settings').then(r=>r.json())]);products=p;$('#siteLogo').src=l.logo;settings=s;$('#storeName').textContent=s.storeName||'Green Moon Plants and Flowers'}catch(e){$('#siteLogo').src='/assets/logo.jpg'}render()}
-function render(){let q=($('#search').value||'').toLowerCase();let list=products.filter(p=>(p.name+' '+p.details).toLowerCase().includes(q));$('#products').innerHTML=list.map(p=>`<article class="card"><img src="${esc(p.image)}" alt="${esc(p.name)}"><div class="cardbody"><h3>${esc(p.name)}</h3><div class="details">${esc(p.details)}</div><div class="price">${Number(p.price)>0?money(p.price):'السعر يحدد من المتجر'}</div><div class="qty"><button class="qbtn" onclick="changeQty(${p.id},-1)">−</button><span class="qnum">${cart[p.id]||0}</span><button class="qbtn" onclick="changeQty(${p.id},1)">+</button></div></div></article>`).join('')||'<p>لا توجد منتجات مطابقة.</p>';updateCart()}
-function changeQty(id,d){cart[id]=Math.max(0,(cart[id]||0)+d);if(!cart[id])delete cart[id];localStorage.setItem('gmCart',JSON.stringify(cart));render()}
-function updateCart(){let count=Object.values(cart).reduce((a,b)=>a+b,0),total=Object.entries(cart).reduce((t,[id,q])=>t+(Number(products.find(p=>p.id==id)?.price)||0)*q,0);$('#cartCount').textContent=count;$('#cartTotal').textContent=money(total);$('#cartbar').classList.toggle('show',count>0)}
-function openCart(){let rows=Object.entries(cart).map(([id,q])=>{let p=products.find(x=>x.id==id);return `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:10px 0"><span>${esc(p.name)} × ${q}</span><b>${money((p.price||0)*q)}</b></div>`}).join('');$('#cartItems').innerHTML=rows||'السلة فارغة';$('#cartModal').classList.add('show')}
-async function submitOrder(){let name=$('#custName').value.trim(),phone=$('#custPhone').value.trim();if(!name||!phone)return alert('اكتب الاسم ورقم الهاتف');let items=Object.entries(cart).map(([id,q])=>({productId:id,quantity:q}));let payload={name,phone,governorate:$('#custGov').value.trim(),area:$('#custArea').value.trim(),building:$('#custBuilding').value.trim(),floor:$('#custFloor').value.trim(),apartment:$('#custApartment').value.trim(),notes:$('#custNotes').value.trim(),items};let saved;try{let r=await fetch('/api/orders',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});saved=await r.json();if(!r.ok)throw new Error(saved.error||'تعذر حفظ الطلب');}catch(e){return alert(e.message)}let text=`طلب جديد من ${settings.storeName}\nرقم الطلب: ${saved.order.id}\nالاسم: ${name}\nالهاتف: ${phone}\nالمحافظة: ${payload.governorate}\nالمنطقة:street:$('#custStreet').value.trim(),<div class="field"><label>اسم الشارع</label><input id="custStreet"></div> ${payload.area}\nالمبنى: ${payload.building}\nالدور: ${payload.floor}\nالشقة: ${payload.apartment}\n\n`+saved.order.items.map(i=>`${i.name} × ${i.quantity} — ${money(i.lineTotal)}`).join('\n')+`\n\nالإجمالي: ${money(saved.order.total)}`+(payload.notes?`\nملاحظات: ${payload.notes}`:'');if(settings.whatsapp){location.href='https://wa.me/'+settings.whatsapp.replace(/\D/g,'')+'?text='+encodeURIComponent(text)}else{navigator.clipboard?.writeText(text);alert('تم تسجيل الطلب بنجاح رقم '+saved.order.id+' ونسخ تفاصيله.')}cart={};localStorage.removeItem('gmCart');render();$('#cartModal').classList.remove('show')}
-$('#search').addEventListener('input',render);$('#viewCart').onclick=openCart;$('#closeCart').onclick=()=>$('#cartModal').classList.remove('show');$('#submitOrder').onclick=submitOrder;load();
-</script></body></html>
+const PRODUCTS_KEY = 'products';
+const LOGO_KEY = 'logo';
+const SETTINGS_KEY = 'settings';
+const ORDERS_KEY = 'orders';
+const SHIPPING_KEY = 'shipping';
+
+const SEED_PRODUCTS = [
+  {id:1,name:'أجلونيما بينك',details:'نبات أجلونيما بألوان وردي وأخضر مميزة، مناسب للديكور الداخلي.',price:0,wholesalePrice:0,image:'/assets/product-1.jpg'},
+  {id:2,name:'أجلونيما بينك سبوت',details:'أوراق وردية كثيفة بتوزيعات خضراء جميلة.',price:0,wholesalePrice:0,image:'/assets/product-2.jpg'},
+  {id:3,name:'أجلونيما بينك جرين',details:'أجلونيما بأوراق وردية زاهية وتفاصيل خضراء.',price:0,wholesalePrice:0,image:'/assets/product-3.jpg'},
+  {id:4,name:'تشكيلة أجلونيما',details:'مجموعة من نباتات أجلونيما بألوان ونقوش مختلفة.',price:0,wholesalePrice:0,image:'/assets/product-4.jpg'},
+  {id:5,name:'أجلونيما بينك فين',details:'أوراق خضراء بنقوش وردية وعروق وردية واضحة.',price:0,wholesalePrice:0,image:'/assets/product-5.jpg'},
+  {id:6,name:'أجلونيما وايت',details:'أجلونيما بأوراق خضراء وبيضاء، مناسبة للمكاتب والبيوت.',price:0,wholesalePrice:0,image:'/assets/product-6.jpg'},
+  {id:7,name:'بوتس مبرقش',details:'بوتس أخضر بتبرقش فاتح، نبات سهل العناية وسريع النمو.',price:0,wholesalePrice:0,image:'/assets/product-7.jpg'},
+  {id:8,name:'أنثوريوم أبيض',details:'أنثوريوم بأزهار بيضاء وأوراق خضراء أنيقة.',price:0,wholesalePrice:0,image:'/assets/product-8.jpg'}
+];
+
+function json(data,status=200){
+  return new Response(JSON.stringify(data),{
+    status,
+    headers:{
+      'content-type':'application/json;charset=UTF-8',
+      'cache-control':'no-store',
+      'access-control-allow-origin':'*'
+    }
+  });
+}
+
+function adminOk(request,env){
+  const h=request.headers.get('authorization')||'';
+  return h===`Bearer ${env.ADMIN_PASSWORD}` && !!env.ADMIN_PASSWORD;
+}
+
+async function getProducts(env){
+  let x=await env.GREEN_MOON_KV.get(PRODUCTS_KEY,'json');
+  if(!x){
+    x=SEED_PRODUCTS;
+    await env.GREEN_MOON_KV.put(PRODUCTS_KEY,JSON.stringify(x));
+  }
+  return x;
+}
+
+async function getLogo(env){
+  return (await env.GREEN_MOON_KV.get(LOGO_KEY))||'/assets/logo.jpg';
+}
+
+async function getShipping(env){
+  const x=await env.GREEN_MOON_KV.get(SHIPPING_KEY,'json');
+  return Number(x?.price)||0;
+}
+
+async function getOrders(env){
+  return (await env.GREEN_MOON_KV.get(ORDERS_KEY,'json'))||[];
+}
+
+export default {
+  async fetch(request,env){
+    const url=new URL(request.url);
+
+    if(request.method==='OPTIONS'){
+      return new Response('',{
+        status:204,
+        headers:{
+          'access-control-allow-origin':'*',
+          'access-control-allow-methods':'GET,POST,PUT,DELETE,OPTIONS',
+          'access-control-allow-headers':'Content-Type,Authorization'
+        }
+      });
+    }
+
+    if(url.pathname==='/api/products' && request.method==='GET'){
+      const products=await getProducts(env);
+      return json(products.map(({wholesalePrice,...p})=>p));
+    }
+
+    if(url.pathname==='/api/logo' && request.method==='GET'){
+      return json({logo:await getLogo(env)});
+    }
+
+    if(url.pathname==='/api/settings' && request.method==='GET'){
+      return json(
+        await env.GREEN_MOON_KV.get(SETTINGS_KEY,'json') ||
+        {storeName:'Green Moon Plants and Flowers',whatsapp:''}
+      );
+    }
+
+    if(url.pathname==='/api/shipping' && request.method==='GET'){
+      return json({shipping:await getShipping(env)});
+    }
+
+    if(url.pathname==='/api/orders' && request.method==='POST'){
+      try{
+        const body=await request.json();
+
+        if(!body.name || !body.phone || !Array.isArray(body.items) || !body.items.length){
+          return json({error:'بيانات الطلب غير مكتملة'},400);
+        }
+
+        const products=await getProducts(env);
+
+        const items=body.items.map(i=>{
+          const p=products.find(x=>String(x.id)===String(i.productId));
+          const qty=Math.max(1,Number(i.quantity)||1);
+
+          return p ? {
+            productId:p.id,
+            name:p.name,
+            price:Number(p.price)||0,
+            quantity:qty,
+            lineTotal:(Number(p.price)||0)*qty
+          } : null;
+        }).filter(Boolean);
+
+        if(!items.length){
+          return json({error:'المنتجات المطلوبة غير موجودة'},400);
+        }
+
+        const productsTotal=items.reduce((s,i)=>s+i.lineTotal,0);
+        const shipping=await getShipping(env);
+        const total=productsTotal+shipping;
+
+        const orders=await getOrders(env);
+
+        const order={
+          id:'GM-'+Date.now().toString(36).toUpperCase(),
+          createdAt:new Date().toISOString(),
+          status:'جديد',
+          name:String(body.name).slice(0,120),
+          phone:String(body.phone).slice(0,40),
+          governorate:String(body.governorate||'').slice(0,80),
+          area:String(body.area||'').slice(0,120),
+          street:String(body.street||'').slice(0,160),
+          building:String(body.building||'').slice(0,40),
+          floor:String(body.floor||'').slice(0,20),
+          apartment:String(body.apartment||'').slice(0,20),
+          notes:String(body.notes||'').slice(0,500),
+          productsTotal,
+          shipping,
+          items,
+          total
+        };
+
+        orders.unshift(order);
+
+        await env.GREEN_MOON_KV.put(
+          ORDERS_KEY,
+          JSON.stringify(orders)
+        );
+
+        return json({ok:true,order});
+
+      }catch(e){
+        return json({error:'تعذر حفظ الطلب'},500);
+      }
+    }
+
+    if(url.pathname.startsWith('/api/admin/')){
+
+      if(!adminOk(request,env)){
+        return json({
+          error:'غير مصرح. كلمة مرور لوحة التحكم غير صحيحة.'
+        },401);
+      }
+
+      if(url.pathname==='/api/admin/products' && request.method==='GET'){
+        return json(await getProducts(env));
+      }
+
+      if(url.pathname==='/api/admin/products' && request.method==='PUT'){
+        const products=await request.json();
+
+        if(!Array.isArray(products)){
+          return json({error:'بيانات المنتجات غير صحيحة'},400);
+        }
+
+        await env.GREEN_MOON_KV.put(
+          PRODUCTS_KEY,
+          JSON.stringify(products)
+        );
+
+        return json({ok:true,products});
+      }
+
+      if(url.pathname==='/api/admin/logo' && request.method==='PUT'){
+        const body=await request.json();
+
+        if(!body.logo){
+          return json({error:'اللوجو مفقود'},400);
+        }
+
+        await env.GREEN_MOON_KV.put(LOGO_KEY,body.logo);
+
+        return json({ok:true,logo:body.logo});
+      }
+
+      if(url.pathname==='/api/admin/settings' && request.method==='PUT'){
+        const body=await request.json();
+
+        await env.GREEN_MOON_KV.put(
+          SETTINGS_KEY,
+          JSON.stringify(body)
+        );
+
+        return json({ok:true,settings:body});
+      }
+
+      if(url.pathname==='/api/admin/shipping' && request.method==='PUT'){
+        const body=await request.json();
+        const price=Math.max(0,Number(body.shipping)||0);
+
+        await env.GREEN_MOON_KV.put(
+          SHIPPING_KEY,
+          JSON.stringify({price})
+        );
+
+        return json({ok:true,shipping:price});
+      }
+
+      if(url.pathname==='/api/admin/orders' && request.method==='GET'){
+        return json(await getOrders(env));
+      }
+
+      if(url.pathname==='/api/admin/orders' && request.method==='PUT'){
+        const body=await request.json();
+        const orders=await getOrders(env);
+
+        const i=orders.findIndex(o=>o.id===body.id);
+
+        if(i<0){
+          return json({error:'الطلب غير موجود'},404);
+        }
+
+        if(body.status){
+          orders[i].status=String(body.status).slice(0,40);
+        }
+
+        await env.GREEN_MOON_KV.put(
+          ORDERS_KEY,
+          JSON.stringify(orders)
+        );
+
+        return json({ok:true,order:orders[i]});
+      }
+
+      if(url.pathname==='/api/admin/orders' && request.method==='DELETE'){
+        const id=url.searchParams.get('id');
+        const orders=await getOrders(env);
+
+        const next=orders.filter(o=>o.id!==id);
+
+        await env.GREEN_MOON_KV.put(
+          ORDERS_KEY,
+          JSON.stringify(next)
+        );
+
+        return json({ok:true});
+      }
+
+      if(url.pathname==='/api/admin/reset' && request.method==='POST'){
+        await env.GREEN_MOON_KV.put(
+          PRODUCTS_KEY,
+          JSON.stringify(SEED_PRODUCTS)
+        );
+
+        await env.GREEN_MOON_KV.put(
+          LOGO_KEY,
+          '/assets/logo.jpg'
+        );
+
+        return json({ok:true});
+      }
+    }
+
+    const asset=await env.ASSETS.fetch(request);
+
+    if(asset.status!==404){
+      return asset;
+    }
+
+    return env.ASSETS.fetch(
+      new Request(new URL('/index.html',request.url),request)
+    );
+  }
+};
