@@ -5,7 +5,7 @@ compatibility_date = "2026-09-20"
 [assets]
 directory = "./public"
 binding = "ASSETS"
-
+not_found_handling = "single-page-application" 
 [[kv_namespaces]]
 binding = "GREEN_MOON_KV"
 id = "fcc82f6add084ccb875865171252f4d1"
