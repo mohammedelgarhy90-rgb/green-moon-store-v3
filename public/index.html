@@ -62,6 +62,31 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 .detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .share-copy{background:var(--green);color:#fff;padding:13px;border-radius:13px;font-weight:700;width:100%}
 @media(max-width:600px){.product-actions{grid-template-columns:1fr 1fr}.product-qty button{width:32px!important}}
+
+.doctor-launch{
+  position:fixed;right:16px;bottom:78px;z-index:70;
+  width:72px;height:72px;border-radius:50%;overflow:hidden;
+  border:3px solid var(--gold2);background:var(--deep);
+  box-shadow:0 10px 30px rgba(6,28,21,.28);
+  padding:0;transition:.2s
+}
+.doctor-launch:hover{transform:translateY(-3px) scale(1.03)}
+.doctor-launch img{width:100%;height:100%;object-fit:cover}
+.doctor-launch span{
+  position:absolute;right:-4px;top:-7px;background:var(--gold);
+  color:var(--green);font-size:9px;font-weight:800;padding:3px 6px;
+  border-radius:999px;border:2px solid var(--ivory)
+}
+.doctor-brand{
+  display:flex;align-items:center;gap:12px;margin-bottom:14px
+}
+.doctor-brand img{width:58px;height:58px;border-radius:16px;object-fit:cover;border:1px solid var(--line)}
+.doctor-note{
+  background:#f5f0e5;border:1px solid var(--line);padding:12px;
+  border-radius:14px;line-height:1.9;color:#5f6d66;margin-top:12px
+}
+@media(max-width:600px){.doctor-launch{width:64px;height:64px;right:12px;bottom:72px}}
+
 </style>
 
 </head>
@@ -87,9 +112,22 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 <div id="categories" class="categories"></div><div id="productGrid" class="products">جاري تحميل المنتجات...</div></section>
 
 <section class="section"><div style="background:#073c27;color:white;padding:30px;border-radius:25px;text-align:center"><h2>🌿 خلي بيتك مليان حياة</h2><a class="gold" href="#products">تسوق الآن</a></div></section>
-<section class="section"><div style="background:#eaf3ec;border-radius:25px;padding:30px;text-align:center"><h2>🩺 Green Moon Doctor</h2><p>عندك مشكلة في نباتك؟ ابعت صورة.</p><button class="gold" onclick="openDoctor()">افحص نباتك</button></div></section>
+<section class="section"><div style="background:#eaf3ec;border-radius:25px;padding:30px;text-align:center">
+<div class="doctor-brand" style="justify-content:center">
+<img src="/assets/green-moon-doctor.png" alt="Green Moon Doctor">
+<div><h2 style="margin:0">Green Moon Doctor</h2><small>دكتور النباتات 🌿</small></div>
+</div>
+<p>عندك مشكلة في نباتك؟ ابعت صورة ونبدأ الفحص الإرشادي.</p>
+<button class="gold" onclick="openDoctor()">افحص نباتك</button>
+</div></section>
 <section class="section" id="articles"><div class="center"><h2>📝 مقالات ونصائح</h2></div><div id="articlesGrid" class="articles"></div></section>
 <footer><h2>Green Moon Plants & Flowers</h2><p>نباتات أكتر.. حياة أجمل 🌿</p></footer>
+
+<button class="doctor-launch" onclick="openDoctor()" aria-label="Green Moon Doctor">
+  <img src="/assets/green-moon-doctor.png" alt="Green Moon Doctor">
+  <span>دكتور</span>
+</button>
+
 <div class="bottom"><a href="#deals">🔥<br>الصفقات</a><a href="#products">🌿<br>المنتجات</a><a href="#articles">📝<br>المقالات</a><a href="#" onclick="openCart();return false">🛒<br>السلة</a></div>
 
 <div id="cartModal" class="modal hidden"><div class="box"><button class="close" onclick="closeCart()">×</button><h2>🛒 سلة المشتريات</h2><div id="cartItems"></div>
@@ -101,7 +139,14 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 <div id="upsellModal" class="modal hidden"><div class="box"><button class="close" onclick="closeUpsell()">×</button><h2 id="upsellTitleView">🌿 استنى! ممكن تكمل نباتتك 👀</h2><p id="upsellMessageView">ضيف حاجة كمان لطلبك واستفيد من توصيل واحد 💚</p><div id="upsellList" class="upsell-list"></div><button class="full" onclick="closeUpsell()">كمل الطلب 🛒</button></div></div>
 
 <div id="articleModal" class="modal hidden"><div class="box"><button class="close" onclick="closeArticle()">×</button><img id="articleImage" style="width:100%;border-radius:15px"><h2 id="articleTitle"></h2><div id="articleContent" style="line-height:2;white-space:pre-line"></div></div></div>
-<div id="doctorModal" class="modal hidden"><div class="box"><button class="close" onclick="closeDoctor()">×</button><h2>🩺 Green Moon Doctor</h2><input type="file" accept="image/*" id="doctorImage"><img id="doctorPreview" style="width:100%;display:none;margin-top:15px;border-radius:15px"></div></div>
+<div id="doctorModal" class="modal hidden"><div class="box">
+<button class="close" onclick="closeDoctor()">×</button>
+<div class="doctor-brand"><img src="/assets/green-moon-doctor.png" alt="Green Moon Doctor"><div><h2 style="margin:0">Green Moon Doctor</h2><small>دكتور النباتات 🌿</small></div></div>
+<p>ارفع صورة واضحة للنبات والأعراض الظاهرة عليه.</p>
+<input type="file" accept="image/*" id="doctorImage">
+<img id="doctorPreview" style="width:100%;display:none;margin-top:15px;border-radius:15px">
+<div class="doctor-note">⚠️ النتيجة الإرشادية لا تُعتبر تشخيصًا مؤكدًا من الصورة وحدها؛ أي توصية علاجية يجب أن تعتمد على مصادر زراعية موثوقة، وإذا كانت الصورة غير كافية سنطلب معلومات إضافية بدل التخمين.</div>
+</div></div>
 
 
 <div id="productModal" class="modal hidden">
