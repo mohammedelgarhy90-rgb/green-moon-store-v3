@@ -435,7 +435,6 @@ function addToCart(id){
  if(x)x.quantity++;else cart.push({id:p.id,name:p.name,price:Number(p.price||0),shippingPrice:Number(p.shippingPrice||0),image:p.image||'/assets/logo.jpg',quantity:1});
  updateCart();updateRewards();openCart();showUpsell(p.id)
   }
-}
 function addDeal(i){
  let d=schedule()[i];
  if(!d||Date.now()<d._start||Date.now()>=d._end)return alert('الصفقة غير متاحة حاليًا.');
