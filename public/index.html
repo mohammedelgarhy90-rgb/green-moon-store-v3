@@ -87,6 +87,16 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 }
 @media(max-width:600px){.doctor-launch{width:64px;height:64px;right:12px;bottom:72px}}
 
+
+.doctor-analyze-btn{
+  width:100%;margin-top:16px;padding:15px 18px;border:0;border-radius:15px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:#fff;font-weight:800;font-size:17px;cursor:pointer;
+  box-shadow:0 8px 20px rgba(6,28,21,.18)
+}
+.doctor-analyze-btn:disabled{opacity:.55;cursor:not-allowed}
+.doctor-status{margin-top:12px;text-align:center;line-height:1.8;color:#53665d;font-size:14px}
+
 </style>
 
 </head>
@@ -145,6 +155,11 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 <p>ارفع صورة واضحة للنبات والأعراض الظاهرة عليه.</p>
 <input type="file" accept="image/*" id="doctorImage">
 <img id="doctorPreview" style="width:100%;display:none;margin-top:15px;border-radius:15px">
+<button id="doctorAnalyzeBtn" class="doctor-analyze-btn" type="button" onclick="analyzePlant()" disabled>
+🔬 حلّل النبات
+</button>
+<div id="doctorStatus" class="doctor-status"></div>
+
 <div class="doctor-note">⚠️ النتيجة الإرشادية لا تُعتبر تشخيصًا مؤكدًا من الصورة وحدها؛ أي توصية علاجية يجب أن تعتمد على مصادر زراعية موثوقة، وإذا كانت الصورة غير كافية سنطلب معلومات إضافية بدل التخمين.</div>
 </div></div>
 
@@ -385,5 +400,33 @@ function openSharedProduct(){
 }
 setInterval(renderDeals,1000);load();
 </script>
+
+<script>
+function doctorImageReady(){
+  const input=document.getElementById('doctorImage');
+  const btn=document.getElementById('doctorAnalyzeBtn');
+  const status=document.getElementById('doctorStatus');
+  if(!input||!btn)return;
+  input.addEventListener('change',()=>{
+    const file=input.files&&input.files[0];
+    btn.disabled=!file;
+    if(status) status.textContent=file?'الصورة جاهزة للفحص. اضغط «حلّل النبات» للبدء.':'';
+  });
+}
+async function analyzePlant(){
+  const input=document.getElementById('doctorImage');
+  const btn=document.getElementById('doctorAnalyzeBtn');
+  const status=document.getElementById('doctorStatus');
+  if(!input||!input.files||!input.files[0])return;
+  btn.disabled=true;
+  if(status) status.textContent='🔬 جاري تجهيز الصورة للفحص...';
+  setTimeout(()=>{
+    if(status) status.innerHTML='تم تجهيز الصورة. <b>محرك التشخيص الموثّق لم يتم توصيله بعد</b>، لذلك لن نعطيك تشخيصًا أو علاجًا بالتخمين.';
+    btn.disabled=false;
+  },700);
+}
+document.addEventListener('DOMContentLoaded',doctorImageReady);
+</script>
+
 </body>
 </html>
