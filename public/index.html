@@ -237,7 +237,7 @@ async function load(){
  try{
   settings=await get('/api/settings');products=await get('/api/products');
   if(!Array.isArray(products))products=[];
-  apply();renderCategories();renderProducts();renderArticles();updateCart();renderDeals();openSharedProduct();
+  apply();renderCategories();renderProducts();renderArticles();updateCart();renderDeals();updateRewards();openSharedProduct();
  }catch(e){$('productGrid').textContent='حدث خطأ أثناء تحميل المنتجات.'}
 }
 function apply(){
