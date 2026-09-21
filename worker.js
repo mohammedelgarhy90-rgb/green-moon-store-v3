@@ -483,11 +483,10 @@ export default {
                   .map(part =>
                     part.text
                   )
-                  .join('\n')
-              )
+                                    .join('\n')
               : ''
           ) ||
-          '';
+          ''; 
 
         if (!extractedText.trim()) {
 
