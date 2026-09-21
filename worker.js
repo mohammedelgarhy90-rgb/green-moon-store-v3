@@ -100,6 +100,7 @@ function json(data, status = 200) {
 
 function adminOk(request, env) {
   const auth = request.headers.get('authorization') || '';
+
   return !!env.ADMIN_PASSWORD &&
     auth === `Bearer ${env.ADMIN_PASSWORD}`;
 }
@@ -111,10 +112,13 @@ function normalizeProduct(product) {
     wholesalePrice: Number(product.wholesalePrice) || 0,
     shippingPrice: Number(product.shippingPrice) || 0,
     care:
-      product.care && typeof product.care === 'object'
+      product.care &&
+      typeof product.care === 'object'
         ? product.care
         : {},
-    image: product.image || '/assets/logo.jpg'
+    image:
+      product.image ||
+      '/assets/logo.jpg'
   };
 }
 
@@ -126,7 +130,10 @@ async function getProducts(env) {
     );
 
   if (!Array.isArray(products)) {
-    products = SEED_PRODUCTS.map(normalizeProduct);
+    products =
+      SEED_PRODUCTS.map(
+        normalizeProduct
+      );
 
     await env.GREEN_MOON_KV.put(
       PRODUCTS_KEY,
@@ -134,12 +141,16 @@ async function getProducts(env) {
     );
   }
 
-  return products.map(normalizeProduct);
+  return products.map(
+    normalizeProduct
+  );
 }
 
 async function getLogo(env) {
   return (
-    await env.GREEN_MOON_KV.get(LOGO_KEY)
+    await env.GREEN_MOON_KV.get(
+      LOGO_KEY
+    )
   ) || '/assets/logo.jpg';
 }
 
@@ -166,9 +177,12 @@ export default {
 
   async fetch(request, env) {
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
-    if (request.method === 'OPTIONS') {
+    if (
+      request.method === 'OPTIONS'
+    ) {
       return new Response('', {
         status: 204,
         headers: {
@@ -195,8 +209,10 @@ export default {
 
       return json(
         products.map(
-          ({ wholesalePrice, ...product }) =>
-            product
+          ({
+            wholesalePrice,
+            ...product
+          }) => product
         )
       );
     }
@@ -211,7 +227,8 @@ export default {
     ) {
 
       return json({
-        logo: await getLogo(env)
+        logo:
+          await getLogo(env)
       });
     }
 
@@ -234,10 +251,13 @@ export default {
         settings || {
           storeName:
             'Green Moon Plants and Flowers',
+
           title:
             'Green Moon 🌿',
+
           subtitle:
             'اختار نباتتك وخلي بيتك أحلى 💚',
+
           whatsapp: ''
         }
       );
@@ -256,6 +276,205 @@ export default {
         shipping:
           await getShipping(env)
       });
+    }
+
+    /* =========================
+       GREEN MOON DOCTOR
+    ========================= */
+
+    if (
+      url.pathname === '/api/doctor/analyze' &&
+      request.method === 'POST'
+    ) {
+
+      try {
+
+        if (!env.OPENAI_API_KEY) {
+          return json(
+            {
+              error:
+                'مفتاح الذكاء الاصطناعي غير مضبوط على Cloudflare.'
+            },
+            500
+          );
+        }
+
+        const body =
+          await request.json();
+
+        const image =
+          String(body.image || '');
+
+        if (
+          !image.startsWith('data:image/')
+        ) {
+          return json(
+            {
+              error:
+                'صورة النبات غير صالحة.'
+            },
+            400
+          );
+        }
+
+        if (
+          image.length > 8_000_000
+        ) {
+          return json(
+            {
+              error:
+                'حجم الصورة كبير جدًا. اختار صورة أصغر.'
+            },
+            413
+          );
+        }
+
+        const aiResponse =
+          await fetch(
+            'https://api.openai.com/v1/responses',
+            {
+              method: 'POST',
+
+              headers: {
+                'content-type':
+                  'application/json',
+                'authorization':
+                  `Bearer ${env.OPENAI_API_KEY}`
+              },
+
+              body: JSON.stringify({
+
+                model:
+                  'gpt-5.6-luna',
+
+                tools: [
+                  {
+                    type:
+                      'web_search'
+                  }
+                ],
+
+                input: [
+
+                  {
+                    role:
+                      'system',
+
+                    content: [
+                      {
+                        type:
+                          'input_text',
+
+                        text:
+`أنت Green Moon Doctor، مساعد متخصص في إرشاد أصحاب النباتات.
+
+حلّل صورة النبات والأعراض الظاهرة فيها.
+
+مهم جدًا:
+- مسموح لك بذكر الاحتمال الأقرب بناءً على الصورة.
+- لا تدّعي أن التشخيص مؤكد 100% من الصورة وحدها.
+- فرّق بوضوح بين "الاحتمال الأقرب" و"التشخيص المؤكد".
+- إذا كانت الصورة غير كافية، اطلب صورة أو معلومات إضافية بدل اختلاق نتيجة.
+
+أجب بالعربية المصرية البسيطة.
+
+نظّم الإجابة بالشكل التالي:
+
+🌿 النبات المحتمل:
+اذكر اسم النبات المحتمل، وإن لم تكن متأكدًا وضّح ذلك.
+
+🔎 اللي ظاهر في الصورة:
+اذكر الأعراض المرئية فقط.
+
+🩺 الاحتمال الأقرب:
+اذكر السبب أو المشكلة المحتملة.
+
+🔄 احتمالات بديلة:
+اذكر بدائل عند الحاجة.
+
+💚 تعمل إيه دلوقتي:
+أعطِ خطوات آمنة وعملية.
+
+⚠️ تجنب:
+اذكر الأشياء التي قد تزيد المشكلة.
+
+📚 المصادر:
+عند تقديم علاج أو مكافحة مرض/آفة، استخدم مصادر زراعية موثوقة وابحث عنها قبل التوصية.
+اذكر اسم المصدر والرابط.
+
+لا تخترع جرعات مبيدات.
+إذا احتاج العلاج إلى مبيد، وضّح أن ملصق المنتج المحلي والتعليمات الرسمية للمنتج هي المرجع النهائي.
+
+لا تقل إن النتيجة مؤكدة 100% من الصورة وحدها.`
+                      }
+                    ]
+                  },
+
+                  {
+                    role:
+                      'user',
+
+                    content: [
+
+                      {
+                        type:
+                          'input_text',
+
+                        text:
+                          'افحص النبات الموجود في الصورة وحدد الاحتمال الأقرب للمشكلة وقدم إرشادات عملية وآمنة.'
+                      },
+
+                      {
+                        type:
+                          'input_image',
+
+                        image_url:
+                          image
+                      }
+                    ]
+                  }
+                ]
+              })
+            }
+          );
+
+        const data =
+          await aiResponse.json();
+
+        if (!aiResponse.ok) {
+
+          return json(
+            {
+              error:
+                data?.error?.message ||
+                'تعذر الاتصال بمحرك Green Moon Doctor.'
+            },
+            aiResponse.status
+          );
+        }
+
+        return json({
+          success:
+            true,
+
+          result:
+            data.output_text ||
+            'لم يتم استخراج نتيجة من محرك التحليل.'
+        });
+
+      } catch (error) {
+
+        return json(
+          {
+            error:
+              String(
+                error?.message ||
+                error
+              )
+          },
+          500
+        );
+      }
     }
 
     /* =========================
@@ -278,6 +497,7 @@ export default {
           !Array.isArray(body.items) ||
           !body.items.length
         ) {
+
           return json(
             {
               error:
@@ -312,22 +532,33 @@ export default {
                 );
 
               return {
-                productId: product.id,
-                name: product.name,
+                productId:
+                  product.id,
+
+                name:
+                  product.name,
+
                 price:
                   Number(product.price) || 0,
+
                 quantity,
+
                 shippingPrice:
-                  Number(product.shippingPrice) || 0,
+                  Number(
+                    product.shippingPrice
+                  ) || 0,
+
                 lineTotal:
-                  (Number(product.price) || 0) *
-                  quantity
+                  (
+                    Number(product.price) || 0
+                  ) * quantity
               };
 
             })
             .filter(Boolean);
 
         if (!items.length) {
+
           return json(
             {
               error:
@@ -344,16 +575,6 @@ export default {
             0
           );
 
-        /*
-          التوصيل:
-
-          منتج واحد مختلف:
-          سعر توصيل المنتج.
-
-          أكثر من منتج مختلف:
-          سعر التوصيل العام.
-        */
-
         const generalShipping =
           await getShipping(env);
 
@@ -362,7 +583,9 @@ export default {
             ...new Set(
               items.map(
                 item =>
-                  String(item.productId)
+                  String(
+                    item.productId
+                  )
               )
             )
           ];
@@ -412,44 +635,56 @@ export default {
             'جديد',
 
           name:
-            String(body.name)
-              .slice(0, 120),
+            String(
+              body.name
+            ).slice(0, 120),
 
           phone:
-            String(body.phone)
-              .slice(0, 40),
+            String(
+              body.phone
+            ).slice(0, 40),
 
           governorate:
-            String(body.governorate || '')
-              .slice(0, 80),
+            String(
+              body.governorate || ''
+            ).slice(0, 80),
 
           area:
-            String(body.area || '')
-              .slice(0, 120),
+            String(
+              body.area || ''
+            ).slice(0, 120),
 
           street:
-            String(body.street || '')
-              .slice(0, 160),
+            String(
+              body.street || ''
+            ).slice(0, 160),
 
           building:
-            String(body.building || '')
-              .slice(0, 40),
+            String(
+              body.building || ''
+            ).slice(0, 40),
 
           floor:
-            String(body.floor || '')
-              .slice(0, 20),
+            String(
+              body.floor || ''
+            ).slice(0, 20),
 
           apartment:
-            String(body.apartment || '')
-              .slice(0, 20),
+            String(
+              body.apartment || ''
+            ).slice(0, 20),
 
           notes:
-            String(body.notes || '')
-              .slice(0, 500),
+            String(
+              body.notes || ''
+            ).slice(0, 500),
 
           productsTotal,
+
           shipping,
+
           items,
+
           total
         };
 
@@ -463,7 +698,9 @@ export default {
         );
 
         return json({
-          success: true,
+          success:
+            true,
+
           order
         });
 
@@ -473,8 +710,12 @@ export default {
           {
             error:
               'حدث خطأ أثناء حفظ الطلب',
+
             details:
-              String(error?.message || error)
+              String(
+                error?.message ||
+                error
+              )
           },
           500
         );
@@ -486,17 +727,29 @@ export default {
     ========================= */
 
     if (
-      url.pathname === '/api/admin/products'
+      url.pathname ===
+      '/api/admin/products'
     ) {
 
-      if (!adminOk(request, env)) {
+      if (
+        !adminOk(
+          request,
+          env
+        )
+      ) {
+
         return json(
-          { error: 'غير مصرح' },
+          {
+            error:
+              'غير مصرح'
+          },
           401
         );
       }
 
-      if (request.method === 'GET') {
+      if (
+        request.method === 'GET'
+      ) {
 
         return json(
           await getProducts(env)
@@ -527,10 +780,13 @@ export default {
             const product =
               normalizeProduct({
                 ...body,
-                id: newId
+                id:
+                  newId
               });
 
-            products.push(product);
+            products.push(
+              product
+            );
 
           } else {
 
@@ -542,6 +798,7 @@ export default {
               );
 
             if (index === -1) {
+
               return json(
                 {
                   error:
@@ -562,11 +819,15 @@ export default {
 
           await env.GREEN_MOON_KV.put(
             PRODUCTS_KEY,
-            JSON.stringify(products)
+            JSON.stringify(
+              products
+            )
           );
 
           return json({
-            success: true,
+            success:
+              true,
+
             products
           });
 
@@ -575,14 +836,19 @@ export default {
           return json(
             {
               error:
-                String(error?.message || error)
+                String(
+                  error?.message ||
+                  error
+                )
             },
             500
           );
         }
       }
 
-      if (request.method === 'DELETE') {
+      if (
+        request.method === 'DELETE'
+      ) {
 
         try {
 
@@ -601,12 +867,17 @@ export default {
 
           await env.GREEN_MOON_KV.put(
             PRODUCTS_KEY,
-            JSON.stringify(filtered)
+            JSON.stringify(
+              filtered
+            )
           );
 
           return json({
-            success: true,
-            products: filtered
+            success:
+              true,
+
+            products:
+              filtered
           });
 
         } catch (error) {
@@ -614,7 +885,10 @@ export default {
           return json(
             {
               error:
-                String(error?.message || error)
+                String(
+                  error?.message ||
+                  error
+                )
             },
             500
           );
@@ -627,17 +901,29 @@ export default {
     ========================= */
 
     if (
-      url.pathname === '/api/admin/logo'
+      url.pathname ===
+      '/api/admin/logo'
     ) {
 
-      if (!adminOk(request, env)) {
+      if (
+        !adminOk(
+          request,
+          env
+        )
+      ) {
+
         return json(
-          { error: 'غير مصرح' },
+          {
+            error:
+              'غير مصرح'
+          },
           401
         );
       }
 
-      if (request.method === 'GET') {
+      if (
+        request.method === 'GET'
+      ) {
 
         return json({
           logo:
@@ -664,7 +950,9 @@ export default {
         );
 
         return json({
-          success: true,
+          success:
+            true,
+
           logo
         });
       }
@@ -675,17 +963,29 @@ export default {
     ========================= */
 
     if (
-      url.pathname === '/api/admin/settings'
+      url.pathname ===
+      '/api/admin/settings'
     ) {
 
-      if (!adminOk(request, env)) {
+      if (
+        !adminOk(
+          request,
+          env
+        )
+      ) {
+
         return json(
-          { error: 'غير مصرح' },
+          {
+            error:
+              'غير مصرح'
+          },
           401
         );
       }
 
-      if (request.method === 'GET') {
+      if (
+        request.method === 'GET'
+      ) {
 
         return json(
           await env.GREEN_MOON_KV.get(
@@ -705,12 +1005,17 @@ export default {
 
         await env.GREEN_MOON_KV.put(
           SETTINGS_KEY,
-          JSON.stringify(body)
+          JSON.stringify(
+            body
+          )
         );
 
         return json({
-          success: true,
-          settings: body
+          success:
+            true,
+
+          settings:
+            body
         });
       }
     }
@@ -720,17 +1025,29 @@ export default {
     ========================= */
 
     if (
-      url.pathname === '/api/admin/shipping'
+      url.pathname ===
+      '/api/admin/shipping'
     ) {
 
-      if (!adminOk(request, env)) {
+      if (
+        !adminOk(
+          request,
+          env
+        )
+      ) {
+
         return json(
-          { error: 'غير مصرح' },
+          {
+            error:
+              'غير مصرح'
+          },
           401
         );
       }
 
-      if (request.method === 'GET') {
+      if (
+        request.method === 'GET'
+      ) {
 
         return json({
           price:
@@ -761,7 +1078,9 @@ export default {
         );
 
         return json({
-          success: true,
+          success:
+            true,
+
           price
         });
       }
@@ -772,17 +1091,29 @@ export default {
     ========================= */
 
     if (
-      url.pathname === '/api/admin/orders'
+      url.pathname ===
+      '/api/admin/orders'
     ) {
 
-      if (!adminOk(request, env)) {
+      if (
+        !adminOk(
+          request,
+          env
+        )
+      ) {
+
         return json(
-          { error: 'غير مصرح' },
+          {
+            error:
+              'غير مصرح'
+          },
           401
         );
       }
 
-      if (request.method === 'GET') {
+      if (
+        request.method === 'GET'
+      ) {
 
         return json(
           await getOrders(env)
@@ -805,11 +1136,16 @@ export default {
           const index =
             orders.findIndex(
               order =>
-                String(order.id) ===
-                String(body.id)
+                String(
+                  order.id
+                ) ===
+                String(
+                  body.id
+                )
             );
 
           if (index === -1) {
+
             return json(
               {
                 error:
@@ -826,12 +1162,17 @@ export default {
 
           await env.GREEN_MOON_KV.put(
             ORDERS_KEY,
-            JSON.stringify(orders)
+            JSON.stringify(
+              orders
+            )
           );
 
           return json({
-            success: true,
-            order: orders[index]
+            success:
+              true,
+
+            order:
+              orders[index]
           });
 
         } catch (error) {
@@ -839,7 +1180,10 @@ export default {
           return json(
             {
               error:
-                String(error?.message || error)
+                String(
+                  error?.message ||
+                  error
+                )
             },
             500
           );
@@ -852,13 +1196,23 @@ export default {
     ========================= */
 
     if (
-      url.pathname === '/api/admin/reset' &&
+      url.pathname ===
+      '/api/admin/reset' &&
       request.method === 'POST'
     ) {
 
-      if (!adminOk(request, env)) {
+      if (
+        !adminOk(
+          request,
+          env
+        )
+      ) {
+
         return json(
-          { error: 'غير مصرح' },
+          {
+            error:
+              'غير مصرح'
+          },
           401
         );
       }
@@ -870,11 +1224,15 @@ export default {
 
       await env.GREEN_MOON_KV.put(
         PRODUCTS_KEY,
-        JSON.stringify(products)
+        JSON.stringify(
+          products
+        )
       );
 
       return json({
-        success: true,
+        success:
+          true,
+
         products
       });
     }
@@ -884,12 +1242,15 @@ export default {
     ========================= */
 
     if (env.ASSETS) {
-      return env.ASSETS.fetch(request);
+      return env.ASSETS.fetch(
+        request
+      );
     }
 
     return json(
       {
-        error: 'Not Found'
+        error:
+          'Not Found'
       },
       404
     );
