@@ -129,7 +129,284 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 
 </head>
 <body>
-<header><div class="nav"><img id="siteLogo" class="logo" src="/assets/logo.jpg"><div class="brand"><b id="headerName">Green Moon Plants & Flowers</b><small>نباتات أكتر.. حياة أجمل 🌿</small></div><button class="cart-btn" onclick="openCart()">🛒 السلة <span id="cartCount">0</span></button></div></header>
+<style>
+.gm-amazon-header{
+  background:#061c15;
+  color:#fff;
+  font-family:Cairo,Tahoma,sans-serif;
+  position:sticky;
+  top:0;
+  z-index:90;
+  box-shadow:0 4px 18px rgba(0,0,0,.18);
+}
+.gm-topbar{
+  height:38px;
+  background:#092d22;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  font-size:12px;
+  color:#f4f1e8;
+}
+.gm-topbar span{margin-left:22px}
+.gm-mainbar{
+  max-width:1400px;
+  margin:auto;
+  min-height:112px;
+  display:flex;
+  align-items:center;
+  gap:28px;
+  padding:14px 22px;
+}
+.gm-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:340px;
+}
+.gm-brand-logo{
+  width:76px;
+  height:76px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #e0c77e;
+  box-shadow:0 5px 18px rgba(0,0,0,.25);
+}
+.gm-brand-text{
+  line-height:1.05;
+}
+.gm-brand-name{
+  display:block;
+  font-family:'Playfair Display',Cairo,serif;
+  font-size:27px;
+  font-weight:700;
+  color:#fff;
+}
+.gm-owner{
+  display:block;
+  color:#e0c77e;
+  font-family:'Playfair Display',Cairo,serif;
+  font-size:17px;
+  margin-top:7px;
+}
+.gm-tagline{
+  display:block;
+  color:#c6d1ca;
+  font-size:11px;
+  margin-top:6px;
+}
+.gm-search{
+  flex:1;
+  max-width:600px;
+  height:50px;
+  display:flex;
+  background:#fff;
+  border-radius:9px;
+  overflow:hidden;
+  direction:rtl;
+}
+.gm-search input{
+  flex:1;
+  border:0!important;
+  outline:0!important;
+  padding:0 20px!important;
+  font-family:Cairo,Tahoma,sans-serif;
+  font-size:14px;
+  background:#fff!important;
+  margin:0!important;
+}
+.gm-search button{
+  width:58px;
+  background:#e0c77e;
+  color:#092d22;
+  font-size:25px;
+  font-weight:700;
+}
+.gm-head-actions{
+  display:flex;
+  align-items:center;
+  gap:24px;
+  white-space:nowrap;
+}
+.gm-head-action{
+  color:#fff;
+  background:transparent;
+  font-size:13px;
+  text-align:center;
+  padding:4px;
+}
+.gm-head-action .ico{
+  display:block;
+  font-size:27px;
+  line-height:1;
+  margin-bottom:5px;
+}
+.gm-cart-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#e51d2a;
+  color:#fff;
+  font-size:11px;
+  position:relative;
+  top:-25px;
+  right:-7px;
+}
+.gm-nav{
+  background:#0d4935;
+  border-top:1px solid rgba(224,199,126,.15);
+}
+.gm-nav-inner{
+  max-width:1400px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  overflow:auto;
+  padding:0 20px;
+}
+.gm-nav a,.gm-nav button{
+  color:#fff;
+  text-decoration:none;
+  background:transparent;
+  padding:15px 20px;
+  font-weight:700;
+  font-size:13px;
+  white-space:nowrap;
+}
+.gm-nav a:hover,.gm-nav button:hover{
+  background:#126044;
+}
+.gm-all{
+  background:#126044!important;
+}
+@media(max-width:800px){
+  .gm-topbar{display:none}
+  .gm-mainbar{
+    min-height:auto;
+    padding:10px 12px;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .gm-brand{
+    min-width:0;
+    flex:1;
+    order:1;
+  }
+  .gm-brand-logo{
+    width:52px;
+    height:52px;
+  }
+  .gm-brand-name{font-size:17px}
+  .gm-owner{font-size:12px;margin-top:4px}
+  .gm-tagline{font-size:9px;margin-top:3px}
+  .gm-head-actions{order:2;gap:5px}
+  .gm-head-action{font-size:9px}
+  .gm-head-action .ico{font-size:21px}
+  .gm-search{
+    order:3;
+    flex-basis:100%;
+    max-width:none;
+    height:44px;
+  }
+  .gm-nav-inner{padding:0 8px}
+  .gm-nav a,.gm-nav button{
+    padding:12px 13px;
+    font-size:11px;
+  }
+}
+</style>
+
+<header class="gm-amazon-header">
+
+  <div class="gm-topbar">
+    <div>
+      <span>🚚 الشحن في جميع محافظات مصر</span>
+      <span>💬 تواصل معنا</span>
+    </div>
+    <div>
+      <span>❓ المساعدة</span>
+      <span>🇪🇬 EGP⌄</span>
+    </div>
+  </div>
+
+  <div class="gm-mainbar">
+
+    <div class="gm-brand">
+      <img id="siteLogo"
+           class="gm-brand-logo"
+           src="/assets/logo.jpg"
+           alt="Green Moon">
+
+      <div class="gm-brand-text">
+        <span class="gm-brand-name" id="headerName">
+          Green Moon Plants & Flowers
+        </span>
+
+        <span class="gm-owner">
+          Mohamed Elgarhy
+        </span>
+
+        <span class="gm-tagline">
+          🌿 نباتات أكتر.. حياة أجمل
+        </span>
+      </div>
+    </div>
+
+    <div class="gm-search">
+      <input
+        id="headerSearch"
+        type="text"
+        placeholder="ابحث عن نباتات، قصاري، مستلزمات..."
+        oninput="$('search').value=this.value;renderProducts()">
+
+      <button type="button"
+        onclick="$('products').scrollIntoView({behavior:'smooth'})">
+        🔍
+      </button>
+    </div>
+
+    <div class="gm-head-actions">
+
+      <button class="gm-head-action" type="button">
+        <span class="ico">♡</span>
+        المفضلة
+      </button>
+
+      <button class="gm-head-action" type="button" onclick="openCart()">
+        <span class="ico">
+          🛒
+          <b class="gm-cart-count" id="cartCount">0</b>
+        </span>
+        السلة
+      </button>
+
+    </div>
+
+  </div>
+
+  <nav class="gm-nav">
+    <div class="gm-nav-inner">
+
+      <button class="gm-all" onclick="$('products').scrollIntoView({behavior:'smooth'})">
+        ☰ &nbsp; كل الأقسام⌄
+      </button>
+
+      <a href="#products">🎋 بامبو</a>
+      <a href="#products">🪴 نباتات داخلية</a>
+      <a href="#products">🌳 نباتات خارجية</a>
+      <a href="#products">🪴 قصاري</a>
+      <a href="#products">🔧 مستلزمات</a>
+      <a href="#deals">🏷️ عروض خاصة</a>
+      <a href="#articles">📖 مقالات</a>
+
+    </div>
+  </nav>
+
+</header>
 <section class="rewards" id="rewards">
   <div class="rewards-card">
     <div class="rewards-head">
