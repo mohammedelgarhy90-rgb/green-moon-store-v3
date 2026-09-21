@@ -422,7 +422,149 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
     <div class="reward-grid" id="rewardGrid"></div>
   </div>
 </section>
-<section class="hero" aria-label="Green Moon hero"><img id="heroImage" alt=""><div class="hero-content"><h1 id="heroTitle"></h1><p id="heroSubtitle"></p></div></section>
+<style>
+.gm-hero{
+  position:relative;
+  width:100%;
+  height:420px;
+  overflow:hidden;
+  background:#071d16;
+}
+.gm-hero img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:saturate(.95) contrast(1.04);
+}
+.gm-hero-overlay{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3,22,15,.82) 0%,
+      rgba(3,22,15,.48) 38%,
+      rgba(3,22,15,.08) 72%
+    );
+}
+.gm-hero-content{
+  position:relative;
+  z-index:2;
+  height:100%;
+  max-width:1400px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 70px;
+  color:#fff;
+  text-align:right;
+}
+.gm-hero-content h1{
+  margin:0 0 8px;
+  max-width:560px;
+  font-family:'Playfair Display',Cairo,serif;
+  font-size:48px;
+  line-height:1.25;
+  font-weight:700;
+}
+.gm-hero-content h1::first-letter{
+  color:#e0c77e;
+}
+.gm-hero-content p{
+  margin:0 0 22px;
+  max-width:500px;
+  font-size:20px;
+  line-height:1.8;
+  color:#f5f0e5;
+}
+.gm-hero-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(135deg,#e0c77e,#c9a85b);
+  color:#092d22;
+  padding:13px 28px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:16px;
+  text-decoration:none;
+  box-shadow:0 8px 25px rgba(0,0,0,.2);
+}
+.gm-hero-dots{
+  position:absolute;
+  bottom:18px;
+  left:70px;
+  z-index:3;
+  display:flex;
+  gap:8px;
+}
+.gm-hero-dots span{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:rgba(255,255,255,.55);
+}
+.gm-hero-dots span.active{
+  background:#fff;
+}
+@media(max-width:600px){
+  .gm-hero{
+    height:430px;
+  }
+  .gm-hero-content{
+    padding:30px 24px;
+    justify-content:flex-end;
+    padding-bottom:55px;
+  }
+  .gm-hero-content h1{
+    font-size:32px;
+    max-width:90%;
+  }
+  .gm-hero-content p{
+    font-size:15px;
+    max-width:90%;
+  }
+  .gm-hero-btn{
+    font-size:14px;
+    padding:11px 22px;
+  }
+  .gm-hero-dots{
+    left:24px;
+    bottom:18px;
+  }
+}
+</style>
+
+<section class="gm-hero" aria-label="Green Moon hero">
+
+  <img id="heroImage" src="/assets/logo.jpg" alt="Green Moon Plants & Flowers">
+
+  <div class="gm-hero-overlay"></div>
+
+  <div class="gm-hero-content">
+    <h1 id="heroTitle">خلي بيتك مليان حياة</h1>
+
+    <p id="heroSubtitle">
+      نباتات طبيعية عالية الجودة لبيت أجمل وحياة أفضل 🌿
+    </p>
+
+    <a class="gm-hero-btn" href="#products">
+      تسوق الآن ←
+    </a>
+  </div>
+
+  <div class="gm-hero-dots">
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+</section> 
 
 <section class="section" id="deals">
 <div class="deals-head"><h2>🔥 صفقات Green Moon</h2><b>صفقة ورا صفقة… الفرصة مبتستناش!</b><p>عروض حصرية بتتجدد تلقائيًا ⏳</p></div>
