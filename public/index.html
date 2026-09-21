@@ -6,6 +6,34 @@
 <title>Green Moon Plants & Flowers</title>
 
 <style>
+  .rewards{max-width:1280px;margin:24px auto 8px;padding:0 18px}
+.rewards-card{background:linear-gradient(135deg,#fffdf8,#f4eee0);border:1px solid rgba(201,168,91,.35);border-radius:26px;padding:20px;box-shadow:0 18px 55px rgba(17,43,34,.08)}
+.rewards-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+.rewards-title{font-family:'Playfair Display',Cairo,serif;font-size:25px;font-weight:700;color:var(--green)}
+.rewards-sub{color:var(--muted);font-size:12px}
+.reward-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.reward{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:18px;padding:12px;transition:.2s}
+.reward.near{border-color:rgba(201,168,91,.75);box-shadow:0 8px 24px rgba(201,168,91,.12)}
+.reward.done{background:#edf6ef}
+.reward-media{width:62px;height:62px;min-width:62px;border-radius:15px;background:#eee7d8;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}
+.reward-media img{width:100%;height:100%;object-fit:cover}
+.reward-info{flex:1;min-width:0}
+.reward-info b{display:block;font-size:13px}
+.reward-info small{display:block;color:var(--muted);margin:3px 0 7px;line-height:1.6}
+.reward-bar{height:7px;background:#e3ded2;border-radius:99px;overflow:hidden}
+.reward-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green2),var(--gold));border-radius:99px}
+.reward-action{font-size:10px;color:#66756e;margin-top:6px}
+.reward-action span{color:#14743f;font-weight:800;margin-right:5px}
+@media(max-width:600px){
+.rewards{padding:0 13px;margin:16px auto 4px}
+.rewards-card{padding:14px;border-radius:20px}
+.rewards-title{font-size:20px}
+.rewards-head{align-items:flex-start}
+.reward-grid{grid-template-columns:1fr}
+.reward{padding:10px}
+.reward-media{width:52px;height:52px;min-width:52px}
+.reward-info b{font-size:12px}
+}
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
 :root{--green:#092d22;--green2:#123f30;--deep:#061c15;--cream:#f5f0e5;--ivory:#fffdf8;--gold:#c9a85b;--gold2:#e0c77e;--muted:#78857e;--line:#e5dfd2}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
