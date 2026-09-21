@@ -357,6 +357,78 @@ function renderDeals(){
  let old=Number(d.oldPrice)||0,price=Number(d.price)||0,off=old>price?Math.round((old-price)/old*100):0;
  $('dealsContainer').innerHTML='<div class="deal-card"><div class="deal-top"><img class="deal-image" src="'+(d.image||'/assets/logo.jpg')+'"><span class="deal-badge">🔥 صفقة الآن</span></div><div class="deal-body"><div class="deal-title">'+esc(d.title||'صفقة Green Moon')+'</div><p class="deal-desc">'+esc(d.description||'')+'</p><div class="prices"><span class="old">'+old+' جنيه</span><span class="new">'+price+' جنيه</span>'+(off?'<span class="discount">خصم '+off+'%</span>':'')+'</div><div class="timer"><div><b>'+String(m).padStart(2,'0')+'</b>دقيقة</div><div><b>'+String(s).padStart(2,'0')+'</b>ثانية</div></div><button class="deal-order" onclick="addDeal('+d._index+')">🛒 اطلب الصفقة الآن</button></div></div>'
 }
+  function updateRewards(){
+  const grid=$("rewardGrid");
+  const status=$("rewardsStatus");
+  const sub=$("rewardsSub");
+
+  if(!grid)return;
+
+  const total=cart.reduce((s,x)=>s+x.price*x.quantity,0);
+  const fs=settings.freeShipping||{};
+  const g=settings.gifts||{};
+  const items=[];
+
+  if(fs.enabled!==false&&Number(fs.threshold)>0){
+    items.push({
+      type:"ship",
+      threshold:Number(fs.threshold),
+      title:"🚚 الشحن المجاني",
+      icon:"🚚",
+      done:total>=Number(fs.threshold),
+      text:total>=Number(fs.threshold)
+        ?"مبروك! الشحن مجاني على طلبك 🎉"
+        :"فاضلك "+Math.max(0,Number(fs.threshold)-total)+" ج",
+      action:"كمل طلبك ووصل للشحن المجاني"
+    });
+  }
+
+  if(g.enabled!==false&&Number(g.threshold)>0){
+    items.push({
+      type:"gift",
+      threshold:Number(g.threshold),
+      title:g.name||"هدية Green Moon 🎁",
+      image:g.image||"",
+      icon:"🎁",
+      done:total>=Number(g.threshold),
+      text:total>=Number(g.threshold)
+        ?(g.message||"مبروك! هديتك المجانية اتفتحت 🎉")
+        :"فاضلك "+Math.max(0,Number(g.threshold)-total)+" ج عشان تفتح هديتك",
+      action:"الهدية: "+(g.name||"هدية Green Moon")
+    });
+  }
+
+  items.sort((a,b)=>a.threshold-b.threshold);
+
+  const next=items.find(x=>!x.done);
+
+  status.textContent=next
+    ?"🔥 فاضلك "+Math.max(0,next.threshold-total)+" ج"
+    :"🎉 كل المكافآت اتفتحت";
+
+  sub.textContent=next
+    ?"أنت قريب من "+next.title+" — كمّل طلبك وخد مكافأتك 💚"
+    :"استمتع بمكافآتك مع Green Moon 💚";
+
+  grid.innerHTML=items.map(r=>{
+    const pct=Math.min(100,Math.round(total/r.threshold*100));
+
+    return '<div class="reward '+(r.done?"done ":"")+(next&&next.type===r.type?"near":"")+'">'+
+      '<div class="reward-media">'+
+      (r.image?'<img src="'+esc(r.image)+'">':r.icon)+
+      '</div>'+
+      '<div class="reward-info">'+
+      '<b>'+esc(r.title)+'</b>'+
+      '<small>'+esc(r.text)+'</small>'+
+      '<div class="reward-bar"><i style="width:'+pct+'%"></i></div>'+
+      '<div class="reward-action">'+
+      esc(r.action)+
+      (r.done?' <span>✓ مفتوحة</span>':'')+
+      '</div>'+
+      '</div>'+
+      '</div>';
+  }).join("");
+  }
 function addToCart(id){
  let p=products.find(x=>String(x.id)===String(id));if(!p)return;
  let x=cart.find(x=>String(x.id)===String(id));
