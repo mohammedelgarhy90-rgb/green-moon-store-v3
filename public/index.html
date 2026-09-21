@@ -361,7 +361,8 @@ function addToCart(id){
  let p=products.find(x=>String(x.id)===String(id));if(!p)return;
  let x=cart.find(x=>String(x.id)===String(id));
  if(x)x.quantity++;else cart.push({id:p.id,name:p.name,price:Number(p.price||0),shippingPrice:Number(p.shippingPrice||0),image:p.image||'/assets/logo.jpg',quantity:1});
- updateCart();openCart();showUpsell(p.id)
+ updateCart();updateRewards();openCart();showUpsell(p.id)
+  }
 }
 function addDeal(i){
  let d=schedule()[i];
