@@ -32,6 +32,100 @@ table{width:100%;border-collapse:collapse;min-width:720px}th,td{padding:10px;bor
 .empty-box{padding:20px;text-align:center;color:#66756d;background:#f7faf8;border-radius:14px}
 .growth-card{border:1px solid #dce6df;border-radius:18px;padding:16px;margin-top:12px;background:linear-gradient(180deg,#fff,#f7fbf8)}
 @media(max-width:700px){.grid{grid-template-columns:1fr}.nav{align-items:flex-start}.nav .btn{display:none}.panel{padding:15px}.deal-admin-head{align-items:flex-start}.deal-admin img{width:75px;height:60px}}
+ .gm-benefits{
+  background:#fffdf8;
+  border-bottom:1px solid #e5dfd2;
+  padding:22px 18px;
+}
+
+.gm-benefits-inner{
+  max-width:1400px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border:1px solid #e5dfd2;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+}
+
+.gm-benefit{
+  min-height:90px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:13px;
+  padding:14px 18px;
+  border-left:1px solid #e5dfd2;
+}
+
+.gm-benefit:last-child{
+  border-left:0;
+}
+
+.gm-benefit-icon{
+  width:48px;
+  height:48px;
+  min-width:48px;
+  border-radius:50%;
+  background:#edf4ef;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+}
+
+.gm-benefit-text b{
+  display:block;
+  color:#092d22;
+  font-size:14px;
+  margin-bottom:3px;
+}
+
+.gm-benefit-text small{
+  color:#78857e;
+  font-size:11px;
+}
+
+@media(max-width:800px){
+  .gm-benefits{
+    padding:12px;
+  }
+
+  .gm-benefits-inner{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .gm-benefit{
+    min-height:76px;
+    padding:10px;
+    border-bottom:1px solid #e5dfd2;
+  }
+
+  .gm-benefit:nth-child(2){
+    border-left:0;
+  }
+
+  .gm-benefit:nth-child(3),
+  .gm-benefit:nth-child(4){
+    border-bottom:0;
+  }
+
+  .gm-benefit-icon{
+    width:40px;
+    height:40px;
+    min-width:40px;
+    font-size:20px;
+  }
+
+  .gm-benefit-text b{
+    font-size:11px;
+  }
+
+  .gm-benefit-text small{
+    font-size:9px;
+  }
+}
 </style>
 </head>
 <body>
