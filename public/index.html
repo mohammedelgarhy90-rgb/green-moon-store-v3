@@ -463,7 +463,7 @@ function updateCart(){
  let g=settings.gifts||{};
  $('giftMsg').innerHTML=t.gift?'<div class="gift-msg">🎁 '+esc(g.message||'مبروك! حصلت على هدية مجانية')+'<br><b>'+esc(g.name||'هدية Green Moon')+' × '+(Number(g.qty)||1)+'</b></div>':''
 }
-function qty(i,n){cart[i].quantity+=n;if(cart[i].quantity<1)cart.splice(i,1);updateCart();updateRewards()
+function qty(i,n){cart[i].quantity+=n;if(cart[i].quantity<1)cart.splice(i,1);updateCart();updateRewards()}
 function openCart(){$('cartModal').classList.remove('hidden');updateCart()}
 function closeCart(){$('cartModal').classList.add('hidden')}
 function showUpsell(id){
