@@ -316,7 +316,56 @@ window.deleteCategory=async i=>{if(!confirm("هل تريد حذف هذه الف�
 $("addCategory").onclick=async()=>{try{const name=$("categoryName").value.trim();if(!name){$("categoryMsg").textContent="اكتب اسم الفئة أولًا";return}const image=await readFile($("categoryImage").files[0]);const s={...currentSettings,categories:[...(currentSettings.categories||[]),{name,image:image||""}]};await api("/api/admin/settings",{method:"PUT",body:JSON.stringify(s)});currentSettings=s;$("categoryName").value="";$("categoryImage").value="";renderCategories();$("categoryMsg").textContent="تمت إضافة الفئة بنجاح";$("categoryMsg").style.color="#14743f"}catch(e){$("categoryMsg").textContent=e.message}};
 
 function renderProducts(){if(!products.length){$("products").innerHTML='<tr><td colspan="7">لا توجد منتجات</td></tr>';return}$("products").innerHTML=products.map(p=>`<tr><td><img class="thumb" src="${p.image||"/assets/logo.jpg"}"></td><td>${esc(p.name)}</td><td>${esc(p.category||"—")}</td><td>${Number(p.price||0)} ج</td><td>${Number(p.wholesalePrice||0)} ج</td><td>${Number(p.shippingPrice||0)} ج</td><td><button class="green" onclick="editProduct('${escjs(p.id)}')">تعديل</button></td></tr>`).join("")}
-function openProduct(p){editing=p||null;$("modal").classList.remove("hidden");$("modalTitle").textContent=p?"تعديل المنتج":"إضافة منتج";$("pid").value=p?.id||"";$("pname").value=p?.name||"";$("pprice").value=p?.price||0;$("pwholesale").value=p?.wholesalePrice||0;$("pshipping").value=p?.shippingPrice||0;$("pcategory").value=p?.category||"";$("pdetails").value=p?.details||"";$("pimagePreview").src=p?.image||"/assets/logo.jpg";const c=p?.care||{};["light","water","temperature","humidity","soil","fertilizer","pruning","propagation","problems","pests","mistakes","tips"].forEach(k=>$(k).value=c[k]||"");$("productMsg").textContent=""}
+function careToText(c){
+  if(!c) return "";
+  if(typeof c === "string") return c;
+
+  const labels = {
+    light:"🌿 الإضاءة",
+    water:"💧 الري",
+    temperature:"🌡️ درجة الحرارة",
+    humidity:"💦 الرطوبة",
+    soil:"🪴 التربة",
+    fertilizer:"🌱 التسميد",
+    pruning:"✂️ التقليم",
+    propagation:"🌱 الإكثار",
+    problems:"⚠️ المشاكل",
+    pests:"🐛 الآفات",
+    mistakes:"❌ الأخطاء الشائعة",
+    tips:"💚 نصائح Green Moon"
+  };
+
+  return Object.keys(labels)
+    .filter(k => c[k])
+    .map(k => labels[k] + ": " + c[k])
+    .join("\n");
+}
+
+function openProduct(p){
+  editing = p || null;
+
+  $("modal").classList.remove("hidden");
+
+  $("modalTitle").textContent =
+    p ? "تعديل المنتج" : "إضافة منتج";
+
+  $("pid").value = p?.id || "";
+  $("pname").value = p?.name || "";
+  $("pprice").value = p?.price || 0;
+  $("pwholesale").value = p?.wholesalePrice || 0;
+  $("pshipping").value = p?.shippingPrice || 0;
+  $("pcategory").value = p?.category || "";
+
+  $("pdetails").value = [
+    p?.details || "",
+    careToText(p?.care)
+  ].filter(Boolean).join("\n\n");
+
+  $("pimagePreview").src =
+    p?.image || "/assets/logo.jpg";
+
+  $("productMsg").textContent = "";
+ }
 window.editProduct=id=>openProduct(products.find(p=>String(p.id)===String(id)));$("newProduct").onclick=()=>openProduct(null);$("closeModal").onclick=()=>$("modal").classList.add("hidden");
 $("pimage").onchange=async e=>{const x=await readFile(e.target.files[0]);if(x)$("pimagePreview").src=x};
 $("saveProduct").onclick=async()=>{try{
