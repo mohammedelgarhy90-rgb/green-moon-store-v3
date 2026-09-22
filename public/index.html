@@ -168,6 +168,111 @@ header{position:sticky;top:0;z-index:50;background:rgba(6,28,21,.96);backdrop-fi
   .new{
     font-size:21px;
   }
+  }
+
+.deal-top{
+  position:relative;
+  border-radius:18px 18px 0 0;
+  overflow:hidden;
+  background:#fff;
+}
+
+.deal-image{
+  width:100%;
+  aspect-ratio:16/6;
+  object-fit:cover;
+  display:block;
+}
+
+.deal-badge{
+  position:absolute;
+  top:14px;
+  right:14px;
+  background:#e51d2a;
+  color:#fff;
+  padding:7px 13px;
+  border-radius:8px;
+  font-weight:800;
+  font-size:12px;
+}
+
+.deal-body{
+  background:#fff;
+  padding:18px 20px 20px;
+  border-radius:0 0 18px 18px;
+  border:1px solid #e5dfd2;
+  border-top:0;
+}
+
+.deal-title{
+  font-family:Cairo,Tahoma,sans-serif;
+  font-size:21px;
+  font-weight:800;
+  color:#092d22;
+}
+
+.deal-desc{
+  color:#78857e;
+  line-height:1.7;
+  margin:5px 0 10px;
+}
+
+.prices{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.old{
+  text-decoration:line-through;
+  color:#999;
+  font-size:13px;
+}
+
+.new{
+  font-size:25px;
+  font-weight:900;
+  color:#08783f;
+}
+
+.discount{
+  background:#e51d2a;
+  color:#fff;
+  padding:4px 9px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:800;
+}
+
+.timer{
+  display:none;
+}
+
+.deal-order{
+  margin-top:12px;
+  background:#08783f;
+  color:#fff;
+  padding:12px 20px;
+  border-radius:10px;
+  font-weight:800;
+}
+
+@media(max-width:600px){
+  .deal-image{
+    aspect-ratio:16/8;
+  }
+
+  .deal-body{
+    padding:14px;
+  }
+
+  .deal-title{
+    font-size:17px;
+  }
+
+  .new{
+    font-size:21px;
+  }
   }  
 .deal-top{position:relative}.deal-image{width:100%;aspect-ratio:16/7;object-fit:cover}
 .deal-badge{position:absolute;top:18px;right:18px;background:rgba(6,28,21,.9);color:#f7e7b4;padding:9px 15px;border-radius:999px;font-weight:700;font-size:12px}
