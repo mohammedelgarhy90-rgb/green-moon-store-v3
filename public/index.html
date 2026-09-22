@@ -1355,7 +1355,7 @@ if(!window.gmDealsTimer){
       done:total>=Number(fs.threshold),
       text:total>=Number(fs.threshold)
         ?"مبروك! الشحن مجاني على طلبك 🎉"
-        :"فاضلك "+Math.max(0,Number(fs.threshold)-total)+" ج",
+        :"أكمل مشترياتك لـ "+Number(fs.threshold)+" جنيه واستمتع بشحن مجاني 🚚", 
       action:"كمل طلبك ووصل للشحن المجاني"
     });
   }
@@ -1370,7 +1370,7 @@ if(!window.gmDealsTimer){
       done:total>=Number(g.threshold),
       text:total>=Number(g.threshold)
         ?(g.message||"مبروك! هديتك المجانية اتفتحت 🎉")
-        :"فاضلك "+Math.max(0,Number(g.threshold)-total)+" ج عشان تفتح هديتك",
+        :"أكمل مشترياتك لـ "+Number(g.threshold)+" جنيه واحصل على "+(g.name||"بوتس هانج")+" هدية 🎁", 
       action:"الهدية: "+(g.name||"هدية Green Moon")
     });
   }
