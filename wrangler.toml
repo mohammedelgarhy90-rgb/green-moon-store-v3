@@ -13,3 +13,5 @@ id = "fcc82f6add084ccb875865171252f4d1"
 [vars]
 # لا تضع كلمة المرور هنا. استخدم:
 # npx wrangler secret put ADMIN_PASSWORD
+[ai]
+binding = "AI"
