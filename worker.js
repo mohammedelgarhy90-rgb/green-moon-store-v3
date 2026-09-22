@@ -287,13 +287,131 @@ export default {
     }
 
     /* =========================
-       GREEN MOON DOCTOR
-    ========================= */
+   GREEN MOON DOCTOR
+========================= */
 
-    if (
-      url.pathname === '/api/doctor/analyze' &&
-      request.method === 'POST'
-    ) {
+if (
+  url.pathname === '/api/doctor/analyze' &&
+  request.method === 'POST'
+) {
+
+  try {
+
+    if (!env.AI) {
+      return json({
+        error: 'Cloudflare Workers AI غير مربوط بالـ Worker.'
+      }, 500);
+    }
+
+    const body = await request.json();
+
+    const image = String(body.image || '');
+
+    if (!image.startsWith('data:image/')) {
+      return json({
+        error: 'الصورة غير صالحة.'
+      }, 400);
+    }
+
+    if (image.length > 8_000_000) {
+      return json({
+        error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.'
+      }, 413);
+    }
+
+    const products = await getProducts(env);
+
+    const productCatalog = products
+      .filter(p => Number(p.price) > 0)
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        price: Number(p.price) || 0,
+        details: p.details || '',
+        image: p.image || '/assets/logo.jpg'
+      }));
+
+    const prompt = `
+أنت Green Moon Doctor 🌿، مساعد اختيار النباتات لمتجر Green Moon Plants & Flowers.
+
+حلل الصورة المرفقة.
+
+الهدف:
+الصورة قد تكون لمكان داخل منزل أو مكتب أو ريسبشن أو ترابيزة أو ركن فارغ.
+نريد اختيار أنسب نبات من المنتجات الموجودة في كتالوج Green Moon فقط.
+
+مهم جدًا:
+- لا تخترع أي منتج غير موجود في الكتالوج.
+- لا تخترع أسعارًا.
+- لا تغير أسماء المنتجات.
+- استخدم فقط المنتجات الموجودة في الكتالوج أدناه.
+- إذا كانت الصورة لا توضح المكان بشكل كافٍ، وضح ذلك.
+- لا تدّعي معرفة شدة الإضاءة بدقة إذا لم تكن واضحة من الصورة.
+- اختر من 1 إلى 3 منتجات مناسبة.
+- أعطِ سببًا بسيطًا لكل اختيار.
+- الإجابة باللهجة المصرية البسيطة.
+
+كتالوج منتجات Green Moon:
+${JSON.stringify(productCatalog)}
+
+أريد النتيجة بالشكل التالي:
+
+🌿 تحليل المكان:
+وصف مختصر للمكان الظاهر في الصورة.
+
+💡 الإضاءة المتوقعة:
+منخفضة / متوسطة / قوية / غير واضحة.
+
+🎯 أنسب اختيارات Green Moon:
+اذكر أفضل 1 إلى 3 منتجات من الكتالوج فقط.
+لكل منتج:
+- الاسم
+- سبب الترشيح
+- السعر
+
+⚠️ ملاحظة:
+إذا كانت الصورة غير كافية، وضح أن الترشيح مبدئي.
+`;
+
+    const aiResponse = await env.AI.run(
+      '@cf/meta/llama-3.2-11b-vision-instruct',
+      {
+        prompt,
+        image,
+        max_tokens: 900,
+        temperature: 0.3
+      }
+    );
+
+    const result =
+      aiResponse?.response ||
+      aiResponse?.result ||
+      '';
+
+    if (!String(result).trim()) {
+      return json({
+        error: 'Green Moon Doctor لم يُرجع نتيجة.'
+      }, 502);
+    }
+
+    return json({
+      success: true,
+      result: String(result).trim(),
+      products: productCatalog
+    });
+
+  } catch (error) {
+
+    return json({
+      error: String(
+        error?.message ||
+        error ||
+        'حدث خطأ أثناء تحليل الصورة.'
+      )
+    }, 500);
+
+  }
+}
 
       try {
 
