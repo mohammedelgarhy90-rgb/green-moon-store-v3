@@ -1049,9 +1049,42 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 </section>
 
 
-<section class="gm-hero" aria-label="Green Moon hero">
+<section class="gm-hero" aria-label="Green Moon hero" id="greenMoonHero">
 
-  <img id="heroImage" src="/assets/logo.jpg" alt="Green Moon Plants & Flowers">
+  <div id="heroSlider" style="position:absolute;inset:0;overflow:hidden">
+
+    <img
+      id="heroImage"
+      src="/assets/logo.jpg"
+      alt="Green Moon Plants & Flowers"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;transition:opacity .7s ease;z-index:1"
+    >
+
+    <img
+      src="/assets/product-1.jpg"
+      alt="Green Moon"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease;z-index:0"
+    >
+
+    <img
+      src="/assets/product-2.jpg"
+      alt="Green Moon"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease;z-index:0"
+    >
+
+    <img
+      src="/assets/product-3.jpg"
+      alt="Green Moon"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease;z-index:0"
+    >
+
+    <img
+      src="/assets/product-4.jpg"
+      alt="Green Moon"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease;z-index:0"
+    >
+
+  </div>
 
   <div class="gm-hero-overlay"></div>
 
@@ -1067,14 +1100,85 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
     </a>
   </div>
 
-  <div class="gm-hero-dots">
-    <span class="active"></span>
-    <span></span>
-    <span></span>
-    <span></span>
+  <div
+    id="heroDots"
+    class="gm-hero-dots"
+    style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:7px"
+  >
+    <span class="active" style="width:9px;height:9px;border-radius:50%;background:#d9b95b;display:block;cursor:pointer"></span>
+    <span style="width:9px;height:9px;border-radius:50%;background:#fff;display:block;cursor:pointer"></span>
+    <span style="width:9px;height:9px;border-radius:50%;background:#fff;display:block;cursor:pointer"></span>
+    <span style="width:9px;height:9px;border-radius:50%;background:#fff;display:block;cursor:pointer"></span>
+    <span style="width:9px;height:9px;border-radius:50%;background:#fff;display:block;cursor:pointer"></span>
   </div>
 
-</section> 
+</section>
+
+<script>
+(function(){
+
+  const slider=document.getElementById('heroSlider');
+  const dots=document.querySelectorAll('#heroDots span');
+
+  if(!slider || !dots.length)return;
+
+  const slides=slider.querySelectorAll('img');
+  let current=0;
+  let timer=null;
+  let startX=0;
+
+  function showSlide(index){
+
+    current=(index+slides.length)%slides.length;
+
+    slides.forEach((img,i)=>{
+      img.style.opacity=i===current?'1':'0';
+      img.style.zIndex=i===current?'2':'0';
+    });
+
+    dots.forEach((dot,i)=>{
+      dot.style.background=i===current?'#d9b95b':'#ffffff';
+      dot.style.transform=i===current?'scale(1.25)':'scale(1)';
+    });
+  }
+
+  function nextSlide(){
+    showSlide(current+1);
+  }
+
+  function startSlider(){
+    clearInterval(timer);
+    timer=setInterval(nextSlide,5000);
+  }
+
+  dots.forEach((dot,i)=>{
+    dot.addEventListener('click',()=>{
+      showSlide(i);
+      startSlider();
+    });
+  });
+
+  slider.addEventListener('touchstart',e=>{
+    startX=e.touches[0].clientX;
+  },{passive:true});
+
+  slider.addEventListener('touchend',e=>{
+    const endX=e.changedTouches[0].clientX;
+    const diff=startX-endX;
+
+    if(Math.abs(diff)>50){
+      if(diff>0)showSlide(current+1);
+      else showSlide(current-1);
+
+      startSlider();
+    }
+  },{passive:true});
+
+  showSlide(0);
+  startSlider();
+
+})();
+</script>
 
 <section class="section" id="deals">
 <div class="deals-head"><h2>🔥 صفقات Green Moon</h2><b>صفقة ورا صفقة… الفرصة مبتستناش!</b><p>عروض حصرية بتتجدد تلقائيًا ⏳</p></div>
