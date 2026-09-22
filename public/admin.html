@@ -319,7 +319,40 @@ function renderProducts(){if(!products.length){$("products").innerHTML='<tr><td 
 function openProduct(p){editing=p||null;$("modal").classList.remove("hidden");$("modalTitle").textContent=p?"تعديل المنتج":"إضافة منتج";$("pid").value=p?.id||"";$("pname").value=p?.name||"";$("pprice").value=p?.price||0;$("pwholesale").value=p?.wholesalePrice||0;$("pshipping").value=p?.shippingPrice||0;$("pcategory").value=p?.category||"";$("pdetails").value=p?.details||"";$("pimagePreview").src=p?.image||"/assets/logo.jpg";const c=p?.care||{};["light","water","temperature","humidity","soil","fertilizer","pruning","propagation","problems","pests","mistakes","tips"].forEach(k=>$(k).value=c[k]||"");$("productMsg").textContent=""}
 window.editProduct=id=>openProduct(products.find(p=>String(p.id)===String(id)));$("newProduct").onclick=()=>openProduct(null);$("closeModal").onclick=()=>$("modal").classList.add("hidden");
 $("pimage").onchange=async e=>{const x=await readFile(e.target.files[0]);if(x)$("pimagePreview").src=x};
-$("saveProduct").onclick=async()=>{try{let image=$("pimagePreview").src;const f=$("pimage").files[0];if(f)image=await readFile(f);const body={id:$("pid").value||undefined,name:$("pname").value.trim(),category:$("pcategory").value.trim(),price:Number($("pprice").value)||0,wholesalePrice:Number($("pwholesale").value)||0,shippingPrice:Number($("pshipping").value)||0,details:$("pdetails").value.trim(),image,care:{light:$("light").value,water:$("water").value,temperature:$("temperature").value,humidity:$("humidity").value,soil:$("soil").value,fertilizer:$("fertilizer").value,pruning:$("pruning").value,propagation:$("propagation").value,problems:$("problems").value,pests:$("pests").value,mistakes:$("mistakes").value,tips:$("tips").value}};const r=await api("/api/admin/products",{method:editing?"PUT":"POST",body:JSON.stringify(body)});products=r.products||products;await loadAll();$("productMsg").textContent="تم الحفظ وظهر للعميل";$("productMsg").style.color="#14743f";setTimeout(()=>$("modal").classList.add("hidden"),700)}catch(e){$("productMsg").textContent=e.message;$("productMsg").style.color="#b3261e"}};
+$("saveProduct").onclick=async()=>{try{
+let image=$("pimagePreview").src;
+const f=$("pimage").files[0];
+if(f)image=await readFile(f);
+
+const body={
+id:$("pid").value||undefined,
+name:$("pname").value.trim(),
+category:$("pcategory").value.trim(),
+price:Number($("pprice").value)||0,
+wholesalePrice:Number($("pwholesale").value)||0,
+shippingPrice:Number($("pshipping").value)||0,
+details:$("pdetails").value.trim(),
+image,
+care:""
+};
+
+const r=await api("/api/admin/products",{
+method:editing?"PUT":"POST",
+body:JSON.stringify(body)
+});
+
+products=r.products||products;
+await loadAll();
+
+$("productMsg").textContent="تم الحفظ وظهر للعميل";
+$("productMsg").style.color="#14743f";
+
+setTimeout(()=>$("modal").classList.add("hidden"),700);
+
+}catch(e){
+$("productMsg").textContent=e.message;
+$("productMsg").style.color="#b3261e";
+}};
 
 function renderDealProductOptions(){const select=$("dealProduct");select.innerHTML='<option value="">اختار المنتج</option>';products.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=p.name+" — "+Number(p.price||0)+" جنيه";select.appendChild(o)})}
 function getDeals(){return Array.isArray(currentSettings.deals)?currentSettings.deals:[]}
