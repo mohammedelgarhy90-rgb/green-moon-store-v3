@@ -286,7 +286,9 @@ const $=id=>document.getElementById(id);
 let products=[],editing=null,currentSettings={},editingArticleIndex=-1;
 function password(){return sessionStorage.getItem("gm_admin_password")||""}
 function headers(){return {"Content-Type":"application/json","Authorization":"Bearer "+password()}}
-async function api(url,opt={}){opt.headers={...(opt.headers||{}),...headers()};const r=await fetch(url,opt);let d={};try{d=await r.json()}catch(e){}if(!r.ok)throw new Error(d.error||"حدث خطأ");return d}
+if(!r.ok)throw new Error(
+  "HTTP "+r.status+" — "+(d.error||JSON.stringify(d)||"خطأ غير معروف")
+);
 function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function escjs(x){return String(x??"").replace(/\\/g,"\\\\").replace(/'/g,"\\'")}
 function readFile(file){return new Promise((resolve,reject)=>{if(!file)return resolve(null);const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
