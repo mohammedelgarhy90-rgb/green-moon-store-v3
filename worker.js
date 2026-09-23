@@ -458,7 +458,24 @@ ${JSON.stringify(productCatalog)}
 ⚠️ ملاحظة:
 إذا كانت الصورة غير كافية، وضح أن الترشيح مبدئي.
 `;
+const doctorAgreementKey = 'GM_DOCTOR_META_AGREED';
 
+const doctorAgreement =
+  await env.GREEN_MOON_KV.get(doctorAgreementKey);
+
+if (!doctorAgreement) {
+  await env.AI.run(
+    '@cf/meta/llama-3.2-11b-vision-instruct',
+    {
+      prompt: 'agree'
+    }
+  );
+
+  await env.GREEN_MOON_KV.put(
+    doctorAgreementKey,
+    '1'
+  );
+}
     const messages = [
   {
     role: 'system',
