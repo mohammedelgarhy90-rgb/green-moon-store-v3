@@ -131,27 +131,56 @@ function normalizeProduct(product) {
 }
 
 async function getProducts(env) {
-  let products =
-    await env.GREEN_MOON_KV.get(
-      PRODUCTS_KEY,
-      'json'
-    );
+  try {
+    const raw = await env.GREEN_MOON_KV.get(PRODUCTS_KEY);
 
-  if (!Array.isArray(products)) {
-    products =
-      SEED_PRODUCTS.map(
-        normalizeProduct
+    if (!raw) {
+      const products = SEED_PRODUCTS.map(normalizeProduct);
+
+      await env.GREEN_MOON_KV.put(
+        PRODUCTS_KEY,
+        JSON.stringify(products)
       );
 
-    await env.GREEN_MOON_KV.put(
-      PRODUCTS_KEY,
-      JSON.stringify(products)
+      return products;
+    }
+
+    let products;
+
+    try {
+      products = JSON.parse(raw);
+    } catch (parseError) {
+      console.error('GREEN_MOON_PRODUCTS_JSON_ERROR', parseError);
+
+      const repaired = SEED_PRODUCTS.map(normalizeProduct);
+
+      await env.GREEN_MOON_KV.put(
+        PRODUCTS_KEY,
+        JSON.stringify(repaired)
+      );
+
+      return repaired;
+    }
+
+    if (!Array.isArray(products)) {
+      const repaired = SEED_PRODUCTS.map(normalizeProduct);
+
+      await env.GREEN_MOON_KV.put(
+        PRODUCTS_KEY,
+        JSON.stringify(repaired)
+      );
+
+      return repaired;
+    }
+
+    return products.map(normalizeProduct);
+  } catch (error) {
+    console.error('GREEN_MOON_PRODUCTS_KV_ERROR', error);
+
+    throw new Error(
+      `GREEN_MOON_KV / products: ${error?.message || String(error)}`
     );
   }
-
-  return products.map(
-    normalizeProduct
-  );
 }
 
 async function getLogo(env) {
@@ -811,9 +840,22 @@ await notifyNewOrderWhatsApp(env, order);
         request.method === 'GET'
       ) {
 
-        return json(
-          await getProducts(env)
-        );
+        try {
+          const products = await getProducts(env);
+          return json(products);
+        } catch (error) {
+          console.error('ADMIN_PRODUCTS_GET_ERROR', error);
+
+          return json(
+            {
+              error: 'فشل تحميل المنتجات من قاعدة البيانات.',
+              details:
+                error?.message ||
+                String(error)
+            },
+            500
+          );
+        }
       }
 
       if (
