@@ -1723,11 +1723,85 @@ async function analyzePlant(){
 
   try{
     const imageData=await new Promise((resolve,reject)=>{
-      const reader=new FileReader();
-      reader.onload=()=>resolve(reader.result);
-      reader.onerror=()=>reject(new Error('تعذر قراءة الصورة.'));
-      reader.readAsDataURL(file);
-    });
+  const reader=new FileReader();
+
+  reader.onload=()=>{
+    const img=new Image();
+
+    img.onload=()=>{
+      const maxSize=1600;
+      const scale=Math.min(
+        1,
+        maxSize/Math.max(img.width,img.height)
+      );
+
+      const canvas=document.createElement('canvas');
+
+      canvas.width=Math.max(
+        1,
+        Math.round(img.width*scale)
+      );
+
+      canvas.height=Math.max(
+        1,
+        Math.round(img.height*scale)
+      );
+
+      const ctx=canvas.getContext('2d');
+
+      if(!ctx){
+        reject(
+          new Error('تعذر تجهيز الصورة للتحليل.')
+        );
+        return;
+      }
+
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      const compressed=
+        canvas.toDataURL(
+          'image/jpeg',
+          0.82
+        );
+
+      if(
+        !compressed ||
+        compressed.length>7500000
+      ){
+        reject(
+          new Error(
+            'الصورة كبيرة جدًا. اختار صورة أصغر وحاول مرة أخرى.'
+          )
+        );
+        return;
+      }
+
+      resolve(compressed);
+    };
+
+    img.onerror=()=>{
+      reject(
+        new Error('تعذر تجهيز الصورة للتحليل.')
+      );
+    };
+
+    img.src=reader.result;
+  };
+
+  reader.onerror=()=>{
+    reject(
+      new Error('تعذر قراءة الصورة.')
+    );
+  };
+
+  reader.readAsDataURL(file);
+});
 
     const response=await fetch('/api/doctor/analyze',{
       method:'POST',
