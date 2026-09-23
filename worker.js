@@ -179,6 +179,92 @@ async function getOrders(env) {
       'json'
     )
   ) || [];
+}async function sendWhatsAppTemplate(env, to, templateName, parameters = []) {
+  const token = env.WHATSAPP_TOKEN;
+  const phoneNumberId = env.WHATSAPP_PHONE_NUMBER_ID;
+
+  if (!token || !phoneNumberId || !to || !templateName) {
+    return false;
+  }
+
+  const version = env.WHATSAPP_GRAPH_VERSION || 'v23.0';
+
+  const url =
+    `https://graph.facebook.com/${version}/${phoneNumberId}/messages`;
+
+  const payload = {
+    messaging_product: 'whatsapp',
+    to: String(to).replace(/[^0-9]/g, ''),
+    type: 'template',
+
+    template: {
+      name: templateName,
+
+      language: {
+        code: env.WHATSAPP_TEMPLATE_LANG || 'ar'
+      },
+
+      components: parameters.length
+        ? [{
+            type: 'body',
+
+            parameters: parameters.map(value => ({
+              type: 'text',
+              text: String(value ?? '')
+            }))
+          }]
+        : []
+    }
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${token}`
+      },
+
+      body: JSON.stringify(payload)
+    });
+
+    return response.ok;
+
+  } catch {
+    return false;
+  }
+}
+
+
+async function notifyNewOrderWhatsApp(env, order) {
+  return sendWhatsAppTemplate(
+    env,
+    env.WHATSAPP_ADMIN_PHONE,
+    env.WHATSAPP_NEW_ORDER_TEMPLATE,
+
+    [
+      order.id,
+      order.name,
+      order.total,
+      order.phone
+    ]
+  );
+}
+
+
+async function notifyOrderStatusWhatsApp(env, order) {
+  return sendWhatsAppTemplate(
+    env,
+    env.WHATSAPP_ADMIN_PHONE,
+    env.WHATSAPP_STATUS_TEMPLATE,
+
+    [
+      order.id,
+      order.name,
+      order.status
+    ]
+  );
 }
 
 export default {
