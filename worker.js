@@ -518,15 +518,14 @@ const aiResponse = await env.AI.run(
   } catch (error) {
 
     return json({
-      error: String(
+      error:
         error?.message ||
-        error ||
+        JSON.stringify(error) ||
+        String(error) ||
         'حدث خطأ أثناء تحليل الصورة.'
-      )
     }, 500);
 
-  }
-}
+               }
 
       
 
