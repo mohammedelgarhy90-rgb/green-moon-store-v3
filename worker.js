@@ -1195,7 +1195,7 @@ await notifyNewOrderWhatsApp(env, order);
               404
             );
           }
-
+const previousStatus = String(orders[index].status || '');
           orders[index] = {
             ...orders[index],
             ...body
