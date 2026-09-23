@@ -762,7 +762,7 @@ if (!doctorAgreement) {
         );
       }
     }
-
+await notifyNewOrderWhatsApp(env, order);
     /* =========================
        ADMIN PRODUCTS
     ========================= */
