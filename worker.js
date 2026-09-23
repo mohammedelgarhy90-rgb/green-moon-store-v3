@@ -476,15 +476,27 @@ if (!doctorAgreement) {
     '1'
   );
 }
-    const aiResponse = await env.AI.run(
-      '@cf/meta/llama-3.2-11b-vision-instruct',
-      {
-        prompt,
-        image,
-        max_tokens: 900,
-        temperature: 0.3
-      }
-    );
+    const messages = [
+  {
+    role: 'system',
+    content:
+      'أنت Green Moon Doctor، مساعد متخصص في تحليل صور النباتات والأماكن واقتراح نباتات Green Moon.'
+  },
+  {
+    role: 'user',
+    content: prompt
+  }
+];
+
+const aiResponse = await env.AI.run(
+  '@cf/meta/llama-3.2-11b-vision-instruct',
+  {
+    messages,
+    image,
+    max_tokens: 900,
+    temperature: 0.3
+  }
+);
 
     const result =
       aiResponse?.response ||
