@@ -737,7 +737,15 @@ if (!doctorAgreement) {
             orders.slice(0, 500)
           )
         );
-
+if (
+  body.status &&
+  String(body.status) !== previousStatus
+) {
+  await notifyOrderStatusWhatsApp(
+    env,
+    orders[index]
+  );
+}
         return json({
           success:
             true,
