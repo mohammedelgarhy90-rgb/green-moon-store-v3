@@ -940,6 +940,21 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 .gm-doctor-card{max-width:1280px;margin:0 auto;padding:35px;border-radius:24px;background:linear-gradient(135deg,#073c27,#0b5b3d);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:35px;overflow:hidden;position:relative;box-shadow:0 12px 35px rgba(7,60,39,.18)}.gm-doctor-content{flex:1}.gm-doctor-kicker{display:block;color:#d5b86a;font-size:11px;font-weight:800;letter-spacing:2px;margin-bottom:8px}.gm-doctor-content h2{margin:0;font-size:32px;font-weight:900}.gm-doctor-title{margin:5px 0 12px;color:#d5b86a;font-size:18px;font-weight:800}.gm-doctor-text{max-width:600px;color:#e8f1ec;line-height:1.9;font-size:14px}.gm-doctor-btn{margin-top:12px;padding:13px 22px;border:0;border-radius:10px;background:#d5b86a;color:#073c27;font-weight:900;cursor:pointer}.gm-doctor-image{width:250px;min-width:250px;text-align:center;position:relative}.gm-doctor-image img{width:210px;height:210px;object-fit:cover;border-radius:50%;border:5px solid rgba(213,184,106,.7);box-shadow:0 10px 30px rgba(0,0,0,.25)}.gm-doctor-badge{margin-top:-18px;position:relative;display:inline-block;background:#fff;color:#073c27;padding:7px 12px;border-radius:20px;font-size:11px;font-weight:800}
 @media(max-width:600px){.gm-benefits{grid-template-columns:1fr 1fr;padding:16px 13px;gap:10px}.gm-benefit{padding:12px 10px}.gm-benefit-icon{font-size:24px;min-width:30px}.gm-benefit-text b{font-size:11px}.gm-benefit-text small{font-size:9px}.gm-doctor-card{padding:25px 18px;flex-direction:column-reverse;text-align:center}.gm-doctor-content h2{font-size:25px}.gm-doctor-text{font-size:12px}.gm-doctor-image{width:100%;min-width:0}.gm-doctor-image img{width:160px;height:160px}}
 
+
+.deal-details-btn{margin-top:10px;background:#f5f0e5;color:#0d5135;padding:11px 16px;border-radius:10px;font-weight:800;border:1px solid #d8c99f;width:100%}
+.deal-detail-modal{width:min(850px,100%);padding:0;overflow:hidden}
+.deal-detail-hero{width:100%;max-height:360px;object-fit:cover;display:block;background:#f2eee4}
+.deal-detail-content{padding:20px}
+.deal-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.deal-detail-box{background:#f7faf8;border:1px solid #e1e9e3;border-radius:15px;padding:13px;line-height:1.9}
+.deal-detail-box.full{grid-column:1/-1}
+.deal-detail-box h4{margin:0 0 6px;color:#0d5135}
+.deal-detail-price{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.deal-detail-price .new{font-size:28px;font-weight:900;color:#08783f}
+.deal-detail-price .old{text-decoration:line-through;color:#999}
+.deal-detail-price .discount{background:#e51d2a;color:#fff;padding:4px 9px;border-radius:6px;font-size:11px;font-weight:800}
+.deal-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+@media(max-width:600px){.deal-detail-grid{grid-template-columns:1fr}.deal-detail-box.full{grid-column:auto}.deal-detail-actions{grid-template-columns:1fr}.deal-detail-hero{max-height:280px}.deal-detail-content{padding:15px}}
 </style>
 </head>
 <body>
@@ -1278,6 +1293,25 @@ footer{background:var(--deep);color:white;text-align:center;padding:50px 20px;ma
 </div></div>
 
 
+<div id="dealModal" class="modal hidden">
+  <div class="box deal-detail-modal">
+    <button class="close" onclick="closeDeal()">×</button>
+    <img id="dealDetailImage" class="deal-detail-hero" src="/assets/logo.jpg" alt="">
+    <div class="deal-detail-content">
+      <span class="deal-badge" style="position:static;display:inline-block">🔥 صفقة Green Moon</span>
+      <h2 id="dealDetailTitle" style="margin:10px 0 4px"></h2>
+      <p id="dealDetailDescription" class="deal-desc"></p>
+      <div id="dealDetailPrice" class="deal-detail-price"></div>
+      <div id="dealDetailGrid" class="deal-detail-grid"></div>
+      <div class="deal-detail-actions">
+        <button class="full" onclick="addDealFromDetails()">🛒 اطلب الصفقة الآن</button>
+        <button class="share-copy" onclick="shareCurrentDeal()">🔗 مشاركة الصفقة</button>
+      </div>
+      <p id="dealShareMsg" style="text-align:center;color:#65766d"></p>
+    </div>
+  </div>
+</div>
+
 <div id="productModal" class="modal hidden">
   <div class="box">
     <button class="close" onclick="closeProduct()">×</button>
@@ -1433,8 +1467,47 @@ function renderDeals(){
  }
  let sec=Math.max(0,Math.ceil((d._end-now)/1000)),m=Math.floor(sec/60),s=sec%60;
  let old=Number(d.oldPrice)||0,price=Number(d.price)||0,off=old>price?Math.round((old-price)/old*100):0;
- $('dealsContainer').innerHTML='<div class="deal-card"><div class="deal-top"><img class="deal-image" src="'+(d.image||'/assets/logo.jpg')+'"><span class="deal-badge">🔥 صفقة الآن</span></div><div class="deal-body"><div class="deal-title">'+esc(d.title||'صفقة Green Moon')+'</div><p class="deal-desc">'+esc(d.description||'')+'</p><div class="prices"><span class="old">'+old+' جنيه</span><span class="new">'+price+' جنيه</span>'+(off?'<span class="discount">خصم '+off+'%</span>':'')+'</div><div class="timer"><div><b>'+String(m).padStart(2,'0')+'</b>دقيقة</div><div><b>'+String(s).padStart(2,'0')+'</b>ثانية</div></div><button class="deal-order" onclick="addDeal('+d._index+')">🛒 اطلب الصفقة الآن</button></div></div>'
+ $('dealsContainer').innerHTML='<div class="deal-card"><div class="deal-top"><img class="deal-image" src="'+(d.image||'/assets/logo.jpg')+'"><span class="deal-badge">🔥 صفقة الآن</span></div><div class="deal-body"><div class="deal-title">'+esc(d.title||'صفقة Green Moon')+'</div><p class="deal-desc">'+esc(d.description||'')+'</p><div class="prices"><span class="old">'+old+' جنيه</span><span class="new">'+price+' جنيه</span>'+(off?'<span class="discount">خصم '+off+'%</span>':'')+'</div><div class="timer"><div><b>'+String(m).padStart(2,'0')+'</b>دقيقة</div><div><b>'+String(s).padStart(2,'0')+'</b>ثانية</div></div><button class="deal-order" onclick="addDeal('+d._index+')">🛒 اطلب الصفقة الآن</button><button class="deal-details-btn" type="button" onclick="openDeal('+d._index+')">📦 تفاصيل الصفقة</button></div></div>'
 }
+function dealDetailBox(title,content,full=false){
+ if(!content)return "";
+ const body=String(content).split(/\r?\n/).filter(Boolean).map(x=>"• "+esc(x)).join("<br>");
+ return '<div class="deal-detail-box'+(full?' full':'')+'"><h4>'+title+'</h4><div>'+body+'</div></div>'
+}
+function openDeal(index){
+ window.currentDealIndex=index;
+ const d=schedule()[index];
+ if(!d)return;
+ const old=Number(d.oldPrice)||0,price=Number(d.price)||0,off=old>price?Math.round((old-price)/old*100):0;
+ $("dealDetailImage").src=d.image||"/assets/logo.jpg";
+ $("dealDetailTitle").textContent=d.title||"صفقة Green Moon";
+ $("dealDetailDescription").textContent=d.description||"";
+ $("dealDetailPrice").innerHTML=(old?'<span class="old">'+old+' جنيه</span>':"")+'<span class="new">'+price+' جنيه</span>'+(off?'<span class="discount">خصم '+off+'%</span>':"");
+ const boxes=[];
+ if(d.contents)boxes.push(dealDetailBox("📦 محتويات الصفقة",d.contents,true));
+ if(d.sizes)boxes.push(dealDetailBox("📏 المقاسات / الأحجام",d.sizes));
+ if(d.features)boxes.push(dealDetailBox("⭐ مميزات الصفقة",d.features));
+ if(d.shipping)boxes.push(dealDetailBox("🚚 تفاصيل الشحن",d.shipping));
+ if(d.notes)boxes.push(dealDetailBox("📝 ملاحظات إضافية",d.notes,true));
+ const product=products.find(p=>String(p.id)===String(d.productId));
+ if(product)boxes.push(dealDetailBox("🌱 المنتج",product.name));
+ $("dealDetailGrid").innerHTML=boxes.length?boxes.join(""):'<div class="deal-detail-box full"><h4>تفاصيل الصفقة</h4><div>اضغط على زر الطلب أو تواصل معنا لمعرفة باقي التفاصيل.</div></div>';
+ $("dealShareMsg").textContent="";
+ $("dealModal").classList.remove("hidden");
+}
+function closeDeal(){$("dealModal").classList.add("hidden")}
+function addDealFromDetails(){
+ const d=schedule()[$("dealModal")?schedule().findIndex(x=>x._index===window.currentDealIndex):0];
+ if(window.currentDealIndex!=null){addDeal(window.currentDealIndex);closeDeal()}
+}
+function shareCurrentDeal(){
+ const d=schedule().find(x=>x._index===window.currentDealIndex);
+ if(!d)return;
+ const text="🔥 "+(d.title||"صفقة Green Moon")+" — "+Number(d.price||0)+" جنيه";
+ if(navigator.share)navigator.share({title:d.title||"صفقة Green Moon",text,url:location.href+"#deals"}).catch(()=>{});
+ else navigator.clipboard?.writeText(text+" "+location.href+"#deals").then(()=>$("dealShareMsg").textContent="تم نسخ رابط الصفقة");
+}
+
 if(!window.gmDealsTimer){
   window.gmDealsTimer=setInterval(renderDeals,1000);
 }
