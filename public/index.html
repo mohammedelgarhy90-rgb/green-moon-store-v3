@@ -1337,7 +1337,7 @@ async function load(){
  try{
   settings=await get('/api/settings');products=await get('/api/products');
   if(!Array.isArray(products))products=[];
-  apply();renderCategories();renderProducts();renderArticles();updateCart();renderDeals();updateRewards();openSharedProduct();
+  renderCategories();renderProducts();renderArticles();updateCart();renderDeals();updateRewards();openSharedProduct();
  }catch(e){const msg='تعذر تحميل بيانات المتجر. تأكد من نشر Worker الصحيح.'; const p=$('productGrid'); if(p)p.innerHTML='<div style="padding:24px;text-align:center;color:#9b2c2c;font-weight:800">'+msg+'</div>'; const d=$('dealsContainer'); if(d)d.innerHTML='<div style="padding:24px;text-align:center;color:#9b2c2c">تعذر تحميل الصفقات حاليًا.</div>'}
 }
 
