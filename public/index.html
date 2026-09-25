@@ -1340,13 +1340,7 @@ async function load(){
   apply();renderCategories();renderProducts();renderArticles();updateCart();renderDeals();updateRewards();openSharedProduct();
  }catch(e){const msg='تعذر تحميل بيانات المتجر. تأكد من نشر Worker الصحيح.'; const p=$('productGrid'); if(p)p.innerHTML='<div style="padding:24px;text-align:center;color:#9b2c2c;font-weight:800">'+msg+'</div>'; const d=$('dealsContainer'); if(d)d.innerHTML='<div style="padding:24px;text-align:center;color:#9b2c2c">تعذر تحميل الصفقات حاليًا.</div>'}
 }
-function apply(){
- if(settings.storeName){$('headerName').textContent=settings.storeName;document.title=settings.storeName}
- if(settings.logo)$('siteLogo').src=settings.logo;
- if(settings.title)$('heroTitle').textContent=settings.title;
- if(settings.subtitle)$('heroSubtitle').textContent=settings.subtitle;
- if(settings.hero){$('heroImage').src=settings.hero;$('heroImage').style.display='block'}
-}
+
 function renderCategories(){
  let a=Array.isArray(settings.categories)?settings.categories:[];
  $('categories').innerHTML='<button class="cat" onclick="filterCat(\'\')">🌿<br><strong>الكل</strong></button>'+
