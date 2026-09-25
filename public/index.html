@@ -1540,6 +1540,1231 @@ footer p{
   }
 }
 </style>
+  <style id="gm-reference-final">
+@media(max-width:600px){
+
+:root{
+  --ref-green:#073f2d;
+  --ref-green2:#0a5a3f;
+  --ref-gold:#e6c25b;
+  --ref-cream:#f5f1e5;
+  --ref-card:#fffdf7;
+  --ref-ink:#17241e;
+}
+
+html,body{
+  background:var(--ref-cream)!important;
+  color:var(--ref-ink)!important;
+}
+
+body{
+  padding-bottom:76px!important;
+  overflow-x:hidden!important;
+}
+
+/* إخفاء الواجهة القديمة على الموبايل فقط */
+body>.gm-amazon-header,
+body>.gm-promo-bar,
+body>#rewards,
+body>#deals,
+body>.gm-benefits,
+body>#shop-categories,
+body>#products,
+body>#articles,
+body>#contact,
+body>footer,
+body>.bottom{
+  display:none!important;
+}
+
+/* الواجهة الجديدة */
+#gmRefMobile{
+  display:block!important;
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  background:var(--ref-cream);
+}
+
+/* ================= HEADER ================= */
+
+.gm-ref-header{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  z-index:50;
+
+  height:82px;
+
+  display:grid;
+  grid-template-columns:64px 1fr 118px;
+  align-items:center;
+  gap:8px;
+
+  padding:8px 10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(2,43,30,.97),
+      rgba(2,43,30,.80)
+    );
+}
+
+.gm-ref-menu,
+.gm-ref-action{
+  border:0!important;
+  color:#f6e4a4!important;
+  background:rgba(2,31,22,.65)!important;
+  border-radius:24px!important;
+  height:56px;
+}
+
+.gm-ref-menu{
+  font-size:29px!important;
+  line-height:1;
+}
+
+.gm-ref-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+}
+
+.gm-ref-action{
+  width:53px;
+  font-size:27px!important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.gm-ref-cart{
+  position:relative;
+}
+
+.gm-ref-cart-count{
+  position:absolute;
+  top:1px;
+  right:0;
+
+  width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:var(--ref-gold);
+  color:#183629;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:10px;
+  font-weight:900;
+}
+
+.gm-ref-brand{
+  justify-self:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  padding:3px 10px;
+}
+
+.gm-ref-brand img{
+  width:190px;
+  height:62px;
+  object-fit:contain;
+  filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));
+}
+
+/* ================= HERO ================= */
+
+.gm-ref-hero{
+  position:relative;
+  height:535px;
+  overflow:hidden;
+  background:#143f2d;
+}
+
+.gm-ref-hero img{
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+  display:block;
+}
+
+.gm-ref-hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(1,32,22,.88) 0%,
+      rgba(1,32,22,.63) 42%,
+      rgba(1,32,22,.05) 78%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.10),
+      rgba(0,0,0,.18)
+    );
+}
+
+.gm-ref-copy{
+  position:absolute;
+  z-index:2;
+
+  top:145px;
+  right:27px;
+  width:55%;
+
+  text-align:right;
+  color:#fff;
+}
+
+.gm-ref-copy h1{
+  margin:0 0 8px;
+
+  font-size:31px;
+  line-height:1.3;
+  font-weight:900;
+}
+
+.gm-ref-copy h1 span{
+  display:block;
+  color:#f1d16c;
+}
+
+.gm-ref-copy p{
+  margin:0 0 17px;
+
+  font-size:13px;
+  line-height:1.8;
+
+  color:#fff;
+}
+
+.gm-ref-cta{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f4d56f,
+      #d8b34f
+    );
+
+  color:#17392b!important;
+  text-decoration:none!important;
+
+  border-radius:30px;
+
+  padding:11px 24px;
+
+  font-size:13px;
+  font-weight:900;
+
+  box-shadow:
+    0 7px 20px rgba(0,0,0,.20);
+}
+
+.gm-ref-cta:before{
+  content:"‹";
+  font-size:24px;
+  line-height:10px;
+}
+
+/* ================= CATEGORIES ================= */
+
+.gm-ref-cats{
+  position:relative;
+  z-index:5;
+
+  margin:-1px 12px 12px;
+
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+}
+
+.gm-ref-cat{
+  min-width:0;
+  height:133px;
+
+  background:var(--ref-card);
+
+  border:1px solid #e7e0d2;
+  border-radius:16px;
+
+  box-shadow:
+    0 4px 14px rgba(22,43,34,.10);
+
+  padding:8px 3px 7px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  text-decoration:none!important;
+  color:var(--ref-ink)!important;
+}
+
+.gm-ref-cat img{
+  width:78px;
+  height:78px;
+
+  object-fit:cover;
+
+  border-radius:12px;
+
+  margin-bottom:5px;
+}
+
+.gm-ref-cat b{
+  font-size:10px;
+  line-height:1.35;
+
+  text-align:center;
+
+  font-weight:900;
+}
+
+/* ================= BAMBOO BANNER ================= */
+
+.gm-ref-banner{
+  position:relative;
+
+  height:132px;
+
+  margin:0 12px 20px;
+
+  border-radius:15px;
+
+  overflow:hidden;
+
+  background:#0b4a34;
+
+  box-shadow:
+    0 4px 14px rgba(22,43,34,.10);
+}
+
+.gm-ref-banner img{
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+}
+
+.gm-ref-banner:after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      270deg,
+      rgba(1,45,31,.96),
+      rgba(1,45,31,.52),
+      rgba(1,45,31,.08)
+    );
+}
+
+.gm-ref-banner-copy{
+  position:absolute;
+  z-index:2;
+
+  right:18px;
+  top:19px;
+
+  text-align:right;
+  color:#fff;
+}
+
+.gm-ref-banner h2{
+  margin:0;
+
+  color:#f0d06a;
+
+  font-size:22px;
+  line-height:1.25;
+}
+
+.gm-ref-banner p{
+  margin:2px 0 2px;
+  font-size:12px;
+}
+
+.gm-ref-banner small{
+  display:block;
+  font-size:9px;
+  margin-bottom:7px;
+}
+
+.gm-ref-banner a{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+
+  background:#f0d06a;
+  color:#17372b!important;
+
+  border-radius:22px;
+
+  padding:6px 16px;
+
+  text-decoration:none!important;
+
+  font-size:9px;
+  font-weight:900;
+}
+
+/* ================= DEALS ================= */
+
+.gm-ref-section{
+  padding:0 12px 8px;
+}
+
+.gm-ref-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  margin:0 2px 9px;
+}
+
+.gm-ref-section-head h2{
+  margin:0;
+
+  color:#111;
+
+  font-size:23px;
+  line-height:1.3;
+
+  font-weight:900;
+}
+
+.gm-ref-section-head a{
+  color:#214f3d!important;
+  text-decoration:none!important;
+
+  font-size:10px;
+  font-weight:900;
+}
+
+.gm-ref-deals{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
+
+.gm-ref-deal{
+  min-width:0;
+
+  background:#fffdf7;
+
+  border:1px solid #e3ddcf;
+  border-radius:11px;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 2px 9px rgba(22,43,34,.08);
+}
+
+.gm-ref-deal-media{
+  height:116px;
+  position:relative;
+  overflow:hidden;
+}
+
+.gm-ref-deal-media img{
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  display:block;
+}
+
+.gm-ref-deal-badge{
+  position:absolute;
+
+  right:5px;
+  top:6px;
+
+  background:#f1d06a;
+  color:#17372b;
+
+  border-radius:8px;
+
+  padding:4px 5px;
+
+  font-size:7px;
+  font-weight:900;
+}
+
+.gm-ref-deal-body{
+  padding:6px 6px 8px;
+  text-align:right;
+}
+
+.gm-ref-deal h3{
+  margin:0;
+
+  font-size:11px;
+  line-height:1.45;
+
+  min-height:31px;
+
+  font-weight:900;
+  color:#111;
+}
+
+.gm-ref-deal p{
+  margin:1px 0 4px;
+
+  font-size:8px;
+  line-height:1.4;
+
+  color:#7b817b;
+
+  min-height:22px;
+}
+
+.gm-ref-price{
+  font-size:15px;
+  font-weight:900;
+  color:#111;
+}
+
+.gm-ref-order{
+  width:100%;
+
+  margin-top:5px;
+
+  padding:7px 2px;
+
+  border:0;
+  border-radius:16px;
+
+  background:#073f2d;
+  color:#fff;
+
+  font-size:9px;
+  font-weight:900;
+}
+
+/* ================= PLACE ================= */
+
+.gm-ref-place{
+  position:relative;
+
+  margin:10px 12px 84px;
+
+  min-height:145px;
+
+  overflow:hidden;
+
+  border-radius:15px;
+
+  background:#dfe7d6;
+}
+
+.gm-ref-place-bg{
+  position:absolute;
+
+  right:0;
+  top:0;
+
+  width:43%;
+  height:100%;
+
+  object-fit:cover;
+}
+
+.gm-ref-place-copy{
+  position:relative;
+  z-index:2;
+
+  padding:15px 15px 10px;
+
+  text-align:right;
+}
+
+.gm-ref-place-copy h2{
+  margin:0;
+
+  font-size:20px;
+  color:#111;
+  font-weight:900;
+}
+
+.gm-ref-place-copy p{
+  margin:0 0 8px;
+
+  font-size:9px;
+  color:#4c5b52;
+}
+
+.gm-ref-place-grid{
+  display:grid;
+
+  grid-template-columns:repeat(5,1fr);
+
+  gap:5px;
+
+  width:76%;
+}
+
+.gm-ref-place-card{
+  background:rgba(255,253,247,.94);
+
+  border:1px solid #e2ddcf;
+
+  border-radius:10px;
+
+  padding:5px 2px;
+
+  text-align:center;
+
+  box-shadow:
+    0 2px 7px rgba(20,40,30,.07);
+}
+
+.gm-ref-place-card img{
+  width:42px;
+  height:42px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  display:block;
+
+  margin:0 auto 2px;
+}
+
+.gm-ref-place-card b{
+  font-size:7px;
+
+  color:#111;
+
+  white-space:nowrap;
+}
+
+/* ================= WHATSAPP ================= */
+
+.gm-ref-whatsapp{
+  position:fixed;
+
+  right:18px;
+  bottom:83px;
+
+  z-index:80;
+
+  width:57px;
+  height:57px;
+
+  border-radius:50%;
+
+  background:#19d777;
+  color:#fff!important;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-decoration:none!important;
+
+  font-size:31px;
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.18);
+}
+
+/* ================= BOTTOM NAV ================= */
+
+.gm-ref-bottom{
+  position:fixed;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:72px;
+
+  z-index:75;
+
+  display:grid;
+
+  grid-template-columns:repeat(5,1fr);
+
+  background:#063f2d;
+
+  border-radius:18px 18px 0 0;
+
+  box-shadow:
+    0 -5px 18px rgba(0,0,0,.17);
+
+  padding:5px 4px 4px;
+}
+
+.gm-ref-bottom a{
+  color:#fff!important;
+
+  text-decoration:none!important;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  gap:1px;
+
+  font-size:9px;
+
+  font-weight:800;
+}
+
+.gm-ref-bottom .ico{
+  font-size:23px;
+  line-height:1;
+}
+
+.gm-ref-home{
+  position:relative;
+  margin-top:-17px;
+}
+
+.gm-ref-home .ico{
+  width:55px;
+  height:55px;
+
+  border-radius:50%;
+
+  background:#f1d06a;
+
+  color:#17372b;
+
+  border:3px solid #063f2d;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  box-shadow:
+    0 3px 10px rgba(0,0,0,.20);
+}
+
+/* النوافذ تفضل فوق التصميم */
+.modal{
+  z-index:200!important;
+}
+
+}
+
+/* الكمبيوتر يفضل كما هو */
+@media(min-width:601px){
+  #gmRefMobile{
+    display:none!important;
+  }
+}
+</style>
+
+<script>
+(function(){
+
+  function gmSafe(v){
+    return typeof esc === 'function'
+      ? esc(v)
+      : String(v ?? '');
+  }
+
+  function gmFind(list,words){
+    return (Array.isArray(list)?list:[]).find(function(x){
+      var name=String(x?.name||'').toLowerCase();
+
+      return words.some(function(w){
+        return name.includes(w);
+      });
+    });
+  }
+
+  function gmProductImage(words){
+    var p=gmFind(window.products,words);
+    return p?.image || '';
+  }
+
+  function gmCategoryImage(words){
+    var c=gmFind(window.settings?.categories,words);
+    return c?.image || gmProductImage(words);
+  }
+
+  function gmFallback(){
+    return gmProductImage(['بامبو']) ||
+      (Array.isArray(window.products) && window.products[0]?.image) ||
+      '/assets/logo.jpg';
+  }
+
+  function gmHero(){
+    var h=String(window.settings?.hero||'');
+
+    if(
+      h &&
+      !/logo\.jpg|logo\.png|logo\.webp/i.test(h)
+    ){
+      return h;
+    }
+
+    var deals=
+      Array.isArray(window.settings?.deals)
+      ? window.settings.deals
+      : [];
+
+    var d=deals.find(function(x){
+      return /بامبو/i.test(
+        String(x?.title||'')+
+        ' '+
+        String(x?.description||'')
+      ) && x?.image;
+    });
+
+    return d?.image ||
+      gmProductImage(['بامبو']) ||
+      gmFallback();
+  }
+
+  function gmWhatsApp(){
+
+    var c=window.settings?.contact||{};
+
+    var v=
+      c.whatsapp ||
+      window.settings?.whatsapp ||
+      '';
+
+    if(String(v).startsWith('http')){
+      return String(v);
+    }
+
+    var n=String(v).replace(/\D/g,'');
+
+    if(n.startsWith('0')){
+      n='20'+n.slice(1);
+    }
+
+    return n
+      ? 'https://wa.me/'+n
+      : '#';
+  }
+
+  function gmDeals(){
+
+    var a=
+      Array.isArray(window.settings?.deals)
+      ? window.settings.deals
+      : [];
+
+    return a.slice(0,3);
+  }
+
+  function gmOrderDeal(i){
+
+    if(typeof window.addDeal === 'function'){
+      try{
+        return window.addDeal(i);
+      }catch(e){}
+    }
+
+    if(typeof window.openCart === 'function'){
+      window.openCart();
+    }
+  }
+
+  function gmBuild(){
+
+    if(window.innerWidth>600) return;
+
+    if(
+      !Array.isArray(window.products) ||
+      !window.products.length ||
+      !window.settings
+    ){
+      return;
+    }
+
+    var root=document.getElementById('gmRefMobile');
+
+    if(!root){
+
+      root=document.createElement('main');
+
+      root.id='gmRefMobile';
+
+      document.body.insertBefore(
+        root,
+        document.body.firstElementChild
+      );
+    }
+
+    if(root.dataset.built==='1') return;
+
+    var logo=
+      window.settings.logo ||
+      '/assets/logo.jpg';
+
+    var cats=[
+      [
+        'عالم البامبو',
+        gmCategoryImage(['بامبو'])
+      ],
+      [
+        'نباتات الزينة',
+        gmCategoryImage(['زينة','نباتات'])
+      ],
+      [
+        'الفازات والإكسسوارات',
+        gmCategoryImage(['فاز','إكسس'])
+      ],
+      [
+        'الصفقات والعروض',
+        gmCategoryImage(['صفق','عرض']) ||
+        gmDeals()[0]?.image ||
+        gmFallback()
+      ]
+    ];
+
+    var hero=gmHero();
+
+    var bamboo=
+      gmCategoryImage(['بامبو']) ||
+      hero;
+
+    var deals=gmDeals();
+
+    var placeNames=[
+      'غرفة نوم',
+      'بلكونة',
+      'مدخل',
+      'ريسبشن',
+      'مكتب'
+    ];
+
+    var placeImgs=[
+      gmProductImage(['بامبو']) || hero,
+      gmProductImage(['نبات','زينة']) || hero,
+      gmProductImage(['فاز']) || hero,
+      gmProductImage(['نبات']) || hero,
+      gmProductImage(['مكتب']) || hero
+    ];
+
+    root.innerHTML=
+
+      '<header class="gm-ref-header">'+
+
+        '<button class="gm-ref-menu" type="button">☰</button>'+
+
+        '<div class="gm-ref-brand">'+
+          '<img src="'+gmSafe(logo)+'" alt="Green Moon">'+
+        '</div>'+
+
+        '<div class="gm-ref-actions">'+
+
+          '<button class="gm-ref-action" type="button" '+
+          'onclick="document.getElementById(\'products\')?.scrollIntoView({behavior:\'smooth\'})">'+
+          '⌕'+
+          '</button>'+
+
+          '<button class="gm-ref-action gm-ref-cart" type="button" '+
+          'onclick="openCart()">'+
+          '🛒'+
+          '<b class="gm-ref-cart-count" id="gmRefCartCount">0</b>'+
+          '</button>'+
+
+        '</div>'+
+
+      '</header>'+
+
+      '<section class="gm-ref-hero">'+
+
+        '<img src="'+gmSafe(hero)+'" alt="Green Moon Plants & Flowers">'+
+
+        '<div class="gm-ref-copy">'+
+
+          '<h1>'+
+            'خلي الطبيعة '+
+            '<span>جزء من مكانك</span>'+
+          '</h1>'+
+
+          '<p>'+
+            'نباتات طبيعية.. حياة أجمل<br>'+
+            'مع جرين مون'+
+          '</p>'+
+
+          '<a class="gm-ref-cta" href="#gmRefDeals">'+
+            'اكتشف مجموعتنا'+
+          '</a>'+
+
+        '</div>'+
+
+      '</section>'+
+
+      '<section class="gm-ref-cats">'+
+
+        cats.map(function(c){
+
+          return(
+            '<a class="gm-ref-cat" href="#gmRefDeals">'+
+              '<img src="'+
+              gmSafe(c[1]||gmFallback())+
+              '" alt="">'+
+              '<b>'+
+              gmSafe(c[0])+
+              '</b>'+
+            '</a>'
+          );
+
+        }).join('')+
+
+      '</section>'+
+
+      '<section class="gm-ref-banner">'+
+
+        '<img src="'+
+        gmSafe(bamboo)+
+        '" alt="">'+
+
+        '<div class="gm-ref-banner-copy">'+
+
+          '<h2>عالم البامبو</h2>'+
+
+          '<p>من جرين مون</p>'+
+
+          '<small>جمال طبيعي يناسب كل مكان</small>'+
+
+          '<a href="#gmRefDeals">'+
+            '‹ &nbsp; تسوق البامبو'+
+          '</a>'+
+
+        '</div>'+
+
+      '</section>'+
+
+      '<section class="gm-ref-section" id="gmRefDeals">'+
+
+        '<div class="gm-ref-section-head">'+
+
+          '<h2>🔥 أشهر الصفقات</h2>'+
+
+          '<a href="#gmRefDeals">عرض الكل ‹</a>'+
+
+        '</div>'+
+
+        '<div class="gm-ref-deals">'+
+
+          deals.map(function(d,i){
+
+            var price=Number(d.price||0);
+
+            var old=Number(d.oldPrice||0);
+
+            var off=
+              old>price
+              ? Math.round((old-price)/old*100)
+              : 0;
+
+            return(
+
+              '<article class="gm-ref-deal">'+
+
+                '<div class="gm-ref-deal-media">'+
+
+                  '<img src="'+
+                  gmSafe(d.image||gmFallback())+
+                  '" alt="">'+
+
+                  '<span class="gm-ref-deal-badge">'+
+                    (
+                      off
+                      ? 'خصم '+off+'%'
+                      : 'عرض مميز'
+                    )+
+                  '</span>'+
+
+                '</div>'+
+
+                '<div class="gm-ref-deal-body">'+
+
+                  '<h3>'+
+                    gmSafe(
+                      d.title ||
+                      'صفقة Green Moon'
+                    )+
+                  '</h3>'+
+
+                  '<p>'+
+                    gmSafe(d.description||'')+
+                  '</p>'+
+
+                  '<div class="gm-ref-price">'+
+                    price+
+                    ' جنيه'+
+                  '</div>'+
+
+                  '<button '+
+                    'class="gm-ref-order" '+
+                    'type="button" '+
+                    'onclick="gmOrderDeal('+i+')">'+
+                    'اطلب الآن 🛒'+
+                  '</button>'+
+
+                '</div>'+
+
+              '</article>'
+
+            );
+
+          }).join('')+
+
+        '</div>'+
+
+      '</section>'+
+
+      '<section class="gm-ref-place">'+
+
+        '<img class="gm-ref-place-bg" src="'+
+        gmSafe(
+          gmProductImage(['نبات']) ||
+          hero
+        )+
+        '" alt="">'+
+
+        '<div class="gm-ref-place-copy">'+
+
+          '<h2>نباتك هيليق فين؟</h2>'+
+
+          '<p>هنقترح لك أفضل النباتات المناسبة لمكانك</p>'+
+
+          '<div class="gm-ref-place-grid">'+
+
+            placeNames.map(function(n,i){
+
+              return(
+                '<div class="gm-ref-place-card">'+
+                  '<img src="'+
+                  gmSafe(placeImgs[i])+
+                  '" alt="">'+
+                  '<b>'+
+                  n+
+                  '</b>'+
+                '</div>'
+              );
+
+            }).join('')+
+
+          '</div>'+
+
+        '</div>'+
+
+      '</section>'+
+
+      '<a class="gm-ref-whatsapp" '+
+      'href="'+gmSafe(gmWhatsApp())+'" '+
+      'target="_blank" '+
+      'rel="noopener" '+
+      'aria-label="واتساب">☎</a>'+
+
+      '<nav class="gm-ref-bottom">'+
+
+        '<a href="#products">'+
+          '<span class="ico">♙</span>'+
+          'حسابي'+
+        '</a>'+
+
+        '<a href="#" onclick="openCart();return false">'+
+          '<span class="ico">🛒</span>'+
+          'السلة'+
+        '</a>'+
+
+        '<a class="gm-ref-home" href="#gmRefMobile">'+
+          '<span class="ico">⌂</span>'+
+          '<span>الرئيسية</span>'+
+        '</a>'+
+
+        '<a href="#gmRefDeals">'+
+          '<span class="ico">🏷</span>'+
+          'الصفقات'+
+        '</a>'+
+
+        '<a href="#products">'+
+          '<span class="ico">🎁</span>'+
+          'المتجر'+
+        '</a>'+
+
+      '</nav>';
+
+    root.dataset.built='1';
+
+    var oldCount=
+      document.getElementById('cartCount');
+
+    var newCount=
+      document.getElementById('gmRefCartCount');
+
+    if(oldCount && newCount){
+      newCount.textContent=
+        oldCount.textContent;
+    }
+  }
+
+  window.gmOrderDeal=gmOrderDeal;
+
+  function gmSync(){
+
+    gmBuild();
+
+    var oldCount=
+      document.getElementById('cartCount');
+
+    var newCount=
+      document.getElementById('gmRefCartCount');
+
+    if(oldCount && newCount){
+      newCount.textContent=
+        oldCount.textContent;
+    }
+  }
+
+  window.addEventListener(
+    'load',
+    function(){
+      setTimeout(gmSync,700);
+    }
+  );
+
+  setInterval(gmSync,2500);
+
+})();
+</script>
 </head>
 <body>
 
