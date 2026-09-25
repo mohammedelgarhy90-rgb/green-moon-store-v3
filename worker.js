@@ -1280,7 +1280,15 @@ const previousStatus = String(orders[index].status || '');
               orders
             )
           );
-
+if (
+  body.status &&
+  String(body.status) !== previousStatus
+) {
+  await notifyOrderStatusWhatsApp(
+    env,
+    orders[index]
+  );
+}
           return json({
             success:
               true,
