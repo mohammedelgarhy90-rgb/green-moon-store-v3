@@ -810,7 +810,6 @@ if (
         );
       }
     }
-await notifyNewOrderWhatsApp(env, order);
     /* =========================
        ADMIN PRODUCTS
     ========================= */
