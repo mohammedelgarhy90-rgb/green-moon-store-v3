@@ -3,7 +3,6 @@ const LOGO_KEY = 'logo';
 const SETTINGS_KEY = 'settings';
 const ORDERS_KEY = 'orders';
 const SHIPPING_KEY = 'shipping';
-const DEALS_KEY = 'deals';
 
 const SEED_PRODUCTS = [
   {
@@ -132,27 +131,56 @@ function normalizeProduct(product) {
 }
 
 async function getProducts(env) {
-  let products =
-    await env.GREEN_MOON_KV.get(
-      PRODUCTS_KEY,
-      'json'
-    );
+  try {
+    const raw = await env.GREEN_MOON_KV.get(PRODUCTS_KEY);
 
-  if (!Array.isArray(products)) {
-    products =
-      SEED_PRODUCTS.map(
-        normalizeProduct
+    if (!raw) {
+      const products = SEED_PRODUCTS.map(normalizeProduct);
+
+      await env.GREEN_MOON_KV.put(
+        PRODUCTS_KEY,
+        JSON.stringify(products)
       );
 
-    await env.GREEN_MOON_KV.put(
-      PRODUCTS_KEY,
-      JSON.stringify(products)
+      return products;
+    }
+
+    let products;
+
+    try {
+      products = JSON.parse(raw);
+    } catch (parseError) {
+      console.error('GREEN_MOON_PRODUCTS_JSON_ERROR', parseError);
+
+      const repaired = SEED_PRODUCTS.map(normalizeProduct);
+
+      await env.GREEN_MOON_KV.put(
+        PRODUCTS_KEY,
+        JSON.stringify(repaired)
+      );
+
+      return repaired;
+    }
+
+    if (!Array.isArray(products)) {
+      const repaired = SEED_PRODUCTS.map(normalizeProduct);
+
+      await env.GREEN_MOON_KV.put(
+        PRODUCTS_KEY,
+        JSON.stringify(repaired)
+      );
+
+      return repaired;
+    }
+
+    return products.map(normalizeProduct);
+  } catch (error) {
+    console.error('GREEN_MOON_PRODUCTS_KV_ERROR', error);
+
+    throw new Error(
+      `GREEN_MOON_KV / products: ${error?.message || String(error)}`
     );
   }
-
-  return products.map(
-    normalizeProduct
-  );
 }
 
 async function getLogo(env) {
@@ -180,35 +208,92 @@ async function getOrders(env) {
       'json'
     )
   ) || [];
-}
+}async function sendWhatsAppTemplate(env, to, templateName, parameters = []) {
+  const token = env.WHATSAPP_TOKEN;
+  const phoneNumberId = env.WHATSAPP_PHONE_NUMBER_ID;
 
-function normalizeDeal(deal) {
-  const oldPrice = Number(deal.oldPrice) || 0;
-  const price = Number(deal.price) || 0;
-  const discount = Number(deal.discount) || (oldPrice > price && oldPrice > 0 ? Math.round((1 - price / oldPrice) * 100) : 0);
-  return {
-    id: deal.id || ('DEAL-' + Date.now().toString(36).toUpperCase()),
-    name: String(deal.name || 'صفقة Green Moon'),
-    shortDescription: String(deal.shortDescription || deal.description || ''),
-    description: String(deal.description || ''),
-    image: deal.image || '/assets/logo.jpg',
-    price,
-    oldPrice,
-    discount,
-    contents: Array.isArray(deal.contents) ? deal.contents.map(x => String(x)).filter(Boolean) : [],
-    sizes: Array.isArray(deal.sizes) ? deal.sizes.map(x => String(x)).filter(Boolean) : [],
-    features: Array.isArray(deal.features) ? deal.features.map(x => String(x)).filter(Boolean) : [],
-    shipping: String(deal.shipping || ''),
-    notes: String(deal.notes || ''),
-    expiresAt: deal.expiresAt || '',
-    active: deal.active !== false,
-    productIds: Array.isArray(deal.productIds) ? deal.productIds : []
+  if (!token || !phoneNumberId || !to || !templateName) {
+    return false;
+  }
+
+  const version = env.WHATSAPP_GRAPH_VERSION || 'v23.0';
+
+  const url =
+    `https://graph.facebook.com/${version}/${phoneNumberId}/messages`;
+
+  const payload = {
+    messaging_product: 'whatsapp',
+    to: String(to).replace(/[^0-9]/g, ''),
+    type: 'template',
+
+    template: {
+      name: templateName,
+
+      language: {
+        code: env.WHATSAPP_TEMPLATE_LANG || 'ar'
+      },
+
+      components: parameters.length
+        ? [{
+            type: 'body',
+
+            parameters: parameters.map(value => ({
+              type: 'text',
+              text: String(value ?? '')
+            }))
+          }]
+        : []
+    }
   };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${token}`
+      },
+
+      body: JSON.stringify(payload)
+    });
+
+    return response.ok;
+
+  } catch {
+    return false;
+  }
 }
 
-async function getDeals(env) {
-  const deals = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
-  return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
+
+async function notifyNewOrderWhatsApp(env, order) {
+  return sendWhatsAppTemplate(
+    env,
+    env.WHATSAPP_ADMIN_PHONE,
+    env.WHATSAPP_NEW_ORDER_TEMPLATE,
+
+    [
+      order.id,
+      order.name,
+      order.total,
+      order.phone
+    ]
+  );
+}
+
+
+async function notifyOrderStatusWhatsApp(env, order) {
+  return sendWhatsAppTemplate(
+    env,
+    env.WHATSAPP_ADMIN_PHONE,
+    env.WHATSAPP_STATUS_TEMPLATE,
+
+    [
+      order.id,
+      order.name,
+      order.status
+    ]
+  );
 }
 
 export default {
@@ -253,18 +338,6 @@ export default {
           }) => product
         )
       );
-    }
-
-    /* =========================
-       PUBLIC DEALS
-    ========================= */
-
-    if (
-      url.pathname === '/api/deals' &&
-      request.method === 'GET'
-    ) {
-      const deals = (await getDeals(env)).filter(d => d.active);
-      return json(deals);
     }
 
     /* =========================
@@ -329,152 +402,161 @@ export default {
     }
 
     /* =========================
-       GREEN MOON DOCTOR
-    ========================= */
+   GREEN MOON DOCTOR
+========================= */
 
-    if (
-      url.pathname === '/api/doctor/analyze' &&
-      request.method === 'POST'
-    ) {
-      try {
-        if (!env.OPENAI_API_KEY) {
-          return json({
-            error: 'مفتاح الذكاء الاصطناعي غير مضبوط على Cloudflare.'
-          }, 500);
-        }
+if (
+  url.pathname === '/api/doctor/analyze' &&
+  request.method === 'POST'
+) {
 
-        const body = await request.json();
-        const image = String(body.image || '');
+  try {
 
-        if (!image.startsWith('data:image/')) {
-          return json({
-            error: 'صورة النبات غير صالحة.'
-          }, 400);
-        }
+    if (!env.AI) {
+      return json({
+        error: 'Cloudflare Workers AI غير مربوط بالـ Worker.'
+      }, 500);
+    }
 
-        // Guard against huge mobile camera uploads.
-        // Vision is explicitly requested at low detail below to avoid
-        // massive image-token expansion.
-        if (image.length > 8_000_000) {
-          return json({
-            error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.'
-          }, 413);
-        }
+    const body = await request.json();
 
-        const aiResponse = await fetch(
-          'https://api.openai.com/v1/responses',
-          {
-            method: 'POST',
-            headers: {
-              'content-type': 'application/json',
-              'authorization': `Bearer ${env.OPENAI_API_KEY}`
-            },
-            body: JSON.stringify({
-              model: 'gpt-5.6-luna',
-              max_output_tokens: 1200,
-              tools: [
-                { type: 'web_search' }
-              ],
-              input: [
-                {
-                  role: 'system',
-                  content: [
-                    {
-                      type: 'input_text',
-                      text: `أنت Green Moon Doctor، مساعد متخصص في إرشاد أصحاب النباتات.
+    const image = String(body.image || '');
 
-حلّل صورة النبات والأعراض الظاهرة فيها.
+    if (!image.startsWith('data:image/')) {
+      return json({
+        error: 'الصورة غير صالحة.'
+      }, 400);
+    }
+
+    if (image.length > 8_000_000) {
+      return json({
+        error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.'
+      }, 413);
+    }
+
+    const products = await getProducts(env);
+
+    const productCatalog = products
+      .filter(p => Number(p.price) > 0)
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        price: Number(p.price) || 0,
+        details: p.details || '',
+        image: p.image || '/assets/logo.jpg'
+      }));
+
+    const prompt = `
+أنت Green Moon Doctor 🌿، مساعد اختيار النباتات لمتجر Green Moon Plants & Flowers.
+
+حلل الصورة المرفقة.
+
+الهدف:
+الصورة قد تكون لمكان داخل منزل أو مكتب أو ريسبشن أو ترابيزة أو ركن فارغ.
+نريد اختيار أنسب نبات من المنتجات الموجودة في كتالوج Green Moon فقط.
 
 مهم جدًا:
-- النتيجة تقديرية وليست تشخيصًا مؤكدًا 100% من الصورة وحدها.
-- اذكر الاحتمال الأقرب بناءً على الأعراض المرئية فقط.
-- إذا كانت الصورة غير كافية، قل ذلك واطلب صورة أو معلومات إضافية.
-- لا تخترع أعراضًا غير ظاهرة.
-- أجب بالعربية المصرية البسيطة.
+- لا تخترع أي منتج غير موجود في الكتالوج.
+- لا تخترع أسعارًا.
+- لا تغير أسماء المنتجات.
+- استخدم فقط المنتجات الموجودة في الكتالوج أدناه.
+- إذا كانت الصورة لا توضح المكان بشكل كافٍ، وضح ذلك.
+- لا تدّعي معرفة شدة الإضاءة بدقة إذا لم تكن واضحة من الصورة.
+- اختر من 1 إلى 3 منتجات مناسبة.
+- أعطِ سببًا بسيطًا لكل اختيار.
+- الإجابة باللهجة المصرية البسيطة.
 
-نظّم الإجابة بالشكل التالي:
+كتالوج منتجات Green Moon:
+${JSON.stringify(productCatalog)}
 
-🌿 النبات المحتمل:
-اذكر اسم النبات المحتمل، وإن لم تكن متأكدًا وضّح ذلك.
+أريد النتيجة بالشكل التالي:
 
-🔎 اللي ظاهر في الصورة:
-اذكر الأعراض المرئية فقط.
+🌿 تحليل المكان:
+وصف مختصر للمكان الظاهر في الصورة.
 
-🩺 الاحتمال الأقرب:
-اذكر السبب أو المشكلة المحتملة مع درجة عدم اليقين.
+💡 الإضاءة المتوقعة:
+منخفضة / متوسطة / قوية / غير واضحة.
 
-🔄 احتمالات بديلة:
-اذكر بدائل عند الحاجة.
+🎯 أنسب اختيارات Green Moon:
+اذكر أفضل 1 إلى 3 منتجات من الكتالوج فقط.
+لكل منتج:
+- الاسم
+- سبب الترشيح
+- السعر
 
-💚 تعمل إيه دلوقتي:
-أعطِ خطوات آمنة وعملية.
+⚠️ ملاحظة:
+إذا كانت الصورة غير كافية، وضح أن الترشيح مبدئي.
+`;
+const doctorAgreementKey = 'GM_DOCTOR_META_AGREED';
 
-⚠️ تجنب:
-اذكر الأشياء التي قد تزيد المشكلة.
+const doctorAgreement =
+  await env.GREEN_MOON_KV.get(doctorAgreementKey);
 
-📚 المصادر:
-عند تقديم علاج أو مكافحة مرض/آفة، استخدم مصادر زراعية موثوقة وابحث عنها قبل التوصية، واذكر اسم المصدر.
-لا تخترع جرعات مبيدات. إذا احتاج العلاج إلى مبيد، وضّح أن ملصق المنتج المحلي والتعليمات الرسمية للمنتج هي المرجع النهائي.`
-                    }
-                  ]
-                },
-                {
-                  role: 'user',
-                  content: [
-                    {
-                      type: 'input_text',
-                      text: 'افحص النبات الموجود في الصورة وحدد الاحتمال الأقرب للمشكلة وقدم إرشادات عملية وآمنة.'
-                    },
-                    {
-                      type: 'input_image',
-                      image_url: image,
-                      detail: 'low'
-                    }
-                  ]
-                }
-              ]
-            })
-          }
-        );
-
-        const data = await aiResponse.json();
-
-        if (!aiResponse.ok) {
-          return json({
-            error:
-              data?.error?.message ||
-              'تعذر الاتصال بمحرك Green Moon Doctor.'
-          }, aiResponse.status);
-        }
-
-        const extractedText =
-          data.output_text ||
-          (
-            Array.isArray(data.output)
-              ? data.output
-                  .flatMap(item => Array.isArray(item?.content) ? item.content : [])
-                  .filter(part => part?.type === 'output_text' && typeof part?.text === 'string')
-                  .map(part => part.text)
-                  .join('\n')
-              : ''
-          ) || '';
-
-        if (!extractedText.trim()) {
-          return json({
-            error: 'محرك التحليل استقبل الصورة لكنه لم يُرجع نصًا قابلًا للعرض.'
-          }, 502);
-        }
-
-        return json({
-          success: true,
-          result: extractedText.trim()
-        });
-      } catch (error) {
-        return json({
-          error: String(error?.message || error || 'حدث خطأ أثناء تحليل الصورة.')
-        }, 500);
-      }
+if (!doctorAgreement) {
+  await env.AI.run(
+    '@cf/meta/llama-3.2-11b-vision-instruct',
+    {
+      prompt: 'agree'
     }
+  );
+
+  await env.GREEN_MOON_KV.put(
+    doctorAgreementKey,
+    '1'
+  );
+}
+    const messages = [
+  {
+    role: 'system',
+    content:
+      'أنت Green Moon Doctor، مساعد متخصص في تحليل صور النباتات والأماكن واقتراح نباتات Green Moon.'
+  },
+  {
+    role: 'user',
+    content: prompt
+  }
+];
+
+const aiResponse = await env.AI.run(
+  '@cf/meta/llama-3.2-11b-vision-instruct',
+  {
+    messages,
+    image,
+    max_tokens: 900,
+    temperature: 0.3
+  }
+);
+
+    const result =
+      aiResponse?.response ||
+      aiResponse?.result ||
+      '';
+
+    if (!String(result).trim()) {
+      return json({
+        error: 'Green Moon Doctor لم يُرجع نتيجة.'
+      }, 502);
+    }
+
+    return json({
+      success: true,
+      result: String(result).trim(),
+      products: productCatalog
+    });
+
+  } catch (error) {
+
+    return json({
+      error:
+        error?.message ||
+        JSON.stringify(error) ||
+        String(error) ||
+        'حدث خطأ أثناء تحليل الصورة.'
+    }, 500);
+
+               }
+}
+      
 
     /* =========================
        CREATE ORDER
@@ -695,7 +777,15 @@ export default {
             orders.slice(0, 500)
           )
         );
-
+if (
+  body.status &&
+  String(body.status) !== previousStatus
+) {
+  await notifyOrderStatusWhatsApp(
+    env,
+    orders[index]
+  );
+}
         return json({
           success:
             true,
@@ -720,7 +810,7 @@ export default {
         );
       }
     }
-
+await notifyNewOrderWhatsApp(env, order);
     /* =========================
        ADMIN PRODUCTS
     ========================= */
@@ -750,9 +840,22 @@ export default {
         request.method === 'GET'
       ) {
 
-        return json(
-          await getProducts(env)
-        );
+        try {
+          const products = await getProducts(env);
+          return json(products);
+        } catch (error) {
+          console.error('ADMIN_PRODUCTS_GET_ERROR', error);
+
+          return json(
+            {
+              error: 'فشل تحميل المنتجات من قاعدة البيانات.',
+              details:
+                error?.message ||
+                String(error)
+            },
+            500
+          );
+        }
       }
 
       if (
@@ -892,43 +995,6 @@ export default {
             500
           );
         }
-      }
-    }
-
-    /* =========================
-       ADMIN DEALS
-    ========================= */
-
-    if (url.pathname === '/api/admin/deals') {
-      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
-
-      if (request.method === 'GET') return json(await getDeals(env));
-
-      try {
-        let deals = await getDeals(env);
-        if (request.method === 'POST') {
-          const body = await request.json();
-          const deal = normalizeDeal({ ...body, id: body.id || undefined });
-          if (deals.some(d => String(d.id) === String(deal.id))) {
-            deal.id = 'DEAL-' + Date.now().toString(36).toUpperCase();
-          }
-          deals.push(deal);
-        } else if (request.method === 'PUT') {
-          const body = await request.json();
-          const index = deals.findIndex(d => String(d.id) === String(body.id));
-          if (index === -1) return json({ error: 'الصفقة غير موجودة' }, 404);
-          deals[index] = normalizeDeal({ ...deals[index], ...body, id: deals[index].id });
-        } else if (request.method === 'DELETE') {
-          const body = await request.json();
-          deals = deals.filter(d => String(d.id) !== String(body.id));
-        } else {
-          return json({ error: 'Method Not Allowed' }, 405);
-        }
-
-        await env.GREEN_MOON_KV.put(DEALS_KEY, JSON.stringify(deals));
-        return json({ success: true, deals });
-      } catch (error) {
-        return json({ error: String(error?.message || error) }, 500);
       }
     }
 
@@ -1190,7 +1256,7 @@ export default {
               404
             );
           }
-
+const previousStatus = String(orders[index].status || '');
           orders[index] = {
             ...orders[index],
             ...body
