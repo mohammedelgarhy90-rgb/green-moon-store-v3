@@ -2036,18 +2036,6 @@ body>.bottom{
         '<div class="gm-ref-product-grid" id="gmRefProductGrid"></div>'+
         '<a class="gm-ref-all-products" href="#" onclick="gmOpenSearch();return false">🔎 ابحث في كل المنتجات</a>'+
       '</section>'+
-      '<section class="gm-ref-place">'+
-        '<img class="gm-ref-place-bg" src="'+gmSafe(gmFindProduct(['نبات'])?.image||hero)+'" alt="">'+
-        '<div class="gm-ref-place-copy">'+
-          '<h2>نباتك هيليق فين؟</h2>'+
-          '<p>اختار المكان وشوف أفكار مناسبة من مجموعة جرين مون</p>'+
-          '<div class="gm-ref-place-grid">'+
-            ['غرفة نوم','بلكونة','مدخل','ريسبشن','مكتب'].map(function(n,i){
-              return '<div class="gm-ref-place-card"><img src="'+gmSafe(placeImgs[i])+'" alt=""><b>'+n+'</b></div>';
-            }).join('')+
-          '</div>'+
-        '</div>'+
-      '</section>'+
       '<a class="gm-ref-whatsapp" href="'+gmSafe(gmWhatsApp())+'" target="_blank" rel="noopener" aria-label="واتساب">☎</a>'+
       '<nav class="gm-ref-bottom">'+
         '<a href="#" onclick="gmOpenMenu();return false"><span class="ico">♙</span>حسابي</a>'+
