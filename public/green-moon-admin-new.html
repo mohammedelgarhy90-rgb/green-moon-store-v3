@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Green Moon Admin — New</title>
+<style>
+:root{--g:#073b29;--g2:#0b5a3d;--gold:#d9bd72;--bg:#f4f6f2;--line:#e3e8e3;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#17251f;font-family:system-ui,Tahoma,Arial}
+button,input,textarea,select{font:inherit}button{border:0;cursor:pointer}.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(145deg,#041c14,#0a4c35)}
+.box{background:#fff;border-radius:26px;padding:28px;width:min(430px,100%);box-shadow:0 30px 90px #0005}.box h1{margin:0}.muted{color:#718078}
+input,textarea,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff}
+label{display:block;font-size:13px;font-weight:800;margin:8px 0 5px}
+.btn{padding:11px 14px;border-radius:11px;font-weight:800}.primary{background:var(--g);color:#fff}.soft{background:#eaf2ed;color:var(--g)}.danger{background:#fff0ef;color:var(--red)}
+.top{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,#041c14,#0a4c35);color:#fff;padding:14px 18px}.topin{max-width:1250px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.wrap{max-width:1250px;margin:auto;padding:16px}.layout{display:grid;grid-template-columns:215px 1fr;gap:16px}
+.side,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:18px}.side{padding:8px;height:max-content;position:sticky;top:75px}.nav{width:100%;background:transparent;text-align:right;padding:11px;border-radius:10px;font-weight:800;color:#52615a}.nav.active,.nav:hover{background:#eaf2ed;color:var(--g)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:15px}.stat b{font-size:25px;display:block}.stat span{font-size:13px;color:#718078}
+.panel{padding:16px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}.head h2{margin:0;font-size:18px}
+.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:right}.thumb{width:48px;height:48px;border-radius:10px;object-fit:cover}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{border:1px solid var(--line);border-radius:14px;padding:10px}.card img{width:100%;height:125px;object-fit:cover;border-radius:10px}
+.modal{position:fixed;inset:0;background:#03140db8;z-index:50;display:grid;place-items:center;padding:15px}.modalbox{width:min(720px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:22px;padding:18px;position:relative}.x{position:absolute;left:12px;top:12px;border-radius:50%;width:38px;height:38px;font-size:22px;background:#edf1ed}.msg{color:var(--red);font-weight:700;min-height:22px}.toast{position:fixed;bottom:18px;left:18px;background:#102b20;color:#fff;padding:12px 15px;border-radius:11px;z-index:100}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.side{position:static;display:flex;overflow:auto}.nav{white-space:nowrap;width:auto}.stats{grid-template-columns:1fr 1fr}.grid,.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="login" class="login"><div class="box">
+<div style="font-size:42px">🌿</div><h1>Green Moon</h1><h2>لوحة التحكم الجديدة</h2>
+<p class="muted">نسخة مستقلة عن لوحة التحكم القديمة.</p>
+<label>كلمة مرور الإدارة</label><input id="pass" type="password" placeholder="كلمة المرور">
+<button class="btn primary" style="width:100%;margin-top:10px" onclick="login()">دخول</button><div id="loginMsg" class="msg"></div>
+</div></div>
+<div id="app" class="hidden">
+<header class="top"><div class="topin"><b>🌿 Green Moon Admin</b><button class="btn" onclick="logout()">خروج</button></div></header>
+<main class="wrap"><div class="layout">
+<aside class="side">
+<button class="nav active" data-t="home">📊 الرئيسية</button><button class="nav" data-t="products">🌿 المنتجات</button>
+<button class="nav" data-t="categories">🗂️ التصنيفات</button><button class="nav" data-t="hero">🖼️ Hero</button>
+<button class="nav" data-t="deals">🎯 الصفقات</button><button class="nav" data-t="articles">📰 المقالات</button>
+<button class="nav" data-t="rewards">🎁 المكافآت</button><button class="nav" data-t="orders">📦 الطلبات</button><button class="nav" data-t="settings">⚙️ الإعدادات</button>
+</aside><section id="content"></section>
+</div></main></div>
+<div id="modal" class="modal hidden"><div class="modalbox"><button class="x" onclick="closeModal()">×</button><h2 id="mt"></h2><div id="mb"></div></div></div><div id="toast" class="toast hidden"></div>
+<script>
+let D={products:[],orders:[],settings:{},shipping:0},tab='home';
+const $=x=>document.getElementById(x);
+const key='gm_admin_password_new';
+function token(){return sessionStorage.getItem(key)||''}
+function H(){return {'Content-Type':'application/json','Authorization':'Bearer '+token()}}
+async function api(u,o={}){const r=await fetch(u,{...o,headers:{...H(),...(o.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error((d.error||'حدث خطأ')+(d.details?' — '+d.details:'')+' ['+r.status+']');return d}
+function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),1800)}
+async function login(){let p=$('pass').value.trim();if(!p)return $('loginMsg').textContent='اكتب كلمة المرور';sessionStorage.setItem(key,p);try{await load();$('login').classList.add('hidden');$('app').classList.remove('hidden')}catch(e){sessionStorage.removeItem(key);$('loginMsg').textContent=e.message}}
+function logout(){sessionStorage.removeItem(key);location.reload()}
+async function load(){D.products=await api('/api/admin/products');D.orders=await api('/api/admin/orders');D.settings=await api('/api/admin/settings');D.shipping=(await api('/api/admin/shipping')).price||0;const s=D.settings||{};D.categories=s.gm_categories||[];D.hero=s.gm_hero||[];D.deals=s.gm_deals||[];D.articles=s.gm_articles||[];D.rewards=s.gm_rewards||{};render()}
+function esc(x){return String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function img(x){return esc(x||'/assets/logo.jpg')}
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()})
+function render(){let f={home,products,categories,hero,deals,articles,rewards,orders,settings};$('content').innerHTML=f[tab]()}
+function home(){return `<div class="stats"><div class="stat"><b>${D.products.length}</b><span>منتج</span></div><div class="stat"><b>${D.categories.length}</b><span>تصنيف</span></div><div class="stat"><b>${D.deals.length}</b><span>صفقة</span></div><div class="stat"><b>${D.orders.length}</b><span>طلب</span></div></div><div class="panel"><h2>لوحة التحكم الجديدة جاهزة</h2><p class="muted">المنتجات والطلبات تستخدم APIs الحالية، والمحتوى الجديد محفوظ داخل إعدادات المتجر حتى لا نحتاج تغيير Worker إضافي.</p></div>`}
+function products(){return `<div class="panel"><div class="head"><h2>المنتجات</h2><button class="btn primary" onclick="productForm()">+ إضافة</button></div><div class="tablewrap"><table class="table"><tr><th>صورة</th><th>الاسم</th><th>السعر</th><th>الجملة</th><th>التصنيف</th><th></th></tr>${D.products.map(p=>`<tr><td><img class="thumb" src="${img(p.image)}"></td><td>${esc(p.name)}</td><td>${+p.price||0} ج</td><td>${+p.wholesalePrice||0} ج</td><td>${esc(p.category||'-')}</td><td><button class="btn soft" onclick="productForm(${p.id})">تعديل</button> <button class="btn danger" onclick="delProduct(${p.id})">حذف</button></td></tr>`).join('')}</table></div></div>`}
+function productForm(id){let p=id?D.products.find(x=>String(x.id)==String(id)):{name:'',details:'',price:0,wholesalePrice:0,shippingPrice:0,image:'',category:''};openModal(id?'تعديل المنتج':'منتج جديد',`<div class="grid"><div><label>الاسم</label><input id="pn" value="${esc(p.name)}"></div><div><label>التصنيف</label><input id="pc" value="${esc(p.category||'')}"></div><div><label>السعر</label><input id="pp" type="number" value="${+p.price||0}"></div><div><label>الجملة</label><input id="pw" type="number" value="${+p.wholesalePrice||0}"></div><div><label>الشحن</label><input id="ps" type="number" value="${+p.shippingPrice||0}"></div><div><label>رابط الصورة</label><input id="pi" value="${esc(p.image||'')}"></div></div><label>التفاصيل</label><textarea id="pd">${esc(p.details||'')}</textarea><button class="btn primary" style="margin-top:10px" onclick="saveProduct(${id||0})">حفظ</button>`)}
+async function saveProduct(id){let b={name:$('pn').value,category:$('pc').value,price:+$('pp').value,wholesalePrice:+$('pw').value,shippingPrice:+$('ps').value,image:$('pi').value,details:$('pd').value};if(id)b.id=id;await api('/api/admin/products',{method:id?'PUT':'POST',body:JSON.stringify(b)});closeModal();await load();toast('تم الحفظ')}
+async function delProduct(id){if(!confirm('حذف المنتج؟'))return;await api('/api/admin/products',{method:'DELETE',body:JSON.stringify({id})});await load();toast('تم الحذف')}
+function contentList(type,title){let a=D[type]||[];return `<div class="panel"><div class="head"><h2>${title}</h2><button class="btn primary" onclick="contentForm('${type}')">+ إضافة</button></div><div class="cards">${a.length?a.map(x=>`<div class="card"><img src="${img(x.image)}"><h3>${esc(x.title||x.name||'بدون عنوان')}</h3><p>${esc(x.text||x.description||'')}</p><button class="btn soft" onclick="contentForm('${type}',${x.id})">تعديل</button> <button class="btn danger" onclick="contentDelete('${type}',${x.id})">حذف</button></div>`).join(''):'<div class="muted">لا يوجد محتوى.</div>'}</div></div>`}
+function categories(){return contentList('categories','التصنيفات')}
+function hero(){return contentList('hero','Hero — الشرائح')}
+function deals(){return contentList('deals','الصفقات والعروض')}
+function articles(){return contentList('articles','المقالات والأخبار')}
+function contentForm(type,id){let a=D[type]||[],x=id?a.find(z=>String(z.id)==String(id)):{title:'',name:'',text:'',image:'',link:'',cta:'اطلب الآن',endAt:''};openModal(id?'تعديل':'إضافة',`<div class="grid"><div><label>العنوان</label><input id="ct" value="${esc(x.title||x.name||'')}"></div><div><label>الصورة</label><input id="ci" value="${esc(x.image||'')}"></div><div><label>الرابط</label><input id="cl" value="${esc(x.link||'')}"></div><div><label>زر الإجراء</label><input id="cc" value="${esc(x.cta||'')}"></div><div><label>نهاية العرض</label><input id="ce" type="datetime-local" value="${esc(x.endAt||'')}"></div></div><label>الوصف</label><textarea id="cx">${esc(x.text||x.description||'')}</textarea><button class="btn primary" style="margin-top:10px" onclick="saveContent('${type}',${id||0})">حفظ</button>`)}
+async function saveContent(type,id){let b={id:id||Date.now(),title:$('ct').value,image:$('ci').value,link:$('cl').value,cta:$('cc').value,endAt:$('ce').value,text:$('cx').value};let a=D[type]||[];if(id){let i=a.findIndex(x=>String(x.id)==String(id));if(i>=0)a[i]=b}else a.push(b);await saveAllContent();closeModal();toast('تم الحفظ')}
+async function contentDelete(type,id){if(!confirm('حذف العنصر؟'))return;D[type]=(D[type]||[]).filter(x=>String(x.id)!=String(id));await saveAllContent();render();toast('تم الحذف')}
+async function saveAllContent(){let s={...D.settings,gm_categories:D.categories,gm_hero:D.hero,gm_deals:D.deals,gm_articles:D.articles,gm_rewards:D.rewards};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});D.settings=s;render()}
+function rewards(){let r=D.rewards||{};return `<div class="panel"><div class="head"><h2>🎁 المكافآت والقواعد</h2><button class="btn primary" onclick="saveRewards()">حفظ</button></div><label>العنوان</label><input id="rt" value="${esc(r.title||'برنامج مكافآت Green Moon')}"><label>القواعد</label><textarea id="rx">${esc(r.text||'')}</textarea><label>الرابط</label><input id="rl" value="${esc(r.link||'')}"></div>`}
+async function saveRewards(){D.rewards={title:$('rt').value,text:$('rx').value,link:$('rl').value};await saveAllContent();toast('تم الحفظ')}
+function orders(){return `<div class="panel"><div class="head"><h2>الطلبات</h2><button class="btn soft" onclick="load()">تحديث</button></div><div class="tablewrap"><table class="table"><tr><th>رقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th></th></tr>${D.orders.map(o=>`<tr><td>${esc(o.id)}</td><td>${esc(o.name)}</td><td>${esc(o.phone)}</td><td>${+o.total||0} ج</td><td><select onchange="orderStatus('${esc(o.id)}',this.value)"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم الشحن'?'selected':''}>تم الشحن</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></td><td><button class="btn soft" onclick="details('${esc(o.id)}')">تفاصيل</button></td></tr>`).join('')}</table></div></div>`}
+async function orderStatus(id,status){await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status})});toast('تم التحديث')}
+function details(id){let o=D.orders.find(x=>String(x.id)==String(id));openModal('تفاصيل الطلب','<pre style="white-space:pre-wrap">'+esc(JSON.stringify(o,null,2))+'</pre>')}
+function settings(){let s=D.settings||{};return `<div class="panel"><div class="head"><h2>⚙️ الإعدادات</h2><button class="btn primary" onclick="saveSettings()">حفظ</button></div><div class="grid"><div><label>اسم المتجر</label><input id="sn" value="${esc(s.storeName||'Green Moon Plants and Flowers')}"></div><div><label>العنوان</label><input id="st" value="${esc(s.title||'Green Moon 🌿')}"></div><div><label>الوصف</label><input id="ss" value="${esc(s.subtitle||'')}"></div><div><label>واتساب</label><input id="sw" value="${esc(s.whatsapp||'')}"></div><div><label>الشحن العام</label><input id="sh" type="number" value="${D.shipping}"></div></div></div>`}
+async function saveSettings(){D.settings={...D.settings,storeName:$('sn').value,title:$('st').value,subtitle:$('ss').value,whatsapp:$('sw').value};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});await api('/api/admin/shipping',{method:'PUT',body:JSON.stringify({price:+$('sh').value})});await load();toast('تم الحفظ')}
+function openModal(t,b){$('mt').textContent=t;$('mb').innerHTML=b;$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}
+$('modal').onclick=e=>{if(e.target.id==='modal')closeModal()};document.onkeydown=e=>{if(e.key==='Escape')closeModal()};if(token())login();
+</script></body></html>
