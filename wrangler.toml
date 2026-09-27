@@ -1,5 +1,5 @@
 name = "green-moon-store-v3"
-main = "worker-final.js"
+main = "worker-GM-FINAL.js"
 compatibility_date = "2026-09-20"
 
 [assets]
@@ -10,8 +10,6 @@ not_found_handling = "single-page-application"
 [[kv_namespaces]]
 binding = "GREEN_MOON_KV"
 id = "fcc82f6add084ccb875865171252f4d1"
-
-[vars]
 
 [ai]
 binding = "AI"
