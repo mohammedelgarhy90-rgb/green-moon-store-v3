@@ -182,23 +182,38 @@ async function getOrders(env) {
   ) || [];
 }
 
+function findPromo(settings, code) {
+  const list = Array.isArray(settings?.promoCodes) ? settings.promoCodes : [];
+  const wanted = String(code || '').trim().toUpperCase();
+  return list.find(x => String(x?.code || '').trim().toUpperCase() === wanted) || null;
+}
+
+function promoValidation(promo, subtotal, shipping, usedCount) {
+  if (!promo || promo.active === false) return { ok:false, error:'البروموكود غير متاح.' };
+  const now = Date.now();
+  if (promo.startsAt) { const t=Date.parse(promo.startsAt); if (Number.isFinite(t) && now < t) return {ok:false,error:'البروموكود لم يبدأ بعد.'}; }
+  if (promo.endsAt) { const t=Date.parse(promo.endsAt); if (Number.isFinite(t) && now > t) return {ok:false,error:'انتهت صلاحية البروموكود.'}; }
+  const minOrder = Math.max(0, Number(promo.minOrder) || 0);
+  if (subtotal < minOrder) return {ok:false,error:`الحد الأدنى لاستخدام الكود ${minOrder} جنيه.`};
+  const maxUses = Math.max(0, Number(promo.maxUses) || 0);
+  if (maxUses && usedCount >= maxUses) return {ok:false,error:'تم الوصول للحد الأقصى لاستخدام البروموكود.'};
+  const type = String(promo.type || 'percentage');
+  const value = Math.max(0, Number(promo.value) || 0);
+  let discount = 0;
+  if (type === 'percentage') discount = Math.min(subtotal, Math.round(subtotal * Math.min(100, value) / 100));
+  else if (type === 'fixed') discount = Math.min(subtotal, value);
+  else if (type === 'free_shipping') discount = Math.max(0, Number(shipping) || 0);
+  else return {ok:false,error:'نوع البروموكود غير صحيح.'};
+  return {ok:true, type, discount, note:String(promo.note || ''), code:String(promo.code || '').toUpperCase()};
+}
+
 function normalizeDeal(deal) {
   const oldPrice = Number(deal.oldPrice) || 0;
   const price = Number(deal.price) || 0;
   const discount = Number(deal.discount) || (oldPrice > price && oldPrice > 0 ? Math.round((1 - price / oldPrice) * 100) : 0);
-  const items = Array.isArray(deal.items)
-    ? deal.items.map(x => ({
-        productId: x?.productId,
-        quantity: Math.max(1, Number(x?.quantity) || 1)
-      })).filter(x => x.productId != null)
-    : [];
-  const productIds = items.length
-    ? items.map(x => x.productId)
-    : (Array.isArray(deal.productIds) ? deal.productIds : []);
   return {
     id: deal.id || ('DEAL-' + Date.now().toString(36).toUpperCase()),
-    name: String(deal.name || deal.title || 'صفقة Green Moon'),
-    title: String(deal.title || deal.name || 'صفقة Green Moon'),
+    name: String(deal.name || 'صفقة Green Moon'),
     shortDescription: String(deal.shortDescription || deal.description || ''),
     description: String(deal.description || ''),
     image: deal.image || '/assets/logo.jpg',
@@ -210,12 +225,9 @@ function normalizeDeal(deal) {
     features: Array.isArray(deal.features) ? deal.features.map(x => String(x)).filter(Boolean) : [],
     shipping: String(deal.shipping || ''),
     notes: String(deal.notes || ''),
-    startAt: deal.startAt || '',
-    endAt: deal.endAt || '',
-    expiresAt: deal.expiresAt || deal.endAt || '',
+    expiresAt: deal.expiresAt || '',
     active: deal.active !== false,
-    items,
-    productIds
+    productIds: Array.isArray(deal.productIds) ? deal.productIds : []
   };
 }
 
@@ -276,12 +288,7 @@ export default {
       url.pathname === '/api/deals' &&
       request.method === 'GET'
     ) {
-      const now = Date.now();
-      const deals = (await getDeals(env)).filter(d =>
-        d.active &&
-        (!d.startAt || now >= Date.parse(d.startAt)) &&
-        ((!d.endAt && !d.expiresAt) || now < Date.parse(d.endAt || d.expiresAt))
-      );
+      const deals = (await getDeals(env)).filter(d => d.active);
       return json(deals);
     }
 
@@ -373,12 +380,9 @@ if (
       }, 400);
     }
 
-    // The browser should send a resized image. Keep a hard server-side guard
-    // so very large mobile photos cannot be forwarded to the vision model.
-    // A data URL can be much larger than the decoded image, so use a conservative limit.
-    if (image.length > 3_500_000) {
+    if (image.length > 8_000_000) {
       return json({
-        error: 'الصورة كبيرة جدًا. جرّب صورة أوضح بحجم أقل من 3.5MB.'
+        error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.'
       }, 413);
     }
 
@@ -523,14 +527,13 @@ if (!doctorAgreement) {
           );
         }
 
-        // Reject oversized data URLs before sending them to the model.
-        // The client also resizes/compresses images, but this protects the Worker
-        // from direct requests containing huge camera originals.
-        if (image.length > 3_500_000) {
+        if (
+          image.length > 8_000_000
+        ) {
           return json(
             {
               error:
-                'الصورة كبيرة جدًا. اختار صورة أصغر أو جرّب ضغطها قبل الفحص.'
+                'حجم الصورة كبير جدًا. اختار صورة أصغر.'
             },
             413
           );
@@ -554,9 +557,6 @@ if (!doctorAgreement) {
 
                 model:
                   'gpt-5.6-luna',
-
-                max_output_tokens:
-                  1200,
 
                 tools: [
                   {
@@ -640,12 +640,7 @@ if (!doctorAgreement) {
                           'input_image',
 
                         image_url:
-                          image,
-
-                        // Low detail prevents high-resolution phone photos from
-                        // expanding into an enormous vision token footprint.
-                        detail:
-                          'low'
+                          image
                       }
                     ]
                   }
@@ -730,6 +725,27 @@ if (!doctorAgreement) {
     }
 
     /* =========================
+       PUBLIC PROMO VALIDATION
+    ========================= */
+
+    if (url.pathname === '/api/promo/validate' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
+        const orders = await getOrders(env);
+        const code = String(body.code || '').trim().toUpperCase();
+        const usedCount = orders.filter(o => String(o.promoCode || '').toUpperCase() === code).length;
+        const subtotal = Math.max(0, Number(body.subtotal) || 0);
+        const shipping = Math.max(0, Number(body.shipping) || 0);
+        const result = promoValidation(findPromo(settings, code), subtotal, shipping, usedCount);
+        if (!result.ok) return json({error:result.error}, 400);
+        return json({success:true,code:result.code,type:result.type,discount:result.discount,message:result.note || 'تم تطبيق البروموكود بنجاح 🎉'});
+      } catch (error) {
+        return json({error:String(error?.message || error || 'تعذر التحقق من البروموكود.')},500);
+      }
+    }
+
+    /* =========================
        CREATE ORDER
     ========================= */
 
@@ -800,15 +816,6 @@ if (!doctorAgreement) {
                     product.shippingPrice
                   ) || 0,
 
-                oldPrice:
-                  Number(product.oldPrice) || 0,
-
-                gift:
-                  String(product.gift || ''),
-
-                image:
-                  product.image || '/assets/logo.jpg',
-
                 lineTotal:
                   (
                     Number(product.price) || 0
@@ -835,31 +842,6 @@ if (!doctorAgreement) {
               sum + item.lineTotal,
             0
           );
-
-        const discount =
-          items.reduce(
-            (sum, item) =>
-              sum +
-              Math.max(
-                0,
-                (Number(item.oldPrice) || 0) -
-                  (Number(item.price) || 0)
-              ) * item.quantity,
-            0
-          );
-
-        const gifts = [
-          ...new Set(
-            items
-              .map(item => item.gift)
-              .filter(Boolean)
-          )
-        ].map(name => ({
-          name,
-          quantity: 1,
-          price: 0,
-          lineTotal: 0
-        }));
 
         const generalShipping =
           await getShipping(env);
@@ -897,21 +879,23 @@ if (!doctorAgreement) {
         } else {
 
           shipping =
-            items.reduce(
-              (max, item) =>
-                Math.max(
-                  max,
-                  Number(item.shippingPrice) || 0
-                ),
-              Number(generalShipping) || 0
-            );
+            generalShipping;
         }
 
-        const total =
-          productsTotal + shipping;
-
-        const orders =
-          await getOrders(env);
+        const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
+        const orders = await getOrders(env);
+        const promoCode = String(body.promoCode || '').trim().toUpperCase();
+        const usedCount = promoCode ? orders.filter(o => String(o.promoCode || '').toUpperCase() === promoCode).length : 0;
+        let promoDiscount = 0;
+        let appliedPromo = null;
+        if (promoCode) {
+          const result = promoValidation(findPromo(settings, promoCode), productsTotal, shipping, usedCount);
+          if (!result.ok) return json({error:result.error},400);
+          promoDiscount = result.discount;
+          appliedPromo = {code:result.code,type:result.type,discount:promoDiscount};
+          if (result.type === 'free_shipping') shipping = 0;
+        }
+        const total = Math.max(0, productsTotal - promoDiscount) + shipping;
 
         const order = {
 
@@ -974,11 +958,13 @@ if (!doctorAgreement) {
 
           productsTotal,
 
-          discount,
-
           shipping,
 
-          gifts,
+          promoCode: appliedPromo?.code || '',
+
+          promoType: appliedPromo?.type || '',
+
+          promoDiscount,
 
           items,
 
