@@ -496,7 +496,7 @@ if (!doctorAgreement) {
 
   }
 }
-
+      if (url.pathname === '/api/doctor/legacy-analyze' && request.method === 'POST') {
       try {
 
         if (!env.OPENAI_API_KEY) {
