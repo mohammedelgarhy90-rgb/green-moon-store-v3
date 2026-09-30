@@ -496,7 +496,7 @@ if (!doctorAgreement) {
 
   }
 }
-
+      if (url.pathname === '/api/doctor/legacy-analyze' && request.method === 'POST') {
       try {
 
         if (!env.OPENAI_API_KEY) {
@@ -723,7 +723,46 @@ if (!doctorAgreement) {
         );
       }
     }
+function resolveRelatedOffer(product, offerId) {
+  const list = Array.isArray(product?.relatedOffers)
+    ? product.relatedOffers
+    : [];
 
+  const wanted = String(offerId || '');
+  if (!wanted) return null;
+
+  const offer = list.find(
+    o => String(o?.offerId || o?.id || '') === wanted
+  );
+
+  if (
+    !offer ||
+    offer.active === false ||
+    !(Number(offer.offerPrice) > 0)
+  ) {
+    return null;
+  }
+
+  const durationMinutes =
+    Math.max(1, Number(offer.durationMinutes) || 30);
+
+  const sequence =
+    Math.max(
+      1,
+      Number(offer.sequence || offer.order) || 1
+    );
+
+  return {
+    offerId: wanted,
+    price: Number(offer.offerPrice) || 0,
+    oldPrice:
+      Number(offer.oldPrice) ||
+      Number(product.price) ||
+      0,
+    durationMinutes,
+    sequence
+  };
+}
     /* =========================
        PUBLIC PROMO VALIDATION
     ========================= */
@@ -799,28 +838,32 @@ if (!doctorAgreement) {
                   Number(item.quantity) || 1
                 );
 
-              return {
-                productId:
-                  product.id,
+            
+const relatedOffer =
+  resolveRelatedOffer(
+    product,
+    item.gmOfferId || ''
+  );
 
-                name:
-                  product.name,
+const finalPrice =
+  relatedOffer
+    ? relatedOffer.price
+    : (Number(product.price) || 0);
 
-                price:
-                  Number(product.price) || 0,
-
-                quantity,
-
-                shippingPrice:
-                  Number(
-                    product.shippingPrice
-                  ) || 0,
-
-                lineTotal:
-                  (
-                    Number(product.price) || 0
-                  ) * quantity
-              };
+return {
+  productId: product.id,
+  name: product.name,
+  price: finalPrice,
+  quantity,
+  shippingPrice:
+    Number(product.shippingPrice) || 0,
+  relatedOfferId:
+    relatedOffer?.offerId || '',
+  relatedOfferPrice:
+    relatedOffer?.price || 0,
+  lineTotal:
+    finalPrice * quantity
+};
 
             })
             .filter(Boolean);
