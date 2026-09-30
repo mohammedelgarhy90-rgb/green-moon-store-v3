@@ -125,7 +125,7 @@ function productForm(id){
    <label class="field" style="display:flex;align-items:center;gap:9px"><input id="st_active" type="checkbox" ${st.active!==false&&st.text?'checked':''}><span>إظهار الاستيكر</span></label>
  </div>
  <div class="field" style="margin-top:12px"><label>تفاصيل المنتج</label><textarea id="pd">${esc(p.details||'')}</textarea></div>
- <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>🌿 اقتراحات مناسبة مع المنتج</b><div class="hint">تظهر داخل تفاصيل المنتج للعميل بسعر العرض الذي تحدده.</div></div><button type="button" class="btn soft" data-add-related-offer onclick="addRelatedOfferRow()">+ إضافة اقتراح</button></div><div id="relatedOffersRows" style="display:grid;gap:9px;margin-top:10px">${relatedRows}</div></div>
+ <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>🎁 عروض إضافية بعد إضافة المنتج للسلة</b><div class="hint">تظهر داخل تفاصيل المنتج للعميل بسعر العرض الذي تحدده.</div></div><button type="button" class="btn soft" data-add-related-offer onclick="addRelatedOfferRow()">+ إضافة اقتراح</button></div><div id="relatedOffersRows" style="display:grid;gap:9px;margin-top:10px">${relatedRows}</div></div>
  <div class="modalfoot"><button type="button" class="btn primary" onclick="saveProduct('${id||''}')">حفظ المنتج</button><button type="button" class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
 }
 function relatedOfferRow(r={},i=Date.now()){
