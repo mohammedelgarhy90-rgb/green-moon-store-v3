@@ -723,7 +723,46 @@ if (!doctorAgreement) {
         );
       }
     }
+function resolveRelatedOffer(product, offerId) {
+  const list = Array.isArray(product?.relatedOffers)
+    ? product.relatedOffers
+    : [];
 
+  const wanted = String(offerId || '');
+  if (!wanted) return null;
+
+  const offer = list.find(
+    o => String(o?.offerId || o?.id || '') === wanted
+  );
+
+  if (
+    !offer ||
+    offer.active === false ||
+    !(Number(offer.offerPrice) > 0)
+  ) {
+    return null;
+  }
+
+  const durationMinutes =
+    Math.max(1, Number(offer.durationMinutes) || 30);
+
+  const sequence =
+    Math.max(
+      1,
+      Number(offer.sequence || offer.order) || 1
+    );
+
+  return {
+    offerId: wanted,
+    price: Number(offer.offerPrice) || 0,
+    oldPrice:
+      Number(offer.oldPrice) ||
+      Number(product.price) ||
+      0,
+    durationMinutes,
+    sequence
+  };
+}
     /* =========================
        PUBLIC PROMO VALIDATION
     ========================= */
