@@ -838,14 +838,8 @@ function resolveRelatedOffer(product, offerId) {
                   Number(item.quantity) || 1
                 );
 
-              return {
-                productId:
-                  product.id,
-
-                name:
-                  product.name,
-
-                const relatedOffer =
+            
+const relatedOffer =
   resolveRelatedOffer(
     product,
     item.gmOfferId || ''
@@ -857,28 +851,16 @@ const finalPrice =
     : (Number(product.price) || 0);
 
 return {
-  productId:
-    product.id,
-
-  name:
-    product.name,
-
-  price:
-    finalPrice,
-
+  productId: product.id,
+  name: product.name,
+  price: finalPrice,
   quantity,
-
   shippingPrice:
-    Number(
-      product.shippingPrice
-    ) || 0,
-
+    Number(product.shippingPrice) || 0,
   relatedOfferId:
     relatedOffer?.offerId || '',
-
   relatedOfferPrice:
     relatedOffer?.price || 0,
-
   lineTotal:
     finalPrice * quantity
 };
