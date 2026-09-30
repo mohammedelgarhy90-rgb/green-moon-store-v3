@@ -864,7 +864,6 @@ return {
   lineTotal:
     finalPrice * quantity
 };
-              };
 
             })
             .filter(Boolean);
