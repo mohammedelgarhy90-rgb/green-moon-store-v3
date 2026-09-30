@@ -828,5 +828,367 @@ document.addEventListener('click',e=>{const m=e.target.closest('.modal');if(m&&e
   requestAnimationFrame(progress);
 
 })();
-  </script>
+<script>
+(function(){
+
+function gmOfferState(p){
+  const list = Array.isArray(p?.relatedOffers)
+    ? p.relatedOffers.filter(o =>
+        o &&
+        o.active !== false &&
+        Number(o.offerPrice) > 0
+      )
+    : [];
+
+  if(!list.length) return null;
+
+  list.sort((a,b)=>
+    (Number(a.sequence || a.order) || 1) -
+    (Number(b.sequence || b.order) || 1)
+  );
+
+  const durations = list.map(o =>
+    Math.max(1, Number(o.durationMinutes) || 30) * 60000
+  );
+
+  const total = durations.reduce((a,b)=>a+b,0);
+  let pos = Date.now() % total;
+
+  for(let i=0;i<list.length;i++){
+    if(pos < durations[i]){
+      return {
+        offer:list[i],
+        remaining:durations[i]-pos
+      };
+    }
+    pos -= durations[i];
+  }
+
+  return {
+    offer:list[0],
+    remaining:durations[0]
+  };
+}
+
+function gmTime(ms){
+  let s=Math.max(0,Math.ceil(ms/1000));
+  let h=Math.floor(s/3600);
+  let m=Math.floor((s%3600)/60);
+  let sec=s%60;
+
+  return (h ? String(h).padStart(2,'0')+':' : '') +
+    String(m).padStart(2,'0')+':' +
+    String(sec).padStart(2,'0');
+}
+
+function gmOfferHTML(p){
+  const state=gmOfferState(p);
+  if(!state) return '';
+
+  const o=state.offer;
+  const price=Number(o.offerPrice)||0;
+  const old=Number(o.oldPrice)||Number(p.price)||0;
+
+  return `
+    <div class="gm-smart-offer"
+      style="
+        margin-top:16px;
+        padding:16px;
+        border-radius:18px;
+        border:1px solid #dce9e1;
+        background:linear-gradient(135deg,#fbfffc,#f0f8f3);
+      ">
+
+      <div style="
+        font-size:18px;
+        font-weight:900;
+        color:#075c3d;
+      ">
+        🎁 عرض خاص ليك
+      </div>
+
+      <div style="
+        margin-top:5px;
+        font-size:13px;
+        color:#68756e;
+      ">
+        ممكن تكمل طلبك بالمنتج ده بسعر خاص 🔥
+      </div>
+
+      <div style="
+        margin-top:12px;
+        font-size:16px;
+        font-weight:800;
+      ">
+        ${esc(p.name)}
+      </div>
+
+      ${
+        o.text
+        ? `<div style="
+            margin-top:5px;
+            font-size:12px;
+            color:#68756e;
+          ">${esc(o.text)}</div>`
+        : ''
+      }
+
+      <div style="margin-top:9px">
+        <span style="
+          font-size:22px;
+          font-weight:900;
+          color:#087842;
+        ">
+          ${price} ج
+        </span>
+
+        ${
+          old > price
+          ? `<del style="
+              margin-right:7px;
+              color:#999;
+              font-size:12px;
+            ">${old} ج</del>`
+          : ''
+        }
+      </div>
+
+      <div style="
+        margin-top:8px;
+        color:#b42318;
+        font-weight:800;
+        font-size:12px;
+      ">
+        ⏳ العرض متاح لمدة:
+        <span
+          class="gm-offer-clock"
+          data-product="${esc(p.id)}">
+          ${gmTime(state.remaining)}
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="submit"
+        style="margin-top:10px"
+        onclick="gmAddOffer('${esc(p.id)}','${esc(o.offerId||o.id||'')}')"
+      >
+        أضف العرض للسلة 🛒
+      </button>
+
+    </div>
+  `;
+}
+
+window.gmAddOffer=function(productId,offerId){
+
+  const p=products.find(
+    x=>String(x.id)===String(productId)
+  );
+
+  if(!p) return;
+
+  const state=gmOfferState(p);
+  const o=state?.offer;
+
+  if(!o) return;
+
+  if(String(o.offerId||o.id||'')!==String(offerId)){
+    alert('العرض انتهى وتم تحديث العرض الجديد.');
+    return;
+  }
+
+  const existing=cart.find(x =>
+    String(x.id)===String(p.id) &&
+    String(x.gmOfferId||'')===String(offerId)
+  );
+
+  if(existing){
+
+    existing.quantity+=1;
+
+  }else{
+
+    cart.push({
+      id:p.id,
+      name:p.name,
+      price:Number(o.offerPrice)||0,
+      oldPrice:Number(o.oldPrice)||Number(p.price)||0,
+      shippingPrice:Number(p.shippingPrice)||0,
+      image:p.image||fallback(),
+      gift:p.gift||'',
+      quantity:1,
+      gmOfferId:String(offerId)
+    });
+
+  }
+
+  updateCart();
+
+  closeM('productModal');
+  openM('cartModal');
+};
+
+function gmShowOffer(){
+
+  if(typeof detailId==='undefined' || !detailId)
+    return;
+
+  const p=products.find(
+    x=>String(x.id)===String(detailId)
+  );
+
+  if(!p) return;
+
+  const info=$('detailInfo');
+
+  if(!info) return;
+
+  let box=$('gmDetailOffer');
+
+  if(!box){
+
+    box=document.createElement('div');
+    box.id='gmDetailOffer';
+
+    info.insertAdjacentElement(
+      'afterend',
+      box
+    );
+
+  }
+
+  box.innerHTML=gmOfferHTML(p);
+}
+
+const oldDetail=window.detail;
+
+if(typeof oldDetail==='function'){
+
+  window.detail=function(id){
+
+    oldDetail(id);
+
+    setTimeout(gmShowOffer,30);
+
+  };
+
+}
+
+const oldUpdateCart=window.updateCart;
+
+if(typeof oldUpdateCart==='function'){
+
+  window.updateCart=function(){
+
+    oldUpdateCart();
+
+    const normal=cart.find(
+      x=>!x.isDeal && !x.gmOfferId
+    );
+
+    const box=$('cartRelatedOffers');
+
+    if(!box) return;
+
+    if(!normal){
+
+      box.innerHTML='';
+
+      return;
+
+    }
+
+    const p=products.find(
+      x=>String(x.id)===String(normal.id)
+    );
+
+    box.innerHTML=p
+      ? '<div style="margin-top:15px">'+
+        gmOfferHTML(p)+
+        '</div>'
+      : '';
+  };
+
+}
+
+/*
+  إرسال رقم العرض للسيرفر
+*/
+const oldFetch=window.fetch;
+
+window.fetch=function(input,init){
+
+  try{
+
+    const url=String(input);
+
+    if(
+      url.includes('/api/orders') &&
+      init &&
+      init.body
+    ){
+
+      const body=JSON.parse(init.body);
+
+      if(Array.isArray(body.items)){
+
+        body.items=body.items.map(function(item){
+
+          const c=cart.find(x =>
+            String(x.id)===String(item.productId) &&
+            String(x.gmOfferId||'')!==''
+          );
+
+          return {
+            ...item,
+            gmOfferId:c?.gmOfferId||''
+          };
+
+        });
+
+        init={
+          ...init,
+          body:JSON.stringify(body)
+        };
+
+      }
+
+    }
+
+  }catch(e){}
+
+  return oldFetch(input,init);
+};
+
+setInterval(function(){
+
+  document.querySelectorAll('.gm-offer-clock')
+    .forEach(function(el){
+
+      const p=products.find(
+        x=>String(x.id)===String(el.dataset.product)
+      );
+
+      if(!p) return;
+
+      const state=gmOfferState(p);
+
+      if(state){
+
+        el.textContent=gmTime(
+          state.remaining
+        );
+
+      }
+
+    });
+
+  gmShowOffer();
+
+},1000);
+
+})();
+</script> 
+  
 </body></html>
