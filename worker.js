@@ -845,20 +845,43 @@ function resolveRelatedOffer(product, offerId) {
                 name:
                   product.name,
 
-                price:
-                  Number(product.price) || 0,
+                const relatedOffer =
+  resolveRelatedOffer(
+    product,
+    item.gmOfferId || ''
+  );
 
-                quantity,
+const finalPrice =
+  relatedOffer
+    ? relatedOffer.price
+    : (Number(product.price) || 0);
 
-                shippingPrice:
-                  Number(
-                    product.shippingPrice
-                  ) || 0,
+return {
+  productId:
+    product.id,
 
-                lineTotal:
-                  (
-                    Number(product.price) || 0
-                  ) * quantity
+  name:
+    product.name,
+
+  price:
+    finalPrice,
+
+  quantity,
+
+  shippingPrice:
+    Number(
+      product.shippingPrice
+    ) || 0,
+
+  relatedOfferId:
+    relatedOffer?.offerId || '',
+
+  relatedOfferPrice:
+    relatedOffer?.price || 0,
+
+  lineTotal:
+    finalPrice * quantity
+};
               };
 
             })
