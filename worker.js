@@ -778,7 +778,18 @@ function resolveRelatedOffer(product, offerId) {
         const shipping = Math.max(0, Number(body.shipping) || 0);
         const result = promoValidation(findPromo(settings, code), subtotal, shipping, usedCount);
         if (!result.ok) return json({error:result.error}, 400);
-        return json({success:true,code:result.code,type:result.type,discount:result.discount,message:result.note || 'تم تطبيق البروموكود بنجاح 🎉'});
+        return json({
+  success:true,
+  code:result.code,
+  type:result.type,
+  value:Math.max(0, Number(findPromo(settings, code)?.value) || 0),
+  discount:result.discount,
+  shippingDiscount:result.type === 'free_shipping'
+    ? Math.max(0, Number(shipping) || 0)
+    : 0,
+  note:result.note || '',
+  message:result.note || 'تم تطبيق البروموكود بنجاح 🎉'
+});
       } catch (error) {
         return json({error:String(error?.message || error || 'تعذر التحقق من البروموكود.')},500);
       }
@@ -926,19 +937,71 @@ return {
         }
 
         const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
-        const orders = await getOrders(env);
-        const promoCode = String(body.promoCode || '').trim().toUpperCase();
-        const usedCount = promoCode ? orders.filter(o => String(o.promoCode || '').toUpperCase() === promoCode).length : 0;
-        let promoDiscount = 0;
-        let appliedPromo = null;
-        if (promoCode) {
-          const result = promoValidation(findPromo(settings, promoCode), productsTotal, shipping, usedCount);
-          if (!result.ok) return json({error:result.error},400);
-          promoDiscount = result.discount;
-          appliedPromo = {code:result.code,type:result.type,discount:promoDiscount};
-          if (result.type === 'free_shipping') shipping = 0;
-        }
-        const total = Math.max(0, productsTotal - promoDiscount) + shipping;
+const orders = await getOrders(env);
+
+const promoCode =
+  String(body.promoCode || '').trim().toUpperCase();
+
+const usedCount =
+  promoCode
+    ? orders.filter(
+        o => String(o.promoCode || '').toUpperCase() === promoCode
+      ).length
+    : 0;
+
+let promoDiscount = 0;
+let promoShippingDiscount = 0;
+let appliedPromo = null;
+
+if (promoCode) {
+
+  const promo = findPromo(settings, promoCode);
+
+  const result = promoValidation(
+    promo,
+    productsTotal,
+    shipping,
+    usedCount
+  );
+
+  if (!result.ok) {
+    return json(
+      { error: result.error },
+      400
+    );
+  }
+
+  if (result.type === 'free_shipping') {
+
+    promoShippingDiscount =
+      Math.max(0, Number(shipping) || 0);
+
+    shipping = 0;
+
+  } else {
+
+    promoDiscount =
+      Math.max(0, Number(result.discount) || 0);
+
+  }
+
+  appliedPromo = {
+    code: result.code,
+    type: result.type,
+    value: Math.max(
+      0,
+      Number(promo?.value) || 0
+    ),
+    discount: promoDiscount,
+    shippingDiscount: promoShippingDiscount
+  };
+}
+
+const total =
+  Math.max(
+    0,
+    productsTotal - promoDiscount
+  ) + shipping;
 
         const order = {
 
