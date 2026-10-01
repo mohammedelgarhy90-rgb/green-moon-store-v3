@@ -354,148 +354,120 @@ export default {
     }
 
     /* =========================
-   GREEN MOON DOCTOR
-========================= */
+       GREEN MOON DOCTOR
+    ========================= */
 
-if (
-  url.pathname === '/api/doctor/analyze' &&
-  request.method === 'POST'
-) {
+    if (
+      url.pathname === '/api/doctor/analyze' &&
+      request.method === 'POST'
+    ) {
+      try {
+        if (!env.AI) {
+          return json({
+            error: 'Cloudflare Workers AI غير مربوط بالـ Worker.'
+          }, 500);
+        }
 
-  try {
+        const body = await request.json();
+        const image = String(body.image || '');
+        const userNote = String(body.note || '').trim().slice(0, 1000);
 
-    if (!env.AI) {
-      return json({
-        error: 'Cloudflare Workers AI غير مربوط بالـ Worker.'
-      }, 500);
-    }
+        if (!image.startsWith('data:image/')) {
+          return json({ error: 'الصورة غير صالحة.' }, 400);
+        }
 
-    const body = await request.json();
+        if (image.length > 8_000_000) {
+          return json({
+            error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.'
+          }, 413);
+        }
 
-    const image = String(body.image || '');
+        const prompt = `
+أنت Green Moon Doctor 🌿، مساعد متخصص في تشخيص مشاكل نباتات الزينة وإرشاد أصحابها.
 
-    if (!image.startsWith('data:image/')) {
-      return json({
-        error: 'الصورة غير صالحة.'
-      }, 400);
-    }
+مهمتك الأساسية هنا هي تحليل صورة النبات نفسه، وليس اختيار نبات لمكان.
 
-    if (image.length > 8_000_000) {
-      return json({
-        error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.'
-      }, 413);
-    }
+حلّل الصورة بعناية، واذكر فقط ما تدعمه الصورة أو المعلومات التي أعطاها العميل.
+لا تدّعي أن التشخيص مؤكد 100% من الصورة وحدها.
+إذا كانت الصورة غير كافية، قل ذلك بوضوح واطلب صورة أو معلومة إضافية بدل اختلاق نتيجة.
 
-    const products = await getProducts(env);
+قواعد مهمة:
+- ابدأ بوصف الأعراض المرئية فقط: اصفرار، بقع، ذبول، احتراق أطراف، تساقط، حشرات ظاهرة، تعفن محتمل... إلخ.
+- فرّق بين "الاحتمال الأقرب" و"المؤكد".
+- اذكر 1 إلى 3 احتمالات فقط، مرتبة من الأقرب للأبعد بدون استخدام درجات أو نسب مئوية.
+- اربط كل احتمال بالعلامات التي ظهرت في الصورة.
+- أعطِ خطوات عملية وآمنة يمكن للعميل تنفيذها.
+- لا تخترع جرعات مبيدات أو أسمدة.
+- إذا اقترحت مبيدًا أو مادة علاجية، اطلب الالتزام بملصق المنتج المحلي والتعليمات الرسمية، ولا تذكر جرعة غير موثقة.
+- لا تنصح بخلط مواد كيميائية.
+- إذا كان هناك احتمال تعفن جذور، ناقش الري والصرف وفحص الجذور بشكل آمن.
+- إذا ظهرت آفة، اذكر أنها آفة محتملة فقط إذا كانت العلامات تدعم ذلك.
+- اذكر متى يحتاج العميل لعزل النبات عن باقي النباتات.
+- اكتب باللهجة المصرية البسيطة، بشكل واضح ومطمئن ومن غير تهويل.
 
-    const productCatalog = products
-      .filter(p => Number(p.price) > 0)
-      .map(p => ({
-        id: p.id,
-        name: p.name,
-        price: Number(p.price) || 0,
-        details: p.details || '',
-        image: p.image || '/assets/logo.jpg'
-      }));
+نظّم النتيجة بالشكل التالي:
 
-    const prompt = `
-أنت Green Moon Doctor 🌿، مساعد اختيار النباتات لمتجر Green Moon Plants & Flowers.
+🌿 النبات المحتمل:
+اسم النبات إن أمكن، مع توضيح درجة الثقة بشكل وصفي مثل "واضح نسبيًا" أو "غير مؤكد".
 
-حلل الصورة المرفقة.
+🔎 اللي ظاهر في الصورة:
+اذكر الأعراض المرئية فقط.
 
-الهدف:
-الصورة قد تكون لمكان داخل منزل أو مكتب أو ريسبشن أو ترابيزة أو ركن فارغ.
-نريد اختيار أنسب نبات من المنتجات الموجودة في كتالوج Green Moon فقط.
+🩺 الاحتمال الأقرب:
+المشكلة الأكثر احتمالًا ولماذا.
 
-مهم جدًا:
-- لا تخترع أي منتج غير موجود في الكتالوج.
-- لا تخترع أسعارًا.
-- لا تغير أسماء المنتجات.
-- استخدم فقط المنتجات الموجودة في الكتالوج أدناه.
-- إذا كانت الصورة لا توضح المكان بشكل كافٍ، وضح ذلك.
-- لا تدّعي معرفة شدة الإضاءة بدقة إذا لم تكن واضحة من الصورة.
-- اختر من 1 إلى 3 منتجات مناسبة.
-- أعطِ سببًا بسيطًا لكل اختيار.
-- الإجابة باللهجة المصرية البسيطة.
+🔄 احتمالات بديلة:
+اذكر البدائل عند الحاجة فقط.
 
-كتالوج منتجات Green Moon:
-${JSON.stringify(productCatalog)}
+💚 تعمل إيه دلوقتي:
+خطوات مرتبة وواضحة للعلاج والعناية.
 
-أريد النتيجة بالشكل التالي:
+🚫 تجنب:
+أهم الأشياء التي قد تزود المشكلة.
 
-🌿 تحليل المكان:
-وصف مختصر للمكان الظاهر في الصورة.
+📸 لو محتاج صورة تانية:
+حدد بالضبط إيه الجزء أو الزاوية أو المعلومة المطلوبة.
 
-💡 الإضاءة المتوقعة:
-منخفضة / متوسطة / قوية / غير واضحة.
-
-🎯 أنسب اختيارات Green Moon:
-اذكر أفضل 1 إلى 3 منتجات من الكتالوج فقط.
-لكل منتج:
-- الاسم
-- سبب الترشيح
-- السعر
-
-⚠️ ملاحظة:
-إذا كانت الصورة غير كافية، وضح أن الترشيح مبدئي.
+معلومة العميل الإضافية:
+${userNote || 'لا توجد معلومات إضافية.'}
 `;
-const doctorAgreementKey = 'GM_DOCTOR_META_AGREED';
 
-const doctorAgreement =
-  await env.GREEN_MOON_KV.get(doctorAgreementKey);
+        const aiResponse = await env.AI.run(
+          '@cf/meta/llama-3.2-11b-vision-instruct',
+          {
+            prompt,
+            image,
+            max_tokens: 1100,
+            temperature: 0.2
+          }
+        );
 
-if (!doctorAgreement) {
-  await env.AI.run(
-    '@cf/meta/llama-3.2-11b-vision-instruct',
-    {
-      prompt: 'agree'
-    }
-  );
+        const result =
+          aiResponse?.response ||
+          aiResponse?.result ||
+          '';
 
-  await env.GREEN_MOON_KV.put(
-    doctorAgreementKey,
-    '1'
-  );
-}
-    const aiResponse = await env.AI.run(
-      '@cf/meta/llama-3.2-11b-vision-instruct',
-      {
-        prompt,
-        image,
-        max_tokens: 900,
-        temperature: 0.3
+        if (!String(result).trim()) {
+          return json({
+            error: 'Green Moon Doctor لم يُرجع نتيجة.'
+          }, 502);
+        }
+
+        return json({
+          success: true,
+          result: String(result).trim()
+        });
+
+      } catch (error) {
+        return json({
+          error: String(
+            error?.message ||
+            error ||
+            'حدث خطأ أثناء تحليل صورة النبات.'
+          )
+        }, 500);
       }
-    );
-
-    const result =
-      aiResponse?.response ||
-      aiResponse?.result ||
-      '';
-
-    if (!String(result).trim()) {
-      return json({
-        error: 'Green Moon Doctor لم يُرجع نتيجة.'
-      }, 502);
     }
-
-    return json({
-      success: true,
-      result: String(result).trim(),
-      products: productCatalog
-    });
-
-  } catch (error) {
-
-    return json({
-      error: String(
-        error?.message ||
-        error ||
-        'حدث خطأ أثناء تحليل الصورة.'
-      )
-    }, 500);
-
-  }
-}
       if (url.pathname === '/api/doctor/legacy-analyze' && request.method === 'POST') {
       try {
 
@@ -776,20 +748,19 @@ function resolveRelatedOffer(product, offerId) {
         const usedCount = orders.filter(o => String(o.promoCode || '').toUpperCase() === code).length;
         const subtotal = Math.max(0, Number(body.subtotal) || 0);
         const shipping = Math.max(0, Number(body.shipping) || 0);
-        const result = promoValidation(findPromo(settings, code), subtotal, shipping, usedCount);
+        const promo = findPromo(settings, code);
+        const result = promoValidation(promo, subtotal, shipping, usedCount);
         if (!result.ok) return json({error:result.error}, 400);
         return json({
-  success:true,
-  code:result.code,
-  type:result.type,
-  value:Math.max(0, Number(findPromo(settings, code)?.value) || 0),
-  discount:result.discount,
-  shippingDiscount:result.type === 'free_shipping'
-    ? Math.max(0, Number(shipping) || 0)
-    : 0,
-  note:result.note || '',
-  message:result.note || 'تم تطبيق البروموكود بنجاح 🎉'
-});
+          success:true,
+          code:result.code,
+          type:result.type,
+          value:Math.max(0, Number(promo?.value) || 0),
+          discount:result.discount,
+          shippingDiscount:result.type === 'free_shipping' ? Math.max(0, Number(shipping) || 0) : 0,
+          note:result.note || '',
+          message:result.note || 'تم تطبيق البروموكود بنجاح 🎉'
+        });
       } catch (error) {
         return json({error:String(error?.message || error || 'تعذر التحقق من البروموكود.')},500);
       }
@@ -937,71 +908,32 @@ return {
         }
 
         const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
-const orders = await getOrders(env);
-
-const promoCode =
-  String(body.promoCode || '').trim().toUpperCase();
-
-const usedCount =
-  promoCode
-    ? orders.filter(
-        o => String(o.promoCode || '').toUpperCase() === promoCode
-      ).length
-    : 0;
-
-let promoDiscount = 0;
-let promoShippingDiscount = 0;
-let appliedPromo = null;
-
-if (promoCode) {
-
-  const promo = findPromo(settings, promoCode);
-
-  const result = promoValidation(
-    promo,
-    productsTotal,
-    shipping,
-    usedCount
-  );
-
-  if (!result.ok) {
-    return json(
-      { error: result.error },
-      400
-    );
-  }
-
-  if (result.type === 'free_shipping') {
-
-    promoShippingDiscount =
-      Math.max(0, Number(shipping) || 0);
-
-    shipping = 0;
-
-  } else {
-
-    promoDiscount =
-      Math.max(0, Number(result.discount) || 0);
-
-  }
-
-  appliedPromo = {
-    code: result.code,
-    type: result.type,
-    value: Math.max(
-      0,
-      Number(promo?.value) || 0
-    ),
-    discount: promoDiscount,
-    shippingDiscount: promoShippingDiscount
-  };
-}
-
-const total =
-  Math.max(
-    0,
-    productsTotal - promoDiscount
-  ) + shipping;
+        const orders = await getOrders(env);
+        const promoCode = String(body.promoCode || '').trim().toUpperCase();
+        const usedCount = promoCode ? orders.filter(o => String(o.promoCode || '').toUpperCase() === promoCode).length : 0;
+        let promoDiscount = 0;
+        let promoShippingDiscount = 0;
+        let appliedPromo = null;
+        if (promoCode) {
+          const promo = findPromo(settings, promoCode);
+          const result = promoValidation(promo, productsTotal, shipping, usedCount);
+          if (!result.ok) return json({error:result.error},400);
+          if (result.type === 'free_shipping') {
+            // Free shipping affects shipping only; never subtract it from the products subtotal.
+            promoShippingDiscount = Math.max(0, Number(shipping) || 0);
+            shipping = 0;
+          } else {
+            promoDiscount = Math.max(0, Number(result.discount) || 0);
+          }
+          appliedPromo = {
+            code:result.code,
+            type:result.type,
+            value:Math.max(0, Number(promo?.value) || 0),
+            discount:promoDiscount,
+            shippingDiscount:promoShippingDiscount
+          };
+        }
+        const total = Math.max(0, productsTotal - promoDiscount) + shipping;
 
         const order = {
 
@@ -1068,15 +1000,15 @@ const total =
 
           promoCode: appliedPromo?.code || '',
 
-promoType: appliedPromo?.type || '',
+          promoType: appliedPromo?.type || '',
 
-promoValue: appliedPromo?.value || 0,
+          promoValue: appliedPromo?.value || 0,
 
-promoDiscount,
+          promoDiscount,
 
-promoShippingDiscount,
+          promoShippingDiscount,
 
-items,
+          items,
 
           total
         };
