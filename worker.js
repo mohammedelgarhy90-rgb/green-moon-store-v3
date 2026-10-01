@@ -1068,11 +1068,15 @@ const total =
 
           promoCode: appliedPromo?.code || '',
 
-          promoType: appliedPromo?.type || '',
+promoType: appliedPromo?.type || '',
 
-          promoDiscount,
+promoValue: appliedPromo?.value || 0,
 
-          items,
+promoDiscount,
+
+promoShippingDiscount,
+
+items,
 
           total
         };
