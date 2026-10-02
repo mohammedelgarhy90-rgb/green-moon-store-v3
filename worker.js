@@ -447,7 +447,7 @@ ${JSON.stringify(catalog)}
         content: prompt
       }
     ],
-    image,
+    image: String(image),
     max_tokens: 900,
     temperature: 0.2
   }
