@@ -354,6 +354,112 @@ export default {
     }
 
     /* =========================
+       GREEN MOON SPACE ADVISOR
+    ========================= */
+
+    if (
+      url.pathname === '/api/space/recommend' &&
+      request.method === 'POST'
+    ) {
+      try {
+        if (!env.AI) {
+          return json({ error: 'Cloudflare Workers AI غير مربوط بالـ Worker.' }, 500);
+        }
+
+        const body = await request.json();
+        const image = String(body.image || '');
+        const userNote = String(body.note || '').trim().slice(0, 1000);
+        if (!image.startsWith('data:image/')) {
+          return json({ error: 'صورة المكان غير صالحة.' }, 400);
+        }
+        if (image.length > 8_000_000) {
+          return json({ error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.' }, 413);
+        }
+
+        const products = await getProducts(env);
+        const catalog = products.map(p => ({
+          id: p.id,
+          name: p.name,
+          details: p.details || '',
+          care: p.care || {}
+        }));
+
+        const prompt = `
+أنت Green Moon Space Advisor، خبير تنسيق نباتات الزينة داخل الأماكن.
+حلّل صورة المكان فقط: الإضاءة الظاهرة، المساحة، سطح الوضع، الارتفاع المتاح، ألوان الديكور، وهل المكان داخلي أو خارجي إن أمكن.
+لا تدّعي قياسات دقيقة من صورة واحدة، ولا تخترع معلومات غير ظاهرة.
+اختر فقط من كتالوج Green Moon التالي، ولا تقترح منتجًا غير موجود فيه.
+
+كتالوج المنتجات:
+${JSON.stringify(catalog, null, 2)}
+
+معلومة العميل:
+${userNote || 'لا توجد معلومات إضافية.'}
+
+أعد JSON فقط بهذا الشكل، بدون Markdown أو كلام خارج JSON:
+{
+  "summary":"وصف مختصر للمكان وما يحتاجه",
+  "recommendations":[
+    {"product_id":"ID","reason":"لماذا يناسب المكان"},
+    {"product_id":"ID","reason":"لماذا يناسب المكان"},
+    {"product_id":"ID","reason":"لماذا يناسب المكان"}
+  ]
+}
+قواعد:
+- من 1 إلى 3 منتجات فقط.
+- product_id يجب أن يكون ID موجودًا حرفيًا في الكتالوج.
+- لا تكرر نفس المنتج.
+- لو الصورة لا تكفي، اجعل recommendations فارغة واشرح السبب في summary.
+- لا تعتمد على الاسم وحده؛ اربط الاختيار بالإضاءة والمساحة والاستخدام الظاهر.
+`;
+
+        const aiResponse = await env.AI.run(
+          '@cf/qwen/qwen3.8-27b',
+          {
+            messages: [
+              {
+                role: 'system',
+                content: 'أنت مستشار نباتات وديكور بصري. التزم بالكتالوج وبصيغة JSON المطلوبة ولا تخمّن معلومات غير ظاهرة.'
+              },
+              { role: 'user', content: prompt }
+            ],
+            image,
+            reasoning_effort: 'high',
+            max_tokens: 900,
+            temperature: 0.1,
+            top_p: 0.9
+          }
+        );
+
+        let raw = String(aiResponse?.response || aiResponse?.result || '').trim();
+        raw = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+        let parsed = null;
+        try { parsed = JSON.parse(raw); } catch (_) {
+          const a = raw.indexOf('{'), b = raw.lastIndexOf('}');
+          if (a >= 0 && b > a) { try { parsed = JSON.parse(raw.slice(a, b + 1)); } catch (_) {} }
+        }
+        if (!parsed || typeof parsed !== 'object') {
+          return json({ success: true, summary: raw || 'لم يتم الحصول على نتيجة.', recommendations: [] });
+        }
+
+        const allowed = new Map(products.map(p => [String(p.id), p]));
+        const recommendations = Array.isArray(parsed.recommendations)
+          ? parsed.recommendations.filter(r => r && allowed.has(String(r.product_id)))
+              .slice(0, 3)
+              .map(r => ({ product_id: String(r.product_id), reason: String(r.reason || '').slice(0, 300) }))
+          : [];
+
+        return json({
+          success: true,
+          summary: String(parsed.summary || '').slice(0, 700),
+          recommendations
+        });
+      } catch (error) {
+        return json({ error: String(error?.message || error) }, 500);
+      }
+    }
+
+    /* =========================
        GREEN MOON DOCTOR
     ========================= */
 
