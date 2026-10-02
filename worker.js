@@ -560,6 +560,10 @@ ${catalogText}
         }
       }
             }
+    if (
+  url.pathname === '/api/doctor/analyze' &&
+  request.method === 'POST'
+) {
       try {
         if (!env.AI) {
           return json({
