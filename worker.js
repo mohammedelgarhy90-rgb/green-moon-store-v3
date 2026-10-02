@@ -350,6 +350,9 @@ async function sendGreenMoonPush(env, payload) {
     total: subscriptions.length
   };
     }
+const PUSH_SUBSCRIPTIONS_KEY = 'push_subscriptions';
+
+const VAPID_PUBLIC_KEY = 'BDAM4aE_8ANdSeUUX7kSTJFTeHil6X77x4K7DZ2PUgMY_RcPMDb0DLn0snY_qKrkZdx4-RvaiLJCv3IjPGt2PXU';
 export default {
 
   async fetch(request, env) {
