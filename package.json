@@ -1,0 +1,8 @@
+{
+  "name": "green-moon-store-v3",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "web-push": "3.6.7"
+  }
+}
