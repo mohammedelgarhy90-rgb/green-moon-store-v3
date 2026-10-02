@@ -1,0 +1,29 @@
+GREEN MOON VISUALIZER — FINAL FIX
+====================================
+
+في public/index.html استبدل دالة aiRank الحالية + بداية gmVizAnalyze الحالية بالكود التالي.
+
+1) استبدل:
+async function aiRank(){...}
+
+بالكود:
+
+async function aiRank(){try{const note=`اختيار نبات لمكان داخل غرفة. العميل حدد موضع النبات تقريبًا عند x=${Math.round(S.x*100)}% و y=${Math.round(S.y*100)}% من الصورة. أريد اختيارًا من كتالوج Green Moon فقط. أرجع JSON فقط بهذا الشكل: {"recommendations":[{"id":"ID","reason":"سبب قصير"},{"id":"ID","reason":"سبب قصير"},{"id":"ID","reason":"سبب قصير"}]}. لا تخترع IDs.`;const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),1800);try{const r=await fetch('/api/visualizer/analyze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({image:S.room,note,products:(window.products||[]).map(p=>({id:p.id,name:p.name,price:p.price,details:p.details,category:p.category}))}),signal:controller.signal});if(!r.ok)return null;const d=await r.json();return Array.isArray(d.recommendations)?d.recommendations:null}finally{clearTimeout(timer)}}catch(_){return null}}
+
+2) استبدل بداية:
+window.gmVizAnalyze=async function(){bindPin();$('gmVizThinking').classList.add('show');$('gmVizStatus').textContent='';const ai=await aiRank();
+
+بـ:
+
+window.gmVizAnalyze=async function(){bindPin();const thinking=$('gmVizThinking'),status=$('gmVizStatus');thinking.classList.add('show');status.textContent='';let ai=null;try{ai=await Promise.race([aiRank(),new Promise(resolve=>setTimeout(()=>resolve(null),1900))]);}catch(_){ai=null}
+
+وباقي دالة gmVizAnalyze يظل كما هو.
+
+الهدف:
+- الـ AI لا ينتظر أكثر من 1.8 ثانية.
+- الـ Visualizer لا يفضل في حالة 🤔.
+- بعد 1.9 ثانية كحد أقصى ينتقل تلقائيًا للـ fallback المحلي.
+- باقي الـ Visualizer والسلة والصورة لا تتغير.
+
+مهم:
+هذا التعديل لم يتم دفعه إلى GitHub لأن صلاحية الكتابة على الريبو رجعت 403 من GitHub.
