@@ -368,40 +368,198 @@ export default {
     /* =========================
        GREEN MOON DOCTOR
     ========================= */
-
     if (url.pathname === '/api/visualizer/analyze' && request.method === 'POST') {
       try {
-        if (!env.AI) return json({ error: 'AI غير مربوط بالـ Worker.' }, 500);
         const body = await request.json();
         const image = String(body.image || '');
-        const note = String(body.note || '').slice(0, 1200);
-        const catalog = Array.isArray(body.products) ? body.products.slice(0, 80) : [];
-        if (!image.startsWith('data:image/')) return json({ error: 'الصورة غير صالحة.' }, 400);
-        if (image.length > 8_000_000) return json({ error: 'حجم الصورة كبير جدًا.' }, 413);
-        const catalogText = catalog.map(p => `ID=${p.id} | الاسم=${p.name} | السعر=${p.price} | التفاصيل=${String(p.details||'').slice(0,240)} | القسم=${p.category||''}`).join('\n');
-        const prompt = `أنت مساعد اختيار نباتات لمتجر Green Moon Plants & Flowers. حلل صورة المكان لاختيار نبات مناسب للموقع الذي حدده العميل. لا تشخّص صحة الأشخاص ولا تخترع منتجات.
-المطلوب: اختر حتى 3 منتجات فقط من الكتالوج المرفق. راعِ أن الموضع المحدد هو مكان وضع النبات، وحاول تقدير هل هو ترابيزة/سطح صغير أو أرضية/ركن، والإضاءة الظاهرة، والمساحة البصرية، وشكل المكان. إذا لم تستطع معرفة الإضاءة بدقة، لا تدّعي ذلك.
+        const note = String(body.note || '').trim().slice(0, 1200);
+
+        if (!image.startsWith('data:image/')) {
+          return json({ error: 'الصورة غير صالحة.' }, 400);
+        }
+
+        if (image.length > 8_000_000) {
+          return json({ error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.' }, 413);
+        }
+
+        // استخدم الكتالوج المرسل من الموقع، ولو مش موجود هاته مباشرة من KV.
+        let catalog = Array.isArray(body.products)
+          ? body.products.slice(0, 80)
+          : [];
+
+        if (!catalog.length) {
+          catalog = (await getProducts(env))
+            .slice(0, 80)
+            .map(({ wholesalePrice, ...p }) => p);
+        }
+
+        if (!catalog.length) {
+          return json({
+            recommendations: [],
+            source: 'fallback',
+            message: 'لا توجد منتجات متاحة للتحليل حاليًا.'
+          });
+        }
+
+        // ترشيح محلي مضمون حتى لو الـ AI غير متاح أو اتأخر.
+        const fallbackScore = (p) => {
+          const text = `${p.name || ''} ${p.details || ''} ${p.category || ''}`.toLowerCase();
+          const n = note.toLowerCase();
+          let score = 0;
+
+          if (/مكتب|ترابيزة|طاولة|سطح/.test(n)) {
+            score += /مكتب|ترابيزة|طاولة/.test(text) ? 5 : 1;
+          }
+          if (/بامبو|pothos|بوتس|مونستيرا|سانسيفيريا|اجلونيما|زاميا|نبات/.test(text)) {
+            score += 2;
+          }
+          if (/صغير|صغيرة|ركن|سطح/.test(n) && /صغير|مكتب|ترابيزة|طاولة/.test(text)) {
+            score += 3;
+          }
+          if (/كبير|أرضية|ركن كبير/.test(n) && /كبير|أرضية|مونستيرا|بامبو/.test(text)) {
+            score += 3;
+          }
+
+          const price = Number(p.price) || 0;
+          if (price > 0) {
+            score += 0.01 * Math.max(0, 1000 - Math.min(price, 1000));
+          }
+
+          return score;
+        };
+
+        const fallback = [...catalog]
+          .sort((a, b) => fallbackScore(b) - fallbackScore(a))
+          .slice(0, 3)
+          .map((p) => ({
+            id: String(p.id),
+            reason: 'مرشح مناسب للمكان حسب بيانات المنتج المتاحة في المتجر.'
+          }));
+
+        // لو Workers AI غير مربوط، رجّع النتيجة المحلية بدل ما الصفحة تفضل معلقة.
+        if (!env.AI) {
+          return json({
+            recommendations: fallback,
+            source: 'fallback',
+            message: 'تم الاختيار من كتالوج Green Moon.'
+          });
+        }
+
+        const catalogText = catalog.map(p =>
+          `ID=${p.id} | الاسم=${p.name} | السعر=${p.price} | التفاصيل=${String(p.details || '').slice(0, 240)} | القسم=${p.category || ''}`
+        ).join('\n');
+
+        const prompt = `أنت مساعد اختيار نباتات لمتجر Green Moon Plants & Flowers.
+حلل صورة المكان لاختيار نبات مناسب للموقع الذي حدده العميل.
+لا تشخّص صحة الأشخاص ولا تخترع منتجات.
+
+المطلوب: اختر حتى 3 منتجات فقط من الكتالوج المرفق.
+راعِ الموضع الذي حدده العميل، والإضاءة الظاهرة، والمساحة، وشكل المكان.
+إذا لم تستطع معرفة الإضاءة بدقة، لا تدّعي ذلك.
+
+ملاحظة العميل:
 ${note}
+
 الكتالوج:
 ${catalogText}
-أرجع JSON فقط بدون Markdown بهذا الشكل: {"recommendations":[{"id":"ID","reason":"سبب مصري قصير"},{"id":"ID","reason":"سبب مصري قصير"},{"id":"ID","reason":"سبب مصري قصير"}]}. استخدم IDs الموجودة حرفيًا فقط. لو منتج واحد مناسب، أرجع واحدًا فقط.`;
-        const aiResponse = await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct', {prompt, image, max_tokens:700, temperature:0.15});
-        const raw = String(aiResponse?.response || aiResponse?.result || '').trim();
-        if (!raw) return json({error:'لم يرجع التحليل نتيجة.'},502);
-        let parsed=null;
-        try { parsed=JSON.parse(raw); } catch (_) {
-          const m=raw.match(/\{[\s\S]*\}/); if(m){ try{parsed=JSON.parse(m[0])}catch(__){}} }
-        if (!parsed || !Array.isArray(parsed.recommendations)) return json({error:'تعذر تنظيم نتيجة التحليل.'},502);
-        const allowed=new Set(catalog.map(p=>String(p.id)));
-        parsed.recommendations=parsed.recommendations.filter(x=>x&&allowed.has(String(x.id))).slice(0,3).map(x=>({id:String(x.id),reason:String(x.reason||'مناسب للمكان').slice(0,220)}));
-        return json(parsed);
-      } catch (error) { return json({error:String(error?.message||error||'تعذر تحليل المكان.')},500); }
-    }
 
-    if (
-      url.pathname === '/api/doctor/analyze' &&
-      request.method === 'POST'
-    ) {
+أرجع JSON فقط:
+{"recommendations":[{"id":"ID","reason":"سبب مصري قصير"}]}
+استخدم IDs الموجودة حرفيًا فقط.`;
+
+        // حد زمني يمنع الموقع من الانتظار للأبد.
+        const aiPromise = env.AI.run(
+          '@cf/meta/llama-3.2-11b-vision-instruct',
+          {
+            prompt,
+            image,
+            max_tokens: 500,
+            temperature: 0.1
+          }
+        );
+
+        const timeoutPromise = new Promise((resolve) =>
+          setTimeout(() => resolve(null), 7000)
+        );
+
+        const aiResponse = await Promise.race([aiPromise, timeoutPromise]);
+
+        if (!aiResponse) {
+          return json({
+            recommendations: fallback,
+            source: 'fallback',
+            message: 'تم اختيار نباتات مناسبة من كتالوج Green Moon.'
+          });
+        }
+
+        const raw = String(
+          aiResponse?.response ||
+          aiResponse?.result ||
+          ''
+        ).trim();
+
+        let parsed = null;
+
+        if (raw) {
+          try {
+            parsed = JSON.parse(raw);
+          } catch (_) {
+            const match = raw.match(/\{[\s\S]*\}/);
+            if (match) {
+              try {
+                parsed = JSON.parse(match[0]);
+              } catch (_) {}
+            }
+          }
+        }
+
+        const allowed = new Set(catalog.map(p => String(p.id)));
+
+        if (parsed && Array.isArray(parsed.recommendations)) {
+          const recommendations = parsed.recommendations
+            .filter(x => x && allowed.has(String(x.id)))
+            .slice(0, 3)
+            .map(x => ({
+              id: String(x.id),
+              reason: String(x.reason || 'مناسب للمكان').slice(0, 220)
+            }));
+
+          if (recommendations.length) {
+            return json({
+              recommendations,
+              source: 'ai'
+            });
+          }
+        }
+
+        return json({
+          recommendations: fallback,
+          source: 'fallback',
+          message: 'تم اختيار نباتات مناسبة من كتالوج Green Moon.'
+        });
+
+      } catch (error) {
+        // حتى في حالة أي خطأ غير متوقع، لا نرجع خطأ يعلّق الـ Visualizer.
+        try {
+          const catalog = (await getProducts(env)).slice(0, 3).map(p => ({
+            id: String(p.id),
+            reason: 'مرشح مناسب من منتجات Green Moon.'
+          }));
+
+          return json({
+            recommendations: catalog,
+            source: 'fallback',
+            message: 'تم تشغيل الاختيار الاحتياطي.'
+          });
+        } catch (_) {
+          return json({
+            recommendations: [],
+            source: 'fallback',
+            message: 'تعذر تحليل المكان حاليًا.'
+          });
+        }
+      }
+            }
       try {
         if (!env.AI) {
           return json({
