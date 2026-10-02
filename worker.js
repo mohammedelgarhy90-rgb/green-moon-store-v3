@@ -439,15 +439,19 @@ ${JSON.stringify(catalog)}
 `;
 
     const aiResponse = await env.AI.run(
-      '@cf/meta/llama-3.2-11b-vision-instruct',
+  '@cf/meta/llama-3.2-11b-vision-instruct',
+  {
+    messages: [
       {
-        prompt,
-        image,
-        max_tokens: 900,
-        temperature: 0.2
+        role: 'user',
+        content: prompt
       }
-    );
-
+    ],
+    image,
+    max_tokens: 900,
+    temperature: 0.2
+  }
+);
     const raw = String(
       aiResponse?.response ||
       aiResponse?.result ||
