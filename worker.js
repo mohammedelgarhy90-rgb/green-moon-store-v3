@@ -364,7 +364,168 @@ export default {
           await getShipping(env)
       });
     }
+/* =========================
+   SPACE ADVISOR
+========================= */
 
+if (
+  url.pathname === '/api/space/recommend' &&
+  request.method === 'POST'
+) {
+  try {
+    if (!env.AI) {
+      return json({
+        error: 'Cloudflare Workers AI غير مربوط بالـ Worker.'
+      }, 500);
+    }
+
+    const body = await request.json();
+    const image = String(body.image || '');
+    const note = String(body.note || '').trim().slice(0, 1000);
+
+    if (!image.startsWith('data:image/')) {
+      return json({ error: 'صورة المكان غير صالحة.' }, 400);
+    }
+
+    if (image.length > 8000000) {
+      return json({
+        error: 'حجم الصورة كبير جدًا. اختار صورة أصغر.'
+      }, 413);
+    }
+
+    const products = await getProducts(env);
+
+    const catalog = products
+      .filter(p => Number(p.price) > 0)
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        price: Number(p.price) || 0,
+        details: p.details || '',
+        image: p.image || '/assets/logo.jpg'
+      }));
+
+    const prompt = `
+أنت Green Moon Space Advisor 🌿.
+
+حلل صورة المكان المرفقة واختر أنسب النباتات من كتالوج Green Moon فقط.
+
+ممنوع اختراع منتجات أو أسعار.
+
+اختر من 1 إلى 3 منتجات.
+
+أعد JSON فقط بهذا الشكل:
+
+{
+  "summary": "",
+  "lighting": "",
+  "space_type": "",
+  "recommendations": [
+    {
+      "product_id": "",
+      "product_name": "",
+      "reason": "",
+      "placement": "",
+      "match": 0
+    }
+  ]
+}
+
+ملاحظة العميل:
+${note || 'لا توجد ملاحظة.'}
+
+كتالوج Green Moon:
+${JSON.stringify(catalog)}
+`;
+
+    const aiResponse = await env.AI.run(
+      '@cf/meta/llama-3.2-11b-vision-instruct',
+      {
+        prompt,
+        image,
+        max_tokens: 900,
+        temperature: 0.2
+      }
+    );
+
+    const raw = String(
+      aiResponse?.response ||
+      aiResponse?.result ||
+      ''
+    ).trim();
+
+    if (!raw) {
+      return json({
+        error: 'لم يتم الحصول على نتيجة من Green Moon Space Advisor.'
+      }, 502);
+    }
+
+    let cleaned = raw
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
+
+    const first = cleaned.indexOf('{');
+    const last = cleaned.lastIndexOf('}');
+
+    if (first >= 0 && last > first) {
+      cleaned = cleaned.slice(first, last + 1);
+    }
+
+    let result;
+
+    try {
+      result = JSON.parse(cleaned);
+    } catch (_) {
+      return json({
+        error: 'نتيجة تحليل المكان ليست بصيغة JSON صحيحة.'
+      }, 502);
+    }
+
+    const allowed = new Map(
+      catalog.map(p => [String(p.id), p])
+    );
+
+    result.recommendations =
+      Array.isArray(result.recommendations)
+        ? result.recommendations
+            .slice(0, 3)
+            .map(r => {
+              const p = allowed.get(String(r?.product_id));
+
+              if (!p) return null;
+
+              return {
+                product_id: p.id,
+                product_name: p.name,
+                reason: String(r?.reason || ''),
+                placement: String(r?.placement || ''),
+                match: Math.max(
+                  0,
+                  Math.min(100, Number(r?.match) || 0)
+                )
+              };
+            })
+            .filter(Boolean)
+        : [];
+
+    result.summary = String(result.summary || '');
+    result.lighting = String(result.lighting || 'غير واضحة');
+    result.space_type = String(result.space_type || '');
+
+    return json(result);
+
+  } catch (error) {
+    return json({
+      error: String(
+        error?.message ||
+        error ||
+        'حدث خطأ أثناء تحليل المكان.'
+      )
+    }, 500);
+  }
+                                  }
     /* =========================
        GREEN MOON DOCTOR
     ========================= */
