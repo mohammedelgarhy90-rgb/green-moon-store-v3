@@ -248,7 +248,108 @@ async function getDeals(env) {
   const deals = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
   return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
 }
+async function getPushSubscriptions(env) {
+  const list = await kvJson(env, PUSH_SUBSCRIPTIONS_KEY, []);
+  return Array.isArray(list) ? list : [];
+}
 
+async function savePushSubscription(env, subscription) {
+  const list = await getPushSubscriptions(env);
+  const endpoint = String(subscription?.endpoint || '');
+
+  if (!endpoint) {
+    throw new Error('اشتراك الإشعارات غير صالح.');
+  }
+
+  const next = list.filter(
+    x => x?.endpoint !== endpoint
+  );
+
+  next.push(subscription);
+
+  await env.GREEN_MOON_KV.put(
+    PUSH_SUBSCRIPTIONS_KEY,
+    JSON.stringify(next)
+  );
+
+  return next.length;
+}
+
+async function removePushSubscription(env, endpoint) {
+  const list = await getPushSubscriptions(env);
+
+  const next = list.filter(
+    x => x?.endpoint !== endpoint
+  );
+
+  await env.GREEN_MOON_KV.put(
+    PUSH_SUBSCRIPTIONS_KEY,
+    JSON.stringify(next)
+  );
+
+  return next.length;
+}
+
+async function sendGreenMoonPush(env, payload) {
+  if (!env.VAPID_PRIVATE_KEY) {
+    throw new Error(
+      'VAPID_PRIVATE_KEY غير مضبوط في Cloudflare Secrets.'
+    );
+  }
+
+  webpush.setVapidDetails(
+    env.VAPID_SUBJECT ||
+      'mailto:admin@greenmoon.store',
+
+    VAPID_PUBLIC_KEY,
+
+    env.VAPID_PRIVATE_KEY
+  );
+
+  const subscriptions =
+    await getPushSubscriptions(env);
+
+  let sent = 0;
+  let removed = 0;
+
+  const next = [];
+
+  for (const subscription of subscriptions) {
+    try {
+      await webpush.sendNotification(
+        subscription,
+        JSON.stringify(payload)
+      );
+
+      sent++;
+      next.push(subscription);
+
+    } catch (error) {
+      const status =
+        Number(error?.statusCode || 0);
+
+      if (
+        status === 404 ||
+        status === 410
+      ) {
+        removed++;
+      } else {
+        next.push(subscription);
+      }
+    }
+  }
+
+  await env.GREEN_MOON_KV.put(
+    PUSH_SUBSCRIPTIONS_KEY,
+    JSON.stringify(next)
+  );
+
+  return {
+    sent,
+    removed,
+    total: subscriptions.length
+  };
+    }
 export default {
 
   async fetch(request, env) {
