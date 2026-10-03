@@ -125,6 +125,20 @@ function normalizeProduct(product) {
         ? product.care
         : {},
 
+    giftOffer:
+      product.giftOffer && typeof product.giftOffer === 'object'
+        ? {
+            active: product.giftOffer.active !== false,
+            minQty: Math.max(1, Number(product.giftOffer.minQty) || 1),
+            giftCount: Math.min(3, Math.max(1, Number(product.giftOffer.giftCount) || 1)),
+            mode: product.giftOffer.mode === 'choice' ? 'choice' : 'fixed',
+            giftProductIds: Array.isArray(product.giftOffer.giftProductIds)
+              ? product.giftOffer.giftProductIds.map(String).filter(Boolean).slice(0, 20)
+              : [],
+            title: String(product.giftOffer.title || 'اختار هداياك المجانية').slice(0, 120)
+          }
+        : {active:false,minQty:1,giftCount:1,mode:'fixed',giftProductIds:[],title:'اختار هداياك المجانية'},
+
     image:
       product.image ||
       '/assets/logo.jpg'
@@ -970,6 +984,56 @@ function resolveRelatedOffer(product, offerId) {
     }
 
     /* =========================
+       GIFT VALIDATION
+    ========================= */
+    function validateOrderGifts(products, orderItems, requestedGifts) {
+      const gifts = Array.isArray(requestedGifts) ? requestedGifts : [];
+      const normalized = [];
+      const grouped = new Map();
+
+      for (const g of gifts) {
+        const triggerProductId = String(g?.triggerProductId || '');
+        const giftProductId = String(g?.productId || '');
+        if (!triggerProductId || !giftProductId) continue;
+        const qty = Math.max(1, Number(g?.quantity) || 1);
+        if (qty !== 1) return {ok:false,error:'كل هدية مجانية يجب أن تكون قطعة واحدة.'};
+        const trigger = products.find(p => String(p.id) === triggerProductId);
+        const gift = products.find(p => String(p.id) === giftProductId);
+        if (!trigger || !gift) return {ok:false,error:'أحد منتجات الهدية غير متاح حاليًا.'};
+        const offer = trigger.giftOffer;
+        const triggerLine = orderItems.find(i => String(i.productId) === triggerProductId);
+        if (!offer?.active || !triggerLine || triggerLine.quantity < Math.max(1, Number(offer.minQty) || 1)) {
+          return {ok:false,error:'هذه الهدية غير مستحقة مع المنتجات الحالية.'};
+        }
+        const allowed = new Set((offer.giftProductIds || []).map(String));
+        if (!allowed.has(giftProductId)) return {ok:false,error:'اختيار الهدية غير متاح لهذا العرض.'};
+        if (!grouped.has(triggerProductId)) grouped.set(triggerProductId, []);
+        grouped.get(triggerProductId).push(giftProductId);
+        normalized.push({triggerProductId,giftProductId,productId:gift.id,name:gift.name,quantity:1,price:0});
+      }
+
+      for (const item of orderItems) {
+        const trigger = products.find(p => String(p.id) === String(item.productId));
+        const offer = trigger?.giftOffer;
+        if (!offer?.active || item.quantity < Math.max(1, Number(offer.minQty) || 1)) continue;
+        const required = Math.min(3, Math.max(1, Number(offer.giftCount) || 1));
+        const list = grouped.get(String(item.productId)) || [];
+        if (list.length !== required) {
+          return {ok:false,error:`اختار ${required} ${required===1?'هدية':'هدايا'} مجانية لمنتج «${trigger.name}».`};
+        }
+        if (new Set(list).size !== list.length) return {ok:false,error:'لا يمكن اختيار نفس الهدية أكثر من مرة.'};
+        if (offer.mode === 'fixed') {
+          const fixed = (offer.giftProductIds || []).map(String).slice(0, required);
+          if (fixed.length !== required || fixed.some(id => !list.includes(id))) {
+            return {ok:false,error:'إعدادات الهدايا لهذا المنتج تحتاج مراجعة من لوحة التحكم.'};
+          }
+        }
+      }
+
+      return {ok:true,gifts:normalized};
+    }
+
+    /* =========================
        CREATE ORDER
     ========================= */
 
@@ -1063,6 +1127,9 @@ return {
             400
           );
         }
+
+        const giftResult = validateOrderGifts(products, items, body.gifts);
+        if (!giftResult.ok) return json({error:giftResult.error},400);
 
         const productsTotal =
           items.reduce(
@@ -1212,6 +1279,8 @@ return {
           promoShippingDiscount,
 
           items,
+
+          gifts: giftResult.gifts,
 
           total
         };
