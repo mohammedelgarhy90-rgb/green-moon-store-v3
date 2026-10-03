@@ -1,0 +1,126 @@
+GREEN MOON — GIFT BUDGET SERVER PATCH
+
+1) أضف هذا البلوك قبل PUBLIC PROMO VALIDATION في worker.js:
+
+function giftConfigForProduct(product) {
+  const g = product?.giftConfig;
+  if (!g || g.enabled !== true || !Array.isArray(g.gifts) || !g.gifts.length) return null;
+  return {
+    enabled: true,
+    mode: g.mode === 'choose' ? 'choose' : 'forced',
+    maxChoices: Math.min(10, Math.max(1, Number(g.maxChoices) || 1)),
+    giftBudgetWholesale: Math.max(0, Number(g.giftBudgetWholesale) || 0),
+    gifts: [...new Set(g.gifts.map(String))]
+  };
+}
+
+/* =========================
+   PUBLIC GIFT QUOTE
+========================= */
+if (url.pathname === '/api/gifts/quote' && request.method === 'POST') {
+  try {
+    const body = await request.json();
+    const products = await getProducts(env);
+    const parent = products.find(p => String(p.id) === String(body.productId));
+    if (!parent) return json({error:'المنتج غير موجود.'},404);
+
+    const cfg = giftConfigForProduct(parent);
+    if (!cfg) return json({error:'لا توجد هدايا مفعلة لهذا المنتج.'},400);
+
+    const quantity = Math.max(1, Number(body.quantity) || 1);
+    let ids = Array.isArray(body.giftIds) ? body.giftIds.map(String) : [];
+    const allowed = new Set(cfg.gifts.filter(id => id !== String(parent.id)));
+
+    if (cfg.mode === 'forced') ids = cfg.gifts.slice(0, cfg.maxChoices);
+    ids = [...new Set(ids)].filter(id => allowed.has(id)).slice(0, cfg.maxChoices);
+
+    if (cfg.mode === 'choose' && !ids.length) {
+      return json({error:'اختار هدية واحدة على الأقل.'},400);
+    }
+
+    const selected = ids.map(id => products.find(p => String(p.id) === id)).filter(Boolean);
+    const values = {};
+    let unitGiftValue = 0;
+    for (const p of selected) {
+      const wholesale = Math.max(0, Number(p.wholesalePrice) || 0);
+      values[String(p.id)] = wholesale;
+      unitGiftValue += wholesale;
+    }
+
+    if (cfg.giftBudgetWholesale > 0 && unitGiftValue > cfg.giftBudgetWholesale) {
+      return json({
+        error:`إجمالي الهدايا ${unitGiftValue} ج بسعر الجملة، بينما الحد المسموح ${cfg.giftBudgetWholesale} ج.`
+      },400);
+    }
+
+    return json({
+      success:true,
+      productId:parent.id,
+      giftIds:selected.map(p => p.id),
+      values,
+      unitGiftValue,
+      giftValue:unitGiftValue * quantity,
+      budget:cfg.giftBudgetWholesale,
+      maxChoices:cfg.maxChoices
+    });
+  } catch (error) {
+    return json({error:String(error?.message || error || 'تعذر التحقق من الهدايا.')},500);
+  }
+}
+
+2) داخل CREATE ORDER، بعد تكوين items وقبل حساب total، أضف:
+
+const giftItems = [];
+for (const rawItem of (Array.isArray(body.items) ? body.items : [])) {
+  const parent = products.find(p => String(p.id) === String(rawItem.productId));
+  const cfg = giftConfigForProduct(parent);
+  if (!parent || !cfg) continue;
+
+  const quantity = Math.max(1, Number(rawItem.quantity) || 1);
+  let ids = Array.isArray(rawItem.giftIds)
+    ? rawItem.giftIds.map(String)
+    : Array.isArray(rawItem.gifts)
+      ? rawItem.gifts.map(g => String(g?.id ?? g?.productId ?? ''))
+      : [];
+
+  const allowed = new Set(cfg.gifts.filter(id => id !== String(parent.id)));
+  if (cfg.mode === 'forced') ids = cfg.gifts.slice(0, cfg.maxChoices);
+  ids = [...new Set(ids)].filter(id => allowed.has(id)).slice(0, cfg.maxChoices);
+
+  const selected = ids.map(id => products.find(p => String(p.id) === id)).filter(Boolean);
+  const unitGiftValue = selected.reduce((sum,p) => sum + Math.max(0,Number(p.wholesalePrice)||0),0);
+
+  if (cfg.mode === 'choose' && !selected.length) {
+    return json({error:`لم يتم اختيار هدية للمنتج: ${parent.name}`},400);
+  }
+  if (cfg.giftBudgetWholesale > 0 && unitGiftValue > cfg.giftBudgetWholesale) {
+    return json({error:`قيمة هدايا المنتج ${parent.name} تتجاوز ميزانية الهدايا المحددة.`},400);
+  }
+
+  for (const gift of selected) {
+    const wholesale = Math.max(0,Number(gift.wholesalePrice)||0);
+    giftItems.push({
+      productId:gift.id,
+      name:gift.name,
+      price:0,
+      originalPrice:Number(gift.price)||0,
+      wholesalePrice:wholesale,
+      quantity,
+      lineTotal:0,
+      giftForProductId:parent.id,
+      giftValue:wholesale * quantity
+    });
+  }
+}
+
+const giftDiscount = giftItems.reduce((sum,g) => sum + (Number(g.giftValue)||0),0);
+
+3) داخل object اسمه order، أضف:
+
+gifts: giftItems,
+giftDiscount,
+
+4) لا تخصم giftDiscount مرة ثانية من total.
+الهدية سعرها 0 أصلًا، لذلك total يظل محسوبًا من المنتجات المدفوعة + الشحن - البروموكود.
+
+5) مهم: لا تعتمد على السعر القادم من العميل. السيرفر هو الذي يقرأ wholesalePrice من المنتجات المخزنة في KV ويتحقق من الميزانية.
