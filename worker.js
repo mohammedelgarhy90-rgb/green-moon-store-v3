@@ -291,11 +291,14 @@ export default {
       request.method === 'GET'
     ) {
 
-      const products =
-        await getProducts(env);
-
+      let products = await getProducts(env);
+      if (!Array.isArray(products) || !products.length) {
+        const backup = await kvJson(env, PRODUCTS_BACKUP_KEY, null);
+        products = Array.isArray(backup) && backup.length ? backup.map(normalizeProduct) : SEED_PRODUCTS.map(normalizeProduct);
+        try { await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(products)); } catch (_) {}
+      }
       const out = json(products.map(({wholesalePrice, ...product}) => product));
-      out.headers.set('cache-control','public, max-age=20, stale-while-revalidate=60');
+      out.headers.set('cache-control','no-store, must-revalidate');
       return out;
     }
 
