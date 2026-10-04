@@ -133,8 +133,6 @@ function normalizeProduct(product) {
 
 const PRODUCTS_BACKUP_KEY = 'products_backup';
 const SETTINGS_BACKUP_KEY = 'settings_backup';
-const SETTINGS_V2_PREFIX = 'settings_v2:';
-const SETTINGS_V2_INDEX = 'settings_v2_index';
 const DEALS_BACKUP_KEY = 'deals_backup';
 
 async function kvJson(env, key, fallback = null) {
@@ -250,37 +248,6 @@ async function getDeals(env) {
   return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
 }
 
-
-async function getSplitSettings(env) {
-  try {
-    const base = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json');
-    const index = await env.GREEN_MOON_KV.get(SETTINGS_V2_INDEX, 'json');
-    const keys = Array.isArray(index) ? index : [];
-    const overrides = {};
-    if (keys.length) {
-      const entries = await Promise.all(keys.map(async key => {
-        try { return [key, await env.GREEN_MOON_KV.get(SETTINGS_V2_PREFIX + key, 'json')]; }
-        catch (_) { return [key, undefined]; }
-      }));
-      for (const [key, value] of entries) if (value !== undefined) overrides[key] = value;
-    }
-    if ((base && typeof base === 'object' && !Array.isArray(base)) || keys.length) return { ...(base || {}), ...overrides };
-    return null;
-  } catch (_) { return null; }
-}
-
-async function saveSplitSettings(env, patch) {
-  const index = await env.GREEN_MOON_KV.get(SETTINGS_V2_INDEX, 'json');
-  const keys = new Set(Array.isArray(index) ? index : []);
-  for (const key of Object.keys(patch)) {
-    keys.add(key);
-    await env.GREEN_MOON_KV.put(SETTINGS_V2_PREFIX + key, JSON.stringify(patch[key]));
-  }
-  await env.GREEN_MOON_KV.put(SETTINGS_V2_INDEX, JSON.stringify([...keys]));
-  return patch;
-}
-
-
 export default {
 
   async fetch(request, env) {
@@ -361,10 +328,7 @@ export default {
       request.method === 'GET'
     ) {
 
-      let settings = await getSplitSettings(env);
-      if (!settings || typeof settings !== 'object' || Array.isArray(settings) || !Object.keys(settings).length) {
-        settings = await kvJson(env, SETTINGS_KEY, null);
-      }
+      let settings = await kvJson(env, SETTINGS_KEY, null);
       if (!settings || typeof settings !== 'object' || Array.isArray(settings) || !Object.keys(settings).length) {
         settings = await kvJson(env, SETTINGS_BACKUP_KEY, null);
       }
@@ -382,6 +346,7 @@ export default {
           services: []
         };
       }
+      try { await env.GREEN_MOON_KV.put(SETTINGS_BACKUP_KEY, JSON.stringify(settings)); } catch (_) {}
       return json(settings);
     }
 
@@ -1583,24 +1548,40 @@ return {
         );
       }
 
-      if (request.method === 'GET') {
-        return json(await getSplitSettings(env) || await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {});
+      if (
+        request.method === 'GET'
+      ) {
+
+        return json(
+          await env.GREEN_MOON_KV.get(
+            SETTINGS_KEY,
+            'json'
+          ) || {}
+        );
       }
 
-      if (request.method === 'PATCH') {
-        const body = await request.json();
-        const patch = body && body.patch && typeof body.patch === 'object' ? body.patch :
-          (body && body.key ? { [String(body.key)]: body.value } : body);
-        if (!patch || typeof patch !== 'object' || Array.isArray(patch)) return json({error:'بيانات التعديل غير صحيحة'},400);
-        const settings = await saveSplitSettings(env, patch);
-        return json({success:true, settings, patched:Object.keys(patch)});
-      }
+      if (
+        request.method === 'POST' ||
+        request.method === 'PUT'
+      ) {
 
-      if (request.method === 'POST' || request.method === 'PUT') {
-        const body = await request.json();
-        if (!body || typeof body !== 'object' || Array.isArray(body)) return json({error:'بيانات الإعدادات غير صحيحة'},400);
-        const settings = await saveSplitSettings(env, body);
-        return json({success:true, settings});
+        const body =
+          await request.json();
+
+        await env.GREEN_MOON_KV.put(
+          SETTINGS_KEY,
+          JSON.stringify(
+            body
+          )
+        );
+
+        return json({
+          success:
+            true,
+
+          settings:
+            body
+        });
       }
     }
 
@@ -1818,6 +1799,29 @@ return {
           true,
 
         products
+      });
+    }
+
+    /* =========================
+       ADMIN HTML ROUTE
+    ========================= */
+
+    if (url.pathname === '/admin.html' && request.method === 'GET') {
+      if (env.ASSETS) {
+        const adminUrl = new URL(request.url);
+        adminUrl.pathname = '/admin.html';
+        const response = await env.ASSETS.fetch(new Request(adminUrl.toString(), request));
+        if (response && response.ok) {
+          const out = new Response(response.body, response);
+          out.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+          out.headers.set('X-Content-Type-Options', 'nosniff');
+          return out;
+        }
+        return response;
+      }
+      return new Response('admin.html غير موجود في ملفات الموقع', {
+        status: 404,
+        headers: { 'content-type': 'text/plain;charset=UTF-8' }
       });
     }
 
