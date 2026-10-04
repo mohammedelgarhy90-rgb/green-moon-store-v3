@@ -492,6 +492,36 @@
 #products .products{align-items:start}
 @media(max-width:700px){#products{padding-top:24px}.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{border-radius:16px}.pimg{aspect-ratio:1/1}.pbody{padding:9px}.pbody h3{font-size:12px;line-height:1.6;min-height:39px}.price .new{font-size:17px}.qty{margin-top:7px}.add,.detailBtn{min-height:42px;padding:8px 6px;font-size:11px}.gm-share-row{display:none}}
 </style>
+
+<style id="gm-final-button-fix-v3">
+/* Premium detail/read buttons: green remains reserved for primary cart actions. */
+.detailBtn, .article button{
+  background:linear-gradient(135deg,#f3d98b,#d7ae52)!important;
+  color:#18372c!important;
+  border:1px solid rgba(184,145,60,.42)!important;
+  box-shadow:0 6px 16px rgba(168,126,45,.14);
+  font-weight:900!important;
+}
+.detailBtn:hover, .article button:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.detailBtn:active, .article button:active{transform:translateY(0) scale(.99)}
+.article button{min-height:40px;padding:9px 14px!important;border-radius:10px!important}
+@media(max-width:700px){.detailBtn,.article button{min-height:42px;font-size:11px!important}}
+</style>
+
+<style id="gm-article-mobile-final-v3">
+@media(max-width:700px){
+  .article-modal-box{width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px)!important;border-radius:18px!important}
+  .article-modal-head{grid-template-columns:1fr!important;min-height:0!important}
+  .article-modal-img{height:190px!important;min-height:190px!important}
+  .article-modal-head-copy{padding:18px 16px 20px!important}
+  .article-modal-head h2{font-size:22px!important;line-height:1.55!important}
+  .article-modal-body{padding:18px 16px 8px!important}
+  .article-modal-lead{font-size:14px!important;line-height:1.9!important}
+  .article-modal-content{font-size:14px!important;line-height:2!important}
+  .article-modal-content h3{font-size:18px!important}
+  .article-modal-footer{padding:10px 16px 18px!important}
+}
+</style>
 </head><body><div id="gmOfferTicker" class="gm-ticker" aria-label="عروض Green Moon"></div>
 
 <div id="gmPremiumSplash" aria-label="Green Moon welcome">
@@ -522,7 +552,7 @@
 </div>
 
 <header class="header"><div class="wrap head"><button class="menu" onclick="menu()">☰</button><div class="brand"><img id="logo"><div><b>Green Moon</b><small>PLANTS AND FLOWERS</small></div></div><div class="actions"><button class="headIcon" onclick="searchSite()">⌕</button><button class="headIcon cartBtn" onclick="cartOpen()">🛒<span class="count" id="count">0</span></button></div></div></header>
-<main><section class="hero"><img id="heroImg" src="/assets/product-1.jpg" loading="eager" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='/assets/logo.jpg'"><div class="wrap heroCopy"><div id="heroText"><div class="kicker">الطبيعة.. أقرب إليك</div><h1>Green Moon<span>Plants and Flowers</span></h1><p>نباتات تضيف حياة وجمال لكل مكان</p><a class="cta" href="#products">تسوق الآن ←</a></div></div><div class="dots" id="dots"></div></section><section class="services"><div class="wrap grid" id="services"></div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="products" id="productGrid"></div></div></section><section class="section" id="categories"><div class="wrap"><div class="title"><h2>تسوق حسب الفئة</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="cats" id="cats"></div></div></section><section class="wrap promoArea" id="banners"></section><section class="section" id="deals"><div class="wrap"><div class="title"><h2 id="dealsHeading">العروض الحالية</h2></div><div id="dealList"></div></div></section><section class="section gm-premium-reco-section" id="gmRecommendationSection">
+<main><section class="hero"><img id="heroImg" src="/assets/product-1.jpg" loading="eager" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='/assets/logo.jpg'"><div class="wrap heroCopy"><div id="heroText"><div class="kicker">الطبيعة.. أقرب إليك</div><h1>Green Moon<span>Plants and Flowers</span></h1><p>نباتات تضيف حياة وجمال لكل مكان</p><a class="cta" href="#products">تسوق الآن ←</a></div></div><div class="dots" id="dots"></div></section><section class="services"><div class="wrap grid" id="services"></div></section><section class="section" id="categories"><div class="wrap"><div class="title"><h2>تسوق حسب الفئة</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="cats" id="cats"></div></div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="products" id="productGrid"></div></div></section><section class="wrap promoArea" id="banners"></section><section class="section" id="deals"><div class="wrap"><div class="title"><h2 id="dealsHeading">العروض الحالية</h2></div><div id="dealList"></div></div></section><section class="section gm-premium-reco-section" id="gmRecommendationSection">
   <div class="wrap">
     <div class="gm-smart-wizard" id="gmRecommendation">
       <div class="gm-wizard-head">
@@ -623,7 +653,7 @@ function dealInfo(id){
 const d=findDeal(id);if(!d)return;const old=Number(d.oldPrice)||0,price=Number(d.price)||0,items=Array.isArray(d.items)?d.items:(Array.isArray(d.productIds)?d.productIds.map(productId=>({productId,quantity:1})):(d.productId?[{productId:d.productId,quantity:1}]:[])),names=items.map(it=>{const p=products.find(x=>String(x.id)===String(it.productId));return p?p.name+' × '+Math.max(1,Number(it.quantity)||1):''}).filter(Boolean),did=esc(String(d.id||id));
 $('dealDetails').innerHTML='<img src="'+esc(d.image||fallback())+'" style="width:100%;border-radius:14px;max-height:360px;object-fit:cover"><h2>'+esc(d.title||d.name||'صفقة')+'</h2><p style="line-height:1.9">'+esc(d.description||d.shortDescription||'')+'</p><div class="dealPrice">'+(old?'<span class="old">'+old+' ج</span>':'')+'<span class="new">'+price+' ج</span></div><h3>📦 محتويات الصفقة</h3><p style="line-height:1.9">'+esc(names.length?names.join('\n'):(Array.isArray(d.contents)?d.contents.join('\n'):""))+'</p>'+(d.sizes?'<h3>📏 المقاسات</h3><p>'+esc(Array.isArray(d.sizes)?d.sizes.join('، '):d.sizes)+'</p>':'')+(d.features?'<h3>✨ المميزات</h3><p>'+esc(Array.isArray(d.features)?d.features.join('، '):d.features)+'</p>':'')+(d.shipping?'<h3>🚚 الشحن</h3><p>'+esc(d.shipping)+'</p>':'')+(d.notes?'<h3>📝 ملاحظات</h3><p>'+esc(d.notes)+'</p>':'')+'<button class="submit" data-deal-id="'+did+'" onclick="closeM(\'dealModal\');dealOrder(this.dataset.dealId)">🛒 اطلب الصفقة الآن</button>';openM('dealModal')
 }
-function renderArticles(){let a=settings.gm_articles||settings.articles||[];$('articleList').innerHTML=a.length?a.slice(0,3).map((x,i)=>'<article class="article"><img loading="lazy" src="'+esc(x.image||fallback())+'"><div><h3>'+esc(x.title||'مقال')+'</h3><p>'+esc(x.excerpt||x.description||'')+'</p><button onclick="article('+i+')">📖 اقرأ التفاصيل</button></div></article>').join(''):'<p>لا توجد مقالات منشورة حاليًا.</p>'}
+function renderArticles(){let a=settings.gm_articles||settings.articles||[];$('articleList').innerHTML=a.length?a.slice(0,3).map((x,i)=>'<article class="article"><img loading="lazy" src="'+esc(x.image||fallback())+'"><div><h3>'+esc(x.title||'مقال')+'</h3><p>'+esc(x.excerpt||x.description||'')+'</p><button onclick="article('+i+')">📖 اقرأ المقال كاملًا</button></div></article>').join(''):'<p>لا توجد مقالات منشورة حاليًا.</p>'}
 function articleParagraphs(text){let raw=String(text||'').replace(/\r/g,'').trim();if(!raw)return '';let blocks=raw.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);if(blocks.length===1&&raw.length>260){let sentences=raw.split(/(?<=[.!؟])\s+/).filter(Boolean),groups=[];for(let i=0;i<sentences.length;i+=3)groups.push(sentences.slice(i,i+3).join(' '));blocks=groups.length>1?groups:blocks}return blocks.map(b=>{let lines=b.split('\n').map(x=>x.trim()).filter(Boolean);if(lines.length>1&&lines.every(x=>/^(?:[•●▪*-]|\d+[.)])\s+/.test(x))){return '<ul>'+lines.map(x=>'<li>'+esc(x.replace(/^(?:[•●▪*-]|\d+[.)])\s+/,'').trim())+'</li>').join('')+'</ul>'}let clean=b.replace(/^#{2,3}\s*/,'');if(/^#{2,3}\s*/.test(b))return '<h3>'+esc(clean)+'</h3>';return '<p>'+esc(b).replace(/\n/g,'<br>')+'</p>'}).join('')}
 function renderArticleContent(x){let sections=Array.isArray(x.sections)?x.sections:(Array.isArray(x.contentSections)?x.contentSections:null);if(sections&&sections.length){return sections.map(sec=>{let h=sec.title||sec.heading||sec.name||'';let body=sec.content||sec.text||sec.description||'';let bullets=Array.isArray(sec.bullets)?'<ul>'+sec.bullets.map(v=>'<li>'+esc(v)+'</li>').join('')+'</ul>':'';return (h?'<h3>'+esc(h)+'</h3>':'')+articleParagraphs(body)+bullets}).join('')}let content=typeof x.content==='string'?x.content:(x.body||x.description||x.excerpt||'');return articleParagraphs(content)}
 function article(i){let a=settings.gm_articles||settings.articles||[],x=a[i];if(!x)return;$('articleImg').src=x.image||fallback();$('articleImg').alt=x.title||'مقال Green Moon';$('articleTitle').textContent=x.title||'مقال Green Moon';$('articleCategory').textContent=x.category||x.tag||'دليل Green Moon';let meta=[];if(x.author)meta.push('✍️ '+x.author);if(x.date)meta.push('📅 '+x.date);if(x.readTime)meta.push('⏱️ '+x.readTime);$('articleMeta').textContent=meta.join('  •  ');let lead=x.excerpt||x.intro||x.description||'';$('articleLead').textContent=lead;$('articleLead').style.display=lead?'block':'none';$('articleContent').innerHTML=renderArticleContent(x);openM('articleModal')}
