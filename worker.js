@@ -1803,7 +1803,7 @@ return {
     }
 
     /* =========================
-       ADMIN HTML ROUTE
+       ADMIN HTML DIRECT ROUTE
     ========================= */
 
     if (url.pathname === '/admin.html' && request.method === 'GET') {
@@ -1819,10 +1819,7 @@ return {
         }
         return response;
       }
-      return new Response('admin.html غير موجود في ملفات الموقع', {
-        status: 404,
-        headers: { 'content-type': 'text/plain;charset=UTF-8' }
-      });
+      return new Response('admin.html غير موجود في ملفات الموقع', { status: 404, headers: { 'content-type': 'text/plain;charset=UTF-8' } });
     }
 
     /* =========================
