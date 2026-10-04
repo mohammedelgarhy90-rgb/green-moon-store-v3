@@ -1560,6 +1560,18 @@ return {
         );
       }
 
+      if (request.method === 'PATCH') {
+        const patch = await request.json();
+        const current = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
+        const merged = {
+          ...current,
+          ...patch,
+          ...(patch.gm_theme ? { gm_theme: { ...(current.gm_theme || {}), ...patch.gm_theme } } : {})
+        };
+        await env.GREEN_MOON_KV.put(SETTINGS_KEY, JSON.stringify(merged));
+        return json({ success: true, settings: merged });
+      }
+
       if (
         request.method === 'POST' ||
         request.method === 'PUT'
