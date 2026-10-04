@@ -150,7 +150,19 @@ async function getProducts(env) {
   let products = await kvJson(env, PRODUCTS_KEY, null);
 
   if (Array.isArray(products) && products.length) {
-    products = products.map(normalizeProduct);
+    let repaired = false;
+    products = products.map((product, index) => {
+      const normalized = normalizeProduct(product);
+      if (normalized.id === undefined || normalized.id === null || String(normalized.id).trim() === '') {
+        repaired = true;
+        normalized.id = 'GM-P-' + (Date.now() + index).toString(36).toUpperCase();
+      }
+      return normalized;
+    });
+    // Repair legacy products that had no usable id so every product can always be edited/deleted.
+    if (repaired) {
+      try { await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(products)); } catch (_) {}
+    }
     // Keep a last-known-good snapshot so a bad/empty KV write cannot blank the shop.
     try { await env.GREEN_MOON_KV.put(PRODUCTS_BACKUP_KEY, JSON.stringify(products)); } catch (_) {}
     return products;
@@ -282,14 +294,9 @@ export default {
       const products =
         await getProducts(env);
 
-      return json(
-        products.map(
-          ({
-            wholesalePrice,
-            ...product
-          }) => product
-        )
-      );
+      const out = json(products.map(({wholesalePrice, ...product}) => product));
+      out.headers.set('cache-control','public, max-age=20, stale-while-revalidate=60');
+      return out;
     }
 
     /* =========================
@@ -347,7 +354,9 @@ export default {
         };
       }
       try { await env.GREEN_MOON_KV.put(SETTINGS_BACKUP_KEY, JSON.stringify(settings)); } catch (_) {}
-      return json(settings);
+      const out = json(settings);
+      out.headers.set('cache-control','public, max-age=20, stale-while-revalidate=60');
+      return out;
     }
 
     /* =========================
@@ -1803,7 +1812,7 @@ return {
     }
 
     /* =========================
-       ADMIN HTML DIRECT ROUTE
+       ADMIN HTML ROUTE
     ========================= */
 
     if (url.pathname === '/admin.html' && request.method === 'GET') {
@@ -1819,7 +1828,10 @@ return {
         }
         return response;
       }
-      return new Response('admin.html غير موجود في ملفات الموقع', { status: 404, headers: { 'content-type': 'text/plain;charset=UTF-8' } });
+      return new Response('admin.html غير موجود في ملفات الموقع', {
+        status: 404,
+        headers: { 'content-type': 'text/plain;charset=UTF-8' }
+      });
     }
 
     /* =========================
