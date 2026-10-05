@@ -18,7 +18,7 @@
 .gm-sticker-preview .st{position:absolute;padding:6px 10px;border-radius:999px;color:#fff;font-size:11px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.18)}
 .gm-sticker-preview .tl{top:8px;left:8px}.gm-sticker-preview .tr{top:8px;right:8px}.gm-sticker-preview .bl{bottom:8px;left:8px}.gm-sticker-preview .br{bottom:8px;right:8px}.gm-sticker-preview .tc{top:8px;left:50%;transform:translateX(-50%)}.gm-sticker-preview .bc{bottom:8px;left:50%;transform:translateX(-50%)}
 </style>
-</head>
+<style id="gm-save-state-css">#gmSaveState{position:fixed;right:18px;top:76px;z-index:250;display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:12px;background:#fff;border:1px solid #dfe8e2;box-shadow:0 10px 30px #09251b18;color:#0b5b3d;font-size:12px;font-weight:900;opacity:0;transform:translateY(-8px);pointer-events:none;transition:.2s}.gm-save-dot{width:8px;height:8px;border-radius:50%;background:#0b5b3d}.gm-save-loading .gm-save-dot{animation:gmSavePulse .7s infinite}.gm-save-ok .gm-save-dot{background:#087842}@keyframes gmSavePulse{50%{transform:scale(.55);opacity:.45}}@media(max-width:620px){#gmSaveState{right:10px;top:68px;font-size:11px}}</style></head>
 <body>
 <div id="login" class="login">
   <div class="loginbox">
@@ -46,6 +46,7 @@
   <button class="nav" data-tab="hero"><span class="ico">🖼️</span> Hero والعروض الرئيسية</button>
   <button class="nav" data-tab="deals"><span class="ico">🎯</span> الصفقات</button>
   <button class="nav" data-tab="articles"><span class="ico">📰</span> المقالات</button>
+  <button class="nav" data-tab="reviews"><span class="ico">💬</span> ماذا قالوا عنا</button>
   <button class="nav" data-tab="rewards"><span class="ico">🎁</span> المكافآت</button>
   <button class="nav" data-tab="vouchers"><span class="ico">🎟️</span> القسائم الشرائية</button>
   <button class="nav" data-tab="promos"><span class="ico">🏷️</span> البروموكودات</button>
@@ -59,16 +60,17 @@
 </div></main></div>
 
 <div id="modal" class="modal hidden"><div class="modalbox"><button class="x" onclick="closeModal()">×</button><div id="modalBody"></div></div></div>
-<div id="toast" class="toast hidden"></div>
+<div id="toast" class="toast hidden"></div><div id="gmSaveState"><span class="gm-save-dot"></span><span id="gmSaveText">جاري الحفظ...</span></div>
 
 <script>
 const $=id=>document.getElementById(id), KEY='gm_admin_password_new';
-let D={products:[],orders:[],settings:{},shipping:0,categories:[],hero:[],deals:[],articles:[],rewards:{},home:{},ticker:{},voucherProducts:[]},tab='home';
+let D={products:[],orders:[],settings:{},shipping:0,categories:[],hero:[],deals:[],articles:[],reviews:[],rewards:{},home:{},ticker:{},voucherProducts:[]},tab='home';
 
 const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const token=()=>sessionStorage.getItem(KEY)||'';
 const H=()=>({'Content-Type':'application/json','Authorization':'Bearer '+token()});
-async function api(url,opt={}){const r=await fetch(url,{...opt,headers:{...H(),...(opt.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error((d.error||'حدث خطأ')+(d.details?' — '+d.details:'')+' ['+r.status+']');return d}
+function saveState(mode,text){const e=$('gmSaveState'),t=$('gmSaveText');if(!e)return;e.style.opacity='1';e.style.transform='translateY(0)';e.classList.toggle('gm-save-loading',mode==='loading');e.classList.toggle('gm-save-ok',mode==='ok');if(t)t.textContent=text||'جاري الحفظ...';clearTimeout(window.gmSaveTimer);if(mode==='ok')window.gmSaveTimer=setTimeout(()=>{e.style.opacity='0';e.style.transform='translateY(-8px)'},1400)}
+async function api(url,opt={}){const method=String(opt.method||'GET').toUpperCase(),mutating=['POST','PUT','PATCH','DELETE'].includes(method);if(mutating)saveState('loading','جاري الحفظ...');try{const r=await fetch(url,{...opt,headers:{...H(),...(opt.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error((d.error||'حدث خطأ')+(d.details?' — '+d.details:'')+' ['+r.status+']');if(mutating)saveState('ok','تم الحفظ بنجاح ✓');return d}catch(e){if(mutating)saveState('ok','تعذر الحفظ ✕');throw e}}
 function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');clearTimeout(window.tt);window.tt=setTimeout(()=>$('toast').classList.add('hidden'),1800)}
 function logout(){sessionStorage.removeItem(KEY);location.reload()}
 
@@ -84,11 +86,11 @@ async function load(){
  D.settings=await api('/api/admin/settings');
  D.shipping=(await api('/api/admin/shipping')).price||0;
  const s=D.settings||{};
- D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=s.gm_deals||s.deals||[]; D.articles=s.gm_articles||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
+ D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=s.gm_deals||s.deals||[]; D.articles=s.gm_articles||[]; D.reviews=s.gm_reviews||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
  render();
 }
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function render(){const f={home,products,categories,hero,deals,articles,rewards,vouchers,promos,ticker,orders,settings,builder,homebuilder};$('content').innerHTML=f[tab]()}
+function render(){const f={home,products,categories,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,settings,builder,homebuilder};$('content').innerHTML=f[tab]()}
 function home(){
  return `<div class="stats">
  <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
@@ -181,7 +183,7 @@ function collection(type,title,sub,kind){
 function collectionForm(type,id){
  const a=D[type]||[],x=id?a.find(z=>String(z.id)===String(id)):{id:Date.now(),title:'',name:'',text:'',description:'',image:'',link:'',cta:'اطلب الآن',startAt:'',endAt:'',active:true};
  let extra='';
- if(type==='categories') extra=`<div class="field"><label>المنتجات داخل التصنيف</label><div style="display:grid;gap:7px;max-height:210px;overflow:auto">${D.products.map(p=>`<label class="check"><input type="checkbox" class="catprod" value="${esc(p.id)}" ${(x.productIds||[]).map(String).includes(String(p.id))?'checked':''}> ${esc(p.name)}</label>`).join('')}</div></div>`;
+ if(type==='categories') extra=`<div class="field"><label>المنتجات داخل التصنيف — اختيار يدوي فقط</label><div class="hint" style="margin-bottom:8px">الموقع لن يضيف أي منتج تلقائيًا لهذا القسم. اختر المنتجات المطلوبة فقط.</div><div style="display:grid;gap:7px;max-height:210px;overflow:auto">${D.products.map(p=>`<label class="check"><input type="checkbox" class="catprod" value="${esc(p.id)}" ${(x.productIds||[]).map(String).includes(String(p.id))?'checked':''}> ${esc(p.name)}</label>`).join('')}</div></div>`;
  if(type==='hero') extra=`<div class="grid2"><div class="field"><label>نوع الشريحة</label><select id="ctype"><option value="offer" ${x.type==='offer'?'selected':''}>عرض</option><option value="article" ${x.type==='article'?'selected':''}>مقال</option><option value="product" ${x.type==='product'?'selected':''}>منتج</option></select></div><div class="field"><label>الرابط / الإجراء</label><input id="cl" value="${esc(x.link||'')}"></div></div>`;
  if(type==='deals') extra=`<div class="grid2">
 <div class="field"><label>السعر قبل الخصم</label><input id="dop" type="number" min="0" value="${Number(x.oldPrice||0)}"></div>
@@ -238,7 +240,7 @@ async function saveCollection(type,id){
  D[type]=a;await saveContent();closeModal();toast('تم حفظ الصفقة بنجاح')
 }
 
-async function saveContent(){const s={...D.settings,gm_categories:D.categories,gm_hero:D.hero,gm_deals:D.deals,deals:D.deals,gm_articles:D.articles,gm_rewards:D.rewards,gm_ticker:D.ticker};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});D.settings=s;render()}
+async function saveContent(){const s={...D.settings,gm_categories:D.categories,gm_hero:D.hero,gm_deals:D.deals,deals:D.deals,gm_articles:D.articles,gm_reviews:D.reviews||D.settings.gm_reviews||[],gm_rewards:D.rewards,gm_ticker:D.ticker};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});D.settings=s;render()}
 async function collectionDelete(type,id){if(!confirm('حذف العنصر؟'))return;D[type]=(D[type]||[]).filter(x=>String(x.id)!==String(id));await saveContent();render();toast('تم الحذف')}
 let dragData=null;function dragStart(e,type){dragData={type,id:e.currentTarget.dataset.id}}async function dropItem(e,type){if(!dragData||dragData.type!==type)return;const target=e.currentTarget.dataset.id,a=D[type]||[],from=a.findIndex(x=>String(x.id)===String(dragData.id)),to=a.findIndex(x=>String(x.id)===String(target));if(from<0||to<0||from===to)return;const [it]=a.splice(from,1);a.splice(to,0,it);await saveContent();render();dragData=null;toast('تم تغيير الترتيب')}
 
@@ -427,6 +429,7 @@ function builder(){
         ['showDeals','الصفقات'],
         ['showProducts','المنتجات'],
         ['showArticles','المقالات'],
+        ['showReviews','ماذا قالوا عنا'],
         ['showRewards','المكافآت'],
         ['showDoctor','Green Moon Doctor'],
         ['showContact','التواصل'],
@@ -470,7 +473,7 @@ async function saveBuilder(){
    sections:{
      showCategories:$('b_showCategories').checked,showHero:$('b_showHero').checked,
      showDeals:$('b_showDeals').checked,showProducts:$('b_showProducts').checked,
-     showArticles:$('b_showArticles').checked,showRewards:$('b_showRewards').checked,
+     showArticles:$('b_showArticles').checked,showReviews:$('b_showReviews').checked,showRewards:$('b_showRewards').checked,
      showDoctor:$('b_showDoctor').checked,showContact:$('b_showContact').checked,
      showFooter:$('b_showFooter').checked
    }
@@ -479,6 +482,11 @@ async function saveBuilder(){
  D.settings=s; toast('تم حفظ التحكم الكامل في واجهة الموقع');
 }
 
+
+function reviews(){const a=Array.isArray(D.reviews)?D.reviews:[];return `<div class="panel"><div class="head"><div><h2>💬 ماذا قالوا عنا</h2><p>أضف صورة العميل/التجربة مع كابشن، ويمكنك ترتيبها وإظهار أو إخفاء أي مراجعة.</p></div><button class="btn primary" onclick="reviewForm()">+ إضافة ريفيو</button></div><div class="cards">${a.length?a.map((x,i)=>`<div class="card"><div class="cardmedia"><img src="${esc(x.image||'/assets/logo.jpg')}"></div><div class="cardbody"><h3>${esc(x.name||'عميل Green Moon')}</h3><p>${esc(x.caption||'')}</p><p>⭐ ${Number(x.rating||5)}/5 — ${x.active===false?'مخفي':'ظاهر'}</p><div class="cardactions"><button class="btn soft" onclick="reviewForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="reviewDelete('${esc(x.id)}')">حذف</button></div></div></div>`).join(''):`<div class="empty">لا توجد ريفيوهات حتى الآن.</div>`}</div></div>`}
+function reviewForm(id){const x=(D.reviews||[]).find(z=>String(z.id)===String(id))||{id:Date.now().toString(),name:'',caption:'',image:'',rating:5,active:true};openModal(id?'تعديل الريفيو':'إضافة ريفيو',`<div class="grid2"><div class="field"><label>اسم العميل (اختياري)</label><input id="rv_name" value="${esc(x.name||'')}" placeholder="مثلاً: أ/ محمد"></div><div class="field"><label>التقييم</label><select id="rv_rating">${[5,4,3,2,1].map(n=>`<option value="${n}" ${Number(x.rating||5)===n?'selected':''}>${'★'.repeat(n)} (${n}/5)</option>`).join('')}</select></div></div><div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('rv',x.image||'','صورة الريفيو')}</div><div class="field" style="margin-top:12px"><label>الكابشن / رأي العميل</label><textarea id="rv_caption" placeholder="اكتب رأي العميل هنا...">${esc(x.caption||'')}</textarea></div><label class="field" style="display:flex;align-items:center;gap:8px;margin-top:10px"><input id="rv_active" type="checkbox" ${x.active!==false?'checked':''}> إظهار الريفيو على الموقع</label><div class="modalfoot"><button class="btn primary" onclick="saveReview('${esc(x.id)}')">حفظ الريفيو</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`)}
+async function saveReview(id){const item={id:id||Date.now().toString(),name:$('rv_name').value.trim(),caption:$('rv_caption').value.trim(),image:$('rv_value').value||'',rating:Math.min(5,Math.max(1,Number($('rv_rating').value)||5)),active:!!$('rv_active').checked};if(!item.caption){toast('اكتب كابشن الريفيو');return}const a=[...(D.reviews||[])];const i=a.findIndex(x=>String(x.id)===String(id));if(i>=0)a[i]=item;else a.push(item);D.reviews=a;D.settings={...D.settings,gm_reviews:a};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});closeModal();render();toast('تم حفظ الريفيو بنجاح')}
+async function reviewDelete(id){if(!confirm('حذف الريفيو؟'))return;D.reviews=(D.reviews||[]).filter(x=>String(x.id)!==String(id));D.settings={...D.settings,gm_reviews:D.reviews};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});render();toast('تم حذف الريفيو')}
 
 function vouchers(){
  const rows=D.products.filter(p=>p.voucherConfig?.enabled||p.giftConfig?.enabled);
