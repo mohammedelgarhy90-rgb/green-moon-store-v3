@@ -1144,27 +1144,24 @@ document.addEventListener('click',e=>{const m=e.target.closest('.modal');if(m&&e
 
   window.refreshOfferTicker=function(){
     try{
-      const ticker=$('gmOfferTicker');
-      if(!ticker)return;
-      const items=products.flatMap(p=>offers(p).map(o=>{
+      const ticker=$('gmOfferTicker'); if(!ticker)return;
+      const custom=Array.isArray(settings.gm_ticker?.items)?settings.gm_ticker.items.filter(x=>x&&x.active!==false&&x.text):[];
+      const customItems=custom.map(x=>'<span class="gm-ticker-item">📢 <strong>'+safe(x.text)+'</strong><span class="gm-ticker-dot">•</span></span>').join('');
+      const offerItems=products.flatMap(p=>offers(p).map(o=>{
         const target=products.find(x=>String(x.id)===String(o.productId));
         const old=Number(o.oldPrice)||Number(target?.oldPrice)||Number(target?.price)||0;
         const text=o.tickerText || o.text || ('عرض خاص: اطلب '+p.name+' وخد '+(target?.name||'منتج مميز')+' بسعر '+(Number(o.offerPrice)||0)+' ج بدلًا من '+old+' ج');
         return '<span class="gm-ticker-item">🎁 <strong>'+safe(text)+'</strong><span class="gm-ticker-dot">•</span></span>';
       })).join('');
-      const fallback=[
-        '🌿 عروض Green Moon مستمرة — اختار نباتك المفضل دلوقتي',
-        '🚚 اطلب من موقع Green Moon واستمتع بخدمة التوصيل',
-        '🎁 تابع العروض والهدايا والقسائم الجديدة على الموقع'
-      ].map(x=>'<span class="gm-ticker-item"><strong>'+safe(x)+'</strong><span class="gm-ticker-dot">•</span></span>').join('');
-      const content=items||fallback;
-      ticker.innerHTML='<div class="gm-ticker-track">'+content+content+'</div>';
-      ticker.style.display='block';
-      ticker.style.visibility='visible';
-    }catch(e){
-      const ticker=$('gmOfferTicker');
-      if(ticker){ticker.style.display='block';ticker.style.visibility='visible';}
-    }
+      const items=customItems+offerItems;
+      const enabled=settings.gm_ticker?.enabled!==false;
+      if(!enabled || !items){ticker.innerHTML='';ticker.style.display='none';return;}
+      ticker.innerHTML='<div class="gm-ticker-track">'+items+items+'</div>';
+      ticker.style.display='block';ticker.style.visibility='visible';
+      const speed=Math.min(180,Math.max(20,Number(settings.gm_ticker?.speed)||70));
+      ticker.style.setProperty('--gm-ticker-duration',speed+'s');
+      const track=ticker.querySelector('.gm-ticker-track'); if(track)track.style.animationDuration=speed+'s';
+    }catch(e){const ticker=$('gmOfferTicker');if(ticker){ticker.style.display='block';ticker.style.visibility='visible';}}
   };
   setTimeout(window.refreshOfferTicker,50);
 })();
@@ -1416,4 +1413,4 @@ setTimeout(gmInitSmartWizard,300);
 })();
 </script>
 
-</body></html>
+<script>(function(){try{setTimeout(function(){if(window.refreshOfferTicker)window.refreshOfferTicker()},500)}catch(e){}})();</script></body></html>
