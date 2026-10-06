@@ -107,6 +107,37 @@ function adminOk(request, env) {
     auth === `Bearer ${env.ADMIN_PASSWORD}`;
 }
 
+function courierOk(request, env) {
+  const key = request.headers.get('x-courier-key') || '';
+  return !!env.COURIER_PASSWORD && key === env.COURIER_PASSWORD;
+}
+
+function addStatusHistory(order, status, by = 'system', note = '') {
+  const history = Array.isArray(order.statusHistory) ? [...order.statusHistory] : [];
+  const last = history[history.length - 1];
+  if (!last || last.status !== status || last.by !== by || note) {
+    history.push({ status, at: new Date().toISOString(), by, note: String(note || '').slice(0, 300) });
+  }
+  return history.slice(-50);
+}
+
+function safeOrder(order) {
+  return {
+    id: order.id,
+    createdAt: order.createdAt,
+    status: order.status || 'جديد',
+    statusHistory: Array.isArray(order.statusHistory) ? order.statusHistory : [],
+    name: order.name || '', phone: order.phone || '',
+    governorate: order.governorate || '', area: order.area || '', street: order.street || '',
+    building: order.building || '', floor: order.floor || '', apartment: order.apartment || '',
+    notes: order.notes || '', productsTotal: Number(order.productsTotal) || 0,
+    shipping: Number(order.shipping) || 0, total: Number(order.total) || 0,
+    items: Array.isArray(order.items) ? order.items : [],
+    trackingToken: order.trackingToken || '',
+    trackingUrl: order.trackingToken ? `/track.html?token=${encodeURIComponent(order.trackingToken)}` : ''
+  };
+}
+
 function normalizeProduct(product) {
   return {
     ...product,
@@ -981,48 +1012,6 @@ function resolveRelatedOffer(product, offerId) {
     }
 
     /* =========================
-       PUBLIC ORDER TRACKING
-    ========================= */
-    if (url.pathname.startsWith('/api/track/') && request.method === 'GET') {
-      const token = decodeURIComponent(url.pathname.slice('/api/track/'.length)).trim();
-      if (!token) return json({error:'رابط التتبع غير صالح'},400);
-      const orders = await getOrders(env);
-      const o = orders.find(x => String(x.trackingToken || '') === token);
-      if (!o) return json({error:'الطلب غير موجود أو رابط التتبع غير صالح'},404);
-      return json({
-        id:o.id, createdAt:o.createdAt, status:o.status, name:o.name,
-        items:(Array.isArray(o.items)?o.items:[]).map(x=>({name:x.name,quantity:x.quantity})),
-        total:o.total, shipping:o.shipping,
-        statusHistory:Array.isArray(o.statusHistory)?o.statusHistory:[]
-      });
-    }
-
-    /* =========================
-       COURIER API
-    ========================= */
-    if (url.pathname === '/api/courier/orders') {
-      const auth = request.headers.get('authorization') || '';
-      const password = String(env.COURIER_PASSWORD || env.ADMIN_PASSWORD || '');
-      if (!password || auth !== `Bearer ${password}`) return json({error:'غير مصرح'},401);
-      const orders = await getOrders(env);
-      if (request.method === 'GET') return json(orders);
-      if (request.method === 'PUT' || request.method === 'POST') {
-        try {
-          const body = await request.json();
-          const index = orders.findIndex(o => String(o.id) === String(body.id));
-          if (index < 0) return json({error:'الطلب غير موجود'},404);
-          const old = orders[index];
-          const nextStatus = String(body.status || old.status || 'جديد');
-          const history = Array.isArray(old.statusHistory) ? old.statusHistory.slice() : [];
-          if (nextStatus !== old.status) history.push({status:nextStatus, at:new Date().toISOString(), by:String(body.by || 'شركة الشحن').slice(0,80), note:String(body.note || '').slice(0,250)});
-          orders[index] = {...old, status:nextStatus, statusHistory:history};
-          await env.GREEN_MOON_KV.put(ORDERS_KEY, JSON.stringify(orders.slice(0,500)));
-          return json({success:true,order:orders[index]});
-        } catch (e) { return json({error:String(e?.message||e)},500); }
-      }
-    }
-
-    /* =========================
        CREATE ORDER
     ========================= */
 
@@ -1199,17 +1188,18 @@ return {
               .toString(36)
               .toUpperCase(),
 
-          createdAt:
-            new Date().toISOString(),
-
           trackingToken:
             crypto.randomUUID(),
+
+          createdAt:
+            new Date().toISOString(),
 
           status:
             'جديد',
 
-          statusHistory:
-            [{status:'جديد', at:new Date().toISOString(), by:'Green Moon', note:'تم استلام الطلب'}],
+          statusHistory: [
+            { status: 'جديد', at: new Date().toISOString(), by: 'system', note: 'تم استلام الطلب' }
+          ],
 
           name:
             String(
@@ -1312,6 +1302,35 @@ return {
     /* =========================
        ADMIN PRODUCTS
     ========================= */
+
+
+    if (url.pathname === '/api/track' && request.method === 'GET') {
+      const token = String(url.searchParams.get('token') || '').trim();
+      if (!token) return json({ error: 'رابط التتبع غير صالح' }, 400);
+      const orders = await getOrders(env);
+      const order = orders.find(o => String(o.trackingToken || '') === token);
+      if (!order) return json({ error: 'الطلب غير موجود أو رابط التتبع غير صالح' }, 404);
+      return json(safeOrder(order));
+    }
+
+    if (url.pathname === '/api/courier/orders') {
+      if (!courierOk(request, env)) return json({ error: 'غير مصرح — تأكد من كود شركة الشحن' }, 401);
+      const orders = await getOrders(env);
+      if (request.method === 'GET') return json(orders.map(safeOrder));
+      if (request.method === 'PUT' || request.method === 'POST') {
+        try {
+          const body = await request.json();
+          const index = orders.findIndex(o => String(o.id) === String(body.id));
+          if (index === -1) return json({ error: 'الطلب غير موجود' }, 404);
+          const status = String(body.status || '').trim();
+          const allowed = ['جديد','قيد التجهيز','تم التجهيز','استلمه المندوب','في الطريق','المندوب قريب','تم التسليم','تعذر التسليم','ملغي'];
+          if (!allowed.includes(status)) return json({ error: 'حالة غير مسموح بها' }, 400);
+          orders[index] = { ...orders[index], status, statusHistory: addStatusHistory(orders[index], status, 'courier', body.note || '') };
+          await env.GREEN_MOON_KV.put(ORDERS_KEY, JSON.stringify(orders.slice(0, 500)));
+          return json({ success: true, order: safeOrder(orders[index]) });
+        } catch (error) { return json({ error: String(error?.message || error) }, 500); }
+      }
+    }
 
     if (
       url.pathname ===
@@ -1771,15 +1790,15 @@ return {
             );
           }
 
-          const previous = orders[index];
-          const nextStatus = body.status != null ? String(body.status) : String(previous.status || 'جديد');
-          const history = Array.isArray(previous.statusHistory) ? previous.statusHistory.slice() : [{status:String(previous.status || 'جديد'), at:previous.createdAt || new Date().toISOString(), by:'Green Moon'}];
-          if (nextStatus !== String(previous.status || '')) history.push({status:nextStatus, at:new Date().toISOString(), by:'Green Moon', note:String(body.note || '').slice(0,250)});
+          const oldStatus = orders[index].status || 'جديد';
+          const nextStatus = String(body.status || oldStatus);
           orders[index] = {
-            ...previous,
+            ...orders[index],
             ...body,
             status: nextStatus,
-            statusHistory: history
+            statusHistory: body.status && nextStatus !== oldStatus
+              ? addStatusHistory(orders[index], nextStatus, 'admin', body.note || '')
+              : (Array.isArray(orders[index].statusHistory) ? orders[index].statusHistory : addStatusHistory(orders[index], nextStatus, 'admin'))
           };
 
           await env.GREEN_MOON_KV.put(
@@ -1853,21 +1872,6 @@ return {
 
         products
       });
-    }
-
-    /* =========================
-       TRACK / COURIER HTML ROUTES
-    ========================= */
-    if ((url.pathname === '/track.html' || url.pathname === '/courier.html') && request.method === 'GET') {
-      if (env.ASSETS) {
-        const response = await env.ASSETS.fetch(new Request(url.toString(), request));
-        if (response && response.ok) {
-          const out = new Response(response.body, response);
-          out.headers.set('Cache-Control','no-cache, no-store, must-revalidate');
-          return out;
-        }
-        return response;
-      }
     }
 
     /* =========================
