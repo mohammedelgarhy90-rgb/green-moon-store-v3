@@ -22,7 +22,7 @@
 <body>
 <div id="login" class="login">
   <div class="loginbox">
-    <div class="loginmark">🌿</div>
+    <div class="loginmark"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:20px"></div>
     <h1>Green Moon</h1>
     <p class="muted">لوحة التحكم الاحترافية</p>
     <div class="field" style="margin-top:18px"><label>كلمة مرور الإدارة</label><input id="pass" type="password" placeholder="••••••••"></div>
@@ -33,7 +33,7 @@
 
 <div id="app" class="hidden">
 <header class="top"><div class="topin">
-  <div class="brand"><div class="brandmark">🌿</div><div><b>Green Moon Admin</b><small>إدارة المتجر بالكامل</small></div></div>
+  <div class="brand"><div class="brandmark" style="background:#fff;padding:4px"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:9px"></div><div><b>Green Moon Admin</b><small>إدارة المتجر بالكامل</small></div></div>
   <div class="topactions"><button class="iconbtn" title="تحديث" onclick="load()">↻</button><button class="iconbtn" title="خروج" onclick="logout()">↪</button></div>
 </div></header>
 <main class="wrap"><div class="layout">
@@ -53,8 +53,9 @@
   <button class="nav" data-tab="ticker"><span class="ico">📰</span> شريط الأخبار</button>
   <div class="sectiontitle">التشغيل</div>
   <button class="nav" data-tab="orders"><span class="ico">📦</span> الطلبات</button>
+  <button class="nav" data-tab="notifications"><span class="ico">🔔</span> الإشعارات</button>
   <button class="nav" data-tab="settings"><span class="ico">⚙️</span> الإعدادات</button>
-  <button class="nav" data-tab="builder"><span class="ico">🎨</span> تحكم كامل في الواجهة</button><button class="nav" data-tab="homebuilder"><span class="ico">🏠</span> منشئ الصفحة الرئيسية</button>
+  <button class="nav" data-tab="builder"><span class="ico">🎨</span> تحكم كامل في الواجهة</button><button class="nav" data-tab="media"><span class="ico">🗂️</span> الصور والنصوص</button><button class="nav" data-tab="homebuilder"><span class="ico">🏠</span> منشئ الصفحة الرئيسية</button>
 </aside>
 <section id="content" class="content"></section>
 </div></main></div>
@@ -80,6 +81,10 @@ async function login(){
  try{await load();$('login').classList.add('hidden');$('app').classList.remove('hidden')}
  catch(e){sessionStorage.removeItem(KEY);$('loginMsg').textContent=e.message}
 }
+async function applyAdminBrand(){
+ try{const s=await fetch('/api/settings').then(r=>r.json());const logo=s?.gm_site?.media?.logo||s?.gm_site?.header?.logo||s?.logo||'/assets/logo.jpg';document.querySelectorAll('.brandmark img,.loginmark img').forEach(i=>i.src=logo);}
+ catch(_){}
+}
 async function load(){
  D.products=await api('/api/admin/products');
  D.orders=await api('/api/admin/orders');
@@ -90,7 +95,7 @@ async function load(){
  render();
 }
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function render(){const f={home,products,categories,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,settings,builder,homebuilder};$('content').innerHTML=f[tab]()}
+function render(){const f={home,products,categories,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,media,homebuilder};$('content').innerHTML=f[tab]()}
 function home(){
  return `<div class="stats">
  <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
@@ -276,13 +281,14 @@ async function savePromo(id){
 }
 async function deletePromo(id){if(!confirm('حذف البروموكود؟'))return;D.settings={...D.settings,promoCodes:(D.settings.promoCodes||[]).filter(x=>String(x.id)!==String(id))};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});render();toast('تم حذف البروموكود')}
 
-function orders(){return `<div class="panel"><div class="head"><div><h2>📦 الطلبات</h2><p>اضغط على رقم الطلب أو اسم العميل لعرض كل التفاصيل والتحكم في الطلب.</p></div><button class="btn soft" onclick="load()">↻ تحديث</button></div><div class="tablewrap"><table class="table"><tr><th>رقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th>تفاصيل</th></tr>${D.orders.map(o=>`<tr><td><button class="btn ghost" onclick="details('${esc(o.id)}')">${esc(o.id)}</button></td><td><button class="btn ghost" onclick="details('${esc(o.id)}')"><b>${esc(o.name||'—')}</b></button></td><td>${esc(o.phone||'—')}</td><td>${+o.total||0} ج</td><td><select onchange="orderStatus('${esc(o.id)}',this.value)"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم التجهيز'?'selected':''}>تم التجهيز</option><option ${o.status==='استلمته شركة الشحن'?'selected':''}>استلمته شركة الشحن</option><option ${o.status==='في الطريق'?'selected':''}>في الطريق</option><option ${o.status==='المندوب قريب'?'selected':''}>المندوب قريب</option><option ${o.status==='تم التسليم'?'selected':''}>تم التسليم</option><option ${o.status==='تعذر التسليم'?'selected':''}>تعذر التسليم</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></td><td><button class="btn soft" onclick="details('${esc(o.id)}')">عرض التفاصيل</button></td></tr>`).join('')}</table></div></div>`}
+function notifications(){return `<div class="panel"><div class="head"><div><h2>🔔 إشعارات العملاء</h2><p>ابعت إشعار فوري للعملاء المشتركين على الموبايل.</p></div></div><div class="grid2"><div class="field"><label>عنوان الإشعار</label><input id="nt_title" placeholder="🌿 عرض جديد من Green Moon"></div><div class="field"><label>الجمهور</label><select id="nt_audience"><option value="all">كل المشتركين</option><option value="promotions">المهتمين بالعروض</option><option value="newProducts">المهتمين بالمنتجات الجديدة</option></select></div></div><div class="field" style="margin-top:12px"><label>نص الإشعار</label><textarea id="nt_body" placeholder="خصم جديد لفترة محدودة..."></textarea></div><div class="grid2" style="margin-top:12px"><div class="field"><label>الرابط عند الضغط</label><input id="nt_url" value="/index.html"></div><div style="display:flex;align-items:end"><button class="btn primary" style="width:100%" onclick="sendNotification()">🚀 إرسال الإشعار</button></div></div><div class="hint" style="margin-top:12px">الإشعارات الخاصة بالطلبات والمنتجات الجديدة والعروض الجديدة يتم إرسالها تلقائيًا حسب إعدادات العميل.</div></div>`}
+async function sendNotification(){const title=$('nt_title').value.trim(),body=$('nt_body').value.trim(),audience=$('nt_audience').value,url=$('nt_url').value.trim()||'/';if(!title||!body){toast('اكتب عنوان ونص الإشعار');return}await api('/api/admin/notifications',{method:'POST',body:JSON.stringify({title,body,audience,url})});toast('تم تجهيز الإشعار للإرسال 🔔')}
+function orders(){return `<div class="panel"><div class="head"><div><h2>📦 الطلبات</h2><p>اضغط على رقم الطلب أو اسم العميل لعرض كل التفاصيل والتحكم في الطلب.</p></div><button class="btn soft" onclick="load()">↻ تحديث</button></div><div class="tablewrap"><table class="table"><tr><th>رقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th>تفاصيل</th></tr>${D.orders.map(o=>`<tr><td><button class="btn ghost" onclick="details('${esc(o.id)}')">${esc(o.id)}</button></td><td><button class="btn ghost" onclick="details('${esc(o.id)}')"><b>${esc(o.name||'—')}</b></button></td><td>${esc(o.phone||'—')}</td><td>${+o.total||0} ج</td><td><select onchange="orderStatus('${esc(o.id)}',this.value)"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم الشحن'?'selected':''}>تم الشحن</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></td><td><button class="btn soft" onclick="details('${esc(o.id)}')">عرض التفاصيل</button></td></tr>`).join('')}</table></div></div>`}
 async function orderStatus(id,status){await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status})});await load();toast('تم تحديث حالة الطلب')}
 function money(n){return (Number(n)||0)+' ج'}
 function orderItemsHtml(o){const items=Array.isArray(o.items)?o.items:[];if(!items.length)return '<div class="empty">لا توجد تفاصيل منتجات محفوظة لهذا الطلب.</div>';return `<div class="tablewrap"><table class="table" style="min-width:650px"><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr>${items.map(it=>{const p=D.products.find(x=>String(x.id)===String(it.productId));const q=Number(it.quantity||1);const price=Number(it.price??p?.price??0);return `<tr><td><b>${esc(it.name||p?.name||it.productId||'منتج')}</b></td><td>${q}</td><td>${money(price)}</td><td>${money(price*q)}</td></tr>`}).join('')}</table></div>`}
-function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم التجهيز'?'selected':''}>تم التجهيز</option><option ${o.status==='استلمته شركة الشحن'?'selected':''}>استلمته شركة الشحن</option><option ${o.status==='في الطريق'?'selected':''}>في الطريق</option><option ${o.status==='المندوب قريب'?'selected':''}>المندوب قريب</option><option ${o.status==='تم التسليم'?'selected':''}>تم التسليم</option><option ${o.status==='تعذر التسليم'?'selected':''}>تعذر التسليم</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="panel"><h3>🕘 سجل الشحن</h3>${(Array.isArray(o.statusHistory)?o.statusHistory:[]).slice().reverse().map(h=>`<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${esc(h.status||'')}</b><span class="muted"> — ${esc(h.by||'')} — ${esc(h.at||'')}</span>${h.note?`<div class="muted">${esc(h.note)}</div>`:''}</div>`).join('')||'<div class="empty">لا يوجد سجل بعد.</div>'}</div><div class="modalfoot"><a class="btn soft" href="${o.trackingToken?`/track.html?token=${encodeURIComponent(o.trackingToken)}`:<a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
-async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await orderStatus(id,status);closeModal();details(id)}
-setInterval(()=>{try{if(typeof token==='function'&&token()&&tab==='orders'&&!document.querySelector('.modal'))load().catch(()=>{})}catch(_){ }},10000);
+function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب والمندوب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم التجهيز'?'selected':''}>تم التجهيز</option><option ${o.status==='استلمته شركة الشحن'?'selected':''}>استلمته شركة الشحن</option><option ${o.status==='في الطريق'?'selected':''}>في الطريق</option><option ${o.status==='المندوب قريب'?'selected':''}>المندوب قريب</option><option ${o.status==='تم التسليم'?'selected':''}>تم التسليم</option><option ${o.status==='تعذر التسليم'?'selected':''}>تعذر التسليم</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><div class="grid2" style="margin-top:10px"><div class="field"><label>👤 اسم المندوب</label><input id="detailCourierName" value="${esc(o.courierName||'')}" placeholder="اسم المندوب"></div><div class="field"><label>📞 رقم المندوب</label><input id="detailCourierPhone" value="${esc(o.courierPhone||'')}" placeholder="01xxxxxxxxx"></div></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة وبيانات المندوب</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="modalfoot"><a class="btn soft" href="tel:${esc(o.phone||'')}" style="text-decoration:none">📞 اتصال</a><a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
+async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status,courierName:$('detailCourierName')?.value||'',courierPhone:$('detailCourierPhone')?.value||''})});await load();closeModal();details(id);toast('تم حفظ حالة الطلب وبيانات المندوب')}
 function printOrder(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const items=Array.isArray(o.items)?o.items:[];const w=window.open('','_blank');if(!w){toast('اسمح بفتح نافذة الطباعة');return}w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>طلب ${esc(o.id)}</title><style>body{font-family:Tahoma,Arial;padding:25px;color:#15221c}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:right}h1,h2{color:#0b5b3d}</style></head><body><h1>Green Moon 🌿</h1><h2>طلب #${esc(o.id)}</h2><p><b>العميل:</b> ${esc(o.name||'')}<br><b>الهاتف:</b> ${esc(o.phone||'')}<br><b>العنوان:</b> ${esc([o.governorate,o.area,o.street,o.building,o.floor,o.apartment].filter(Boolean).join(' — '))}</p><table><tr><th>المنتج</th><th>الكمية</th><th>السعر</th></tr>${items.map(it=>`<tr><td>${esc(it.name||it.productId||'منتج')}</td><td>${Number(it.quantity||1)}</td><td>${money(it.price||0)}</td></tr>`).join('')}</table><h2>الإجمالي: ${money(o.total)}</h2><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
 
 function homebuilder(){
@@ -368,6 +374,30 @@ async function saveHomeBuilder(){
  D.home=h;await saveHomeOnly();toast('تم حفظ الصفحة الرئيسية بالكامل');
 }
 
+function media(){
+ const v=(D.settings&&D.settings.gm_site)||{},m=v.media||{},c=v.content||{};
+ return `<div class="panel"><div class="head"><div><h2>🗂️ الصور والنصوص — تحكم مركزي</h2><p>كل الصور هنا تُرفع من الجهاز كملف صورة، ولا تحتاج كتابة روابط. المنتجات/التصنيفات/العروض/المقالات لها إدارة مستقلة بنفس نظام الرفع.</p></div><button class="btn primary" onclick="saveMediaCenter()">حفظ</button></div>
+ <div class="grid2">
+   <div><label>اللوجو الرئيسي</label>${uploadBox('mc_logo',m.logo||v.header?.logo||'/assets/logo.jpg','PNG / JPG / WEBP')}</div>
+   <div><label>لوجو شاشة الدخول</label>${uploadBox('mc_splash',m.splashLogo||'/assets/green-moon-logo-transparent.png','PNG / JPG / WEBP')}</div>
+   <div><label>صورة Green Moon Doctor</label>${uploadBox('mc_doctor',m.doctor||'/assets/green-moon-doctor.png','PNG / JPG / WEBP')}</div>
+   <div><label>الصورة الاحتياطية</label>${uploadBox('mc_fallback',m.defaultFallback||'/assets/logo.jpg','PNG / JPG / WEBP')}</div>
+   <div><label>صورة Hero الاحتياطية</label>${uploadBox('mc_hero',m.heroFallback||'/assets/logo.jpg','تظهر فقط لو مفيش Hero مرفوع')}</div>
+ </div>
+ <div class="panel" style="margin-top:14px"><div class="head"><div><h3>✍️ نصوص أساسية</h3></div></div><div class="grid2">
+  <div class="field"><label>التصنيفات</label><input id="mc_cat" value="${esc(c.categoriesHeading||'تسوق حسب الفئة')}"></div>
+  <div class="field"><label>المنتجات</label><input id="mc_prod" value="${esc(c.productsHeading||'وصل حديثًا')}"></div>
+  <div class="field"><label>العروض</label><input id="mc_deal" value="${esc(c.dealsHeading||'العروض الحالية')}"></div>
+  <div class="field"><label>المقالات</label><input id="mc_art" value="${esc(c.articlesHeading||'مقالات Green Moon')}"></div>
+ </div></div></div>`;
+}
+async function saveMediaCenter(){
+ const v={...(D.settings.gm_site||{})},m={...(v.media||{})},c={...(v.content||{})};
+ m.logo=$('mc_logo_value').value;m.splashLogo=$('mc_splash_value').value;m.doctor=$('mc_doctor_value').value;m.defaultFallback=$('mc_fallback_value').value;m.heroFallback=$('mc_hero_value').value;
+ c.categoriesHeading=$('mc_cat').value;c.productsHeading=$('mc_prod').value;c.dealsHeading=$('mc_deal').value;c.articlesHeading=$('mc_art').value;
+ v.media=m;v.content=c;D.settings={...D.settings,gm_site:v};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});toast('تم حفظ الصور والنصوص ✓');await load();
+}
+
 function builder(){
  const s=D.settings||{}, v=s.gm_site||{};
  const header=v.header||{}, heroV=v.hero||{}, colors=v.colors||{}, nav=v.nav||{}, footer=v.footer||{}, sections=v.sections||{};
@@ -380,7 +410,7 @@ function builder(){
       <div class="field"><label>اسم المتجر في الهيدر</label><input id="b_store" value="${esc(header.storeName||s.storeName||'Green Moon Plants and Flowers')}"></div>
       <div class="field"><label>اسم المالك/السطر الثاني</label><input id="b_owner" value="${esc(header.owner||'Mohamed Elgarhy')}"></div>
       <div class="field"><label>الجملة التعريفية</label><input id="b_tag" value="${esc(header.tagline||'نباتات أكتر.. حياة أجمل 🌿')}"></div>
-      <div class="field"><label>رابط الشعار</label><input id="b_logo" value="${esc(header.logo||s.logo||'/assets/logo.jpg')}"></div>
+      <div class="field"><label>شعار Green Moon — ارفع صورة فقط</label>${uploadBox('b_logo',header.logo||s.logo||'/assets/logo.jpg','اللوجو الرئيسي')}</div>
       <div class="field"><label>Placeholder البحث</label><input id="b_search" value="${esc(header.searchPlaceholder||'ابحث عن نباتات، قصاري، مستلزمات...')}"></div>
       <div class="field"><label>نص زر التواصل</label><input id="b_contact" value="${esc(header.contactText||'💬 تواصل معنا')}"></div>
     </div>
@@ -392,7 +422,7 @@ function builder(){
       <div class="field"><label>عنوان Hero</label><input id="b_ht" value="${esc(heroV.title||'الطبيعة أقرب إليك')}"></div>
       <div class="field"><label>الوصف</label><input id="b_hs" value="${esc(heroV.subtitle||'نباتات تضيف حياة وجمال لكل مكان')}"></div>
       <div class="field"><label>نص الزر</label><input id="b_hc" value="${esc(heroV.cta||'تسوق الآن')}"></div>
-      <div class="field"><label>صورة Hero</label><input id="b_hi" value="${esc(heroV.image||'')}"></div>
+      <div class="field"><label>صورة Hero — ارفع صورة فقط</label>${uploadBox('b_hi',heroV.image||'','صورة Hero')}</div>
       <div class="field"><label>الرابط</label><input id="b_hl" value="${esc(heroV.link||'#products')}"></div>
       <div class="field"><label>ارتفاع Hero بالموبايل</label><input id="b_hh" type="number" value="${Number(heroV.mobileHeight||390)}"></div>
     </div>
@@ -440,6 +470,42 @@ function builder(){
    </div>
 
    <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🎬 شاشة الدخول Motion — 7 ثواني</h3><p>اللوجو والصورة والنصوص والحركة كلها قابلة للتعديل من هنا.</p></div></div>
+    <div class="grid2">
+      <label class="field" style="display:flex;align-items:center;gap:9px"><input id="sp_enabled" type="checkbox" ${v.splash?.enabled!==false?'checked':''}><span>تشغيل شاشة الدخول</span></label>
+      <div class="field"><label>المدة بالثواني</label><input id="sp_duration" type="number" min="3" max="12" value="${Number(v.splash?.duration||7)}"></div>
+      <div class="field"><label>العنوان</label><input id="sp_title" value="${esc(v.splash?.title||header.storeName||'Green Moon')}"></div>
+      <div class="field"><label>السطر التعريفي</label><input id="sp_sub" value="${esc(v.splash?.subtitle||'Plants and Flowers')}"></div>
+      <div class="field"><label>اسم المالك</label><input id="sp_owner" value="${esc(v.splash?.owner||header.owner||'Mohamed Elgarhy')}"></div>
+      <div class="field"><label>الجملة السفلية</label><input id="sp_tag" value="${esc(v.splash?.tagline||'THE NATURE • THE GREEN MOON EXPERIENCE')}"></div>
+    </div>
+    <div class="field" style="margin-top:12px"><label>لوجو شاشة الدخول — صورة فقط</label>${uploadBox('sp_logo',v.splash?.logo||v.media?.splashLogo||header.logo||'/assets/green-moon-logo-transparent.png','لوجو شاشة الدخول')}</div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🖼️ الصور الأساسية</h3><p>لا توجد صورة ثابتة لا يمكن تغييرها: ارفع البديل من هنا.</p></div></div>
+    <div class="grid2">
+      <div><label>صورة Green Moon Doctor</label>${uploadBox('md_doctor',v.media?.doctor||'/assets/green-moon-doctor.png','صورة الدكتور')}</div>
+      <div><label>الصورة الاحتياطية عند عدم وجود صورة</label>${uploadBox('md_fallback',v.media?.defaultFallback||'/assets/logo.jpg','صورة احتياطية')}</div>
+      <div><label>صورة Hero الاحتياطية</label>${uploadBox('md_hero',v.media?.heroFallback||'/assets/logo.jpg','صورة Hero احتياطية')}</div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>✍️ النصوص العامة</h3><p>غيّر العناوين الرئيسية الظاهرة في الموقع بدون لمس الكود.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>عنوان التصنيفات</label><input id="ct_categories" value="${esc(v.content?.categoriesHeading||'تسوق حسب الفئة')}"></div>
+      <div class="field"><label>عنوان المنتجات</label><input id="ct_products" value="${esc(v.content?.productsHeading||'وصل حديثًا')}"></div>
+      <div class="field"><label>عنوان العروض</label><input id="ct_deals" value="${esc(v.content?.dealsHeading||'العروض الحالية')}"></div>
+      <div class="field"><label>عنوان المقالات</label><input id="ct_articles" value="${esc(v.content?.articlesHeading||'مقالات Green Moon')}"></div>
+      <div class="field"><label>اسم الفوتر</label><input id="ft_brand" value="${esc(v.footer?.brand||header.storeName||'Green Moon')}"></div>
+      <div class="field"><label>سطر الفوتر</label><input id="ft_sub" value="${esc(v.footer?.sub||'PLANTS AND FLOWERS')}"></div>
+      <div class="field"><label>اسم صاحب العلامة</label><input id="ft_owner" value="${esc(v.footer?.owner||header.owner||'Mohamed Elgarhy')}"></div>
+      <div class="field"><label>حقوق النشر</label><input id="ft_copy" value="${esc(v.footer?.copy||'Green Moon Plants and Flowers © 2026')}"></div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
     <div class="head"><div><h3>🔧 أدوات سريعة</h3><p>هذه لا تحذف البيانات؛ فقط تغيّر حالة الواجهة.</p></div></div>
     <div class="grid3">
       <button class="btn soft" onclick="go('products')">🌿 المنتجات</button>
@@ -461,7 +527,26 @@ async function saveBuilder(){
    },
    hero:{
      title:$('b_ht').value,subtitle:$('b_hs').value,cta:$('b_hc').value,
-     image:$('b_hi').value,link:$('b_hl').value,mobileHeight:Number($('b_hh').value)||390
+     image:$('b_hi_value').value,link:$('b_hl').value,mobileHeight:Number($('b_hh').value)||390
+   },
+   splash:{
+     enabled:!!$('sp_enabled').checked,duration:Math.min(12,Math.max(3,Number($('sp_duration').value)||7)),
+     title:$('sp_title').value,subtitle:$('sp_sub').value,owner:$('sp_owner').value,tagline:$('sp_tag').value,
+     logo:$('sp_logo_value').value
+   },
+   media:{
+     logo:$('b_logo_value').value,
+     splashLogo:$('sp_logo_value').value,
+     doctor:$('md_doctor_value').value,
+     defaultFallback:$('md_fallback_value').value,
+     heroFallback:$('md_hero_value').value
+   },
+   content:{
+     categoriesHeading:$('ct_categories').value,productsHeading:$('ct_products').value,
+     dealsHeading:$('ct_deals').value,articlesHeading:$('ct_articles').value
+   },
+   footer:{
+     brand:$('ft_brand').value,sub:$('ft_sub').value,owner:$('ft_owner').value,copy:$('ft_copy').value
    },
    colors:{
      primary:$('b_c1').value,dark:$('b_c2').value,gold:$('b_c3').value,
@@ -521,6 +606,6 @@ async function saveSettings(){
 function openModal(title,body){$('modalBody').innerHTML=`<div class="modalhead"><h2>${title}</h2></div>${body}`;$('modal').classList.remove('hidden')}
 function closeModal(){$('modal').classList.add('hidden')}
 $('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-if(token())login();
+if(token()){applyAdminBrand();login();}else{applyAdminBrand();}
 </script>
 </body></html>
