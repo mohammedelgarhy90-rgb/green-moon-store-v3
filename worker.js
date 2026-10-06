@@ -4,6 +4,12 @@ const SETTINGS_KEY = 'settings';
 const ORDERS_KEY = 'orders';
 const SHIPPING_KEY = 'shipping';
 const DEALS_KEY = 'deals';
+const ACCOUNT_PREFIX = 'acct:';
+const SESSION_PREFIX = 'custsess:';
+const COURIER_SESSION_PREFIX = 'couriersess:';
+const PUSH_PREFIX = 'push:';
+const VAPID_KEY = 'vapid_keys';
+const ORDER_TOKEN_BYTES = 32;
 
 const SEED_PRODUCTS = [
   {
@@ -105,37 +111,6 @@ function adminOk(request, env) {
 
   return !!env.ADMIN_PASSWORD &&
     auth === `Bearer ${env.ADMIN_PASSWORD}`;
-}
-
-function courierOk(request, env) {
-  const key = request.headers.get('x-courier-key') || '';
-  return !!env.COURIER_PASSWORD && key === env.COURIER_PASSWORD;
-}
-
-function addStatusHistory(order, status, by = 'system', note = '') {
-  const history = Array.isArray(order.statusHistory) ? [...order.statusHistory] : [];
-  const last = history[history.length - 1];
-  if (!last || last.status !== status || last.by !== by || note) {
-    history.push({ status, at: new Date().toISOString(), by, note: String(note || '').slice(0, 300) });
-  }
-  return history.slice(-50);
-}
-
-function safeOrder(order) {
-  return {
-    id: order.id,
-    createdAt: order.createdAt,
-    status: order.status || 'جديد',
-    statusHistory: Array.isArray(order.statusHistory) ? order.statusHistory : [],
-    name: order.name || '', phone: order.phone || '',
-    governorate: order.governorate || '', area: order.area || '', street: order.street || '',
-    building: order.building || '', floor: order.floor || '', apartment: order.apartment || '',
-    notes: order.notes || '', productsTotal: Number(order.productsTotal) || 0,
-    shipping: Number(order.shipping) || 0, total: Number(order.total) || 0,
-    items: Array.isArray(order.items) ? order.items : [],
-    trackingToken: order.trackingToken || '',
-    trackingUrl: order.trackingToken ? `/track.html?token=${encodeURIComponent(order.trackingToken)}` : ''
-  };
 }
 
 function normalizeProduct(product) {
@@ -294,9 +269,121 @@ async function getDeals(env) {
   return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
 }
 
+
+function b64u(bytes) {
+  let s = '';
+  const a = bytes instanceof ArrayBuffer ? new Uint8Array(bytes) : bytes;
+  for (const b of a) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function unb64u(s) {
+  s = String(s || '').replace(/-/g,'+').replace(/_/g,'/');
+  while (s.length % 4) s += '=';
+  const bin = atob(s); const out = new Uint8Array(bin.length);
+  for (let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
+  return out;
+}
+function randomToken(n=32) { const a = new Uint8Array(n); crypto.getRandomValues(a); return b64u(a); }
+function normalizePhone(v) { return String(v||'').replace(/[^0-9+]/g,'').replace(/^00/,'+'); }
+async function pbkdf2(password, saltB64) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({name:'PBKDF2',salt:unb64u(saltB64),iterations:120000,hash:'SHA-256'}, key, 256);
+  return b64u(bits);
+}
+async function makePassword(password) { const salt=b64u(crypto.getRandomValues(new Uint8Array(16))); return {salt,hash:await pbkdf2(password,salt)}; }
+async function claimGuestOrders(env,guestKey,accountId){if(!guestKey||!accountId)return;const orders=await getOrders(env);let changed=false;for(const o of orders){if(o.guestKey===guestKey&&!o.accountId){o.accountId=accountId;changed=true}}if(changed)await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(orders.slice(0,500)))}
+async function customerSession(request, env) {
+  const auth=String(request.headers.get('authorization')||'');
+  const token=auth.startsWith('Bearer ')?auth.slice(7).trim():'';
+  if(!token)return null;
+  const sess=await kvJson(env,SESSION_PREFIX+token,null);
+  if(!sess||!sess.accountId||Number(sess.expiresAt||0)<Date.now()) return null;
+  return sess;
+}
+async function accountById(env,id){ return id ? kvJson(env,ACCOUNT_PREFIX+id,null) : null; }
+async function safeAccount(a){ if(!a)return null; const {passwordHash,passwordSalt,...safe}=a; return safe; }
+async function customerNotificationPrefs(env, accountId) {
+  const a=await accountById(env,accountId);
+  return a?.notifications || {promotions:true,newProducts:true,orderUpdates:true};
+}
+function initialTimeline(status='جديد') { return [{status,at:new Date().toISOString(),by:'Green Moon'}]; }
+function statusText(status){return String(status||'').trim()}
+function publicOrder(o) {
+  if(!o)return null;
+  return {id:o.id,createdAt:o.createdAt,status:o.status,name:o.name||'',items:o.items||[],productsTotal:o.productsTotal||0,shipping:o.shipping||0,total:o.total||0,timeline:Array.isArray(o.timeline)?o.timeline:initialTimeline(o.status),trackingUrl:'/track.html?token='+encodeURIComponent(o.trackingToken||'')};
+}
+async function getVapid(env) {
+  let keys=await kvJson(env,VAPID_KEY,null);
+  if(keys?.privateJwk && keys?.publicKey) return keys;
+  const kp=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);
+  const privateJwk=await crypto.subtle.exportKey('jwk',kp.privateKey);
+  const publicKey=await crypto.subtle.exportKey('raw',kp.publicKey);
+  keys={privateJwk,publicKey:b64u(publicKey)};
+  await env.GREEN_MOON_KV.put(VAPID_KEY,JSON.stringify(keys));
+  return keys;
+}
+async function hmac(keyBytes, dataBytes){
+  const k=await crypto.subtle.importKey('raw',keyBytes,{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC',k,dataBytes));
+}
+async function hkdfExtract(salt, ikm){return hmac(salt,ikm)}
+async function hkdfExpand(prk, info, len){
+  let out=new Uint8Array(0), prev=new Uint8Array(0), c=1; const inf=typeof info==='string'?new TextEncoder().encode(info):info;
+  while(out.length<len){const data=new Uint8Array(prev.length+inf.length+1);data.set(prev);data.set(inf,prev.length);data[data.length-1]=c++;prev=await hmac(prk,data);const n=new Uint8Array(out.length+prev.length);n.set(out);n.set(prev,out.length);out=n;}
+  return out.slice(0,len);
+}
+async function signVapid(env,audience) {
+  const keys=await getVapid(env); const now=Math.floor(Date.now()/1000);
+  const enc=o=>b64u(new TextEncoder().encode(JSON.stringify(o)));
+  const head=enc({typ:'JWT',alg:'ES256'}), pay=enc({aud:audience,exp:now+12*60*60,sub:'mailto:notifications@greenmoon.local'});
+  const input=new TextEncoder().encode(head+'.'+pay);
+  const key=await crypto.subtle.importKey('jwk',keys.privateJwk,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);
+  const sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,input);
+  return head+'.'+pay+'.'+b64u(sig);
+}
+async function encryptPush(subscription, payload) {
+  const ua=unb64u(subscription.keys.p256dh), auth=unb64u(subscription.keys.auth);
+  const eph=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveBits']);
+  const client=await crypto.subtle.importKey('raw',ua,{name:'ECDH',namedCurve:'P-256'},false,[]);
+  const shared=new Uint8Array(await crypto.subtle.deriveBits({name:'ECDH',public:client},eph.privateKey,256));
+  const prkKey=await hkdfExtract(auth,shared);
+  const serverPub=new Uint8Array(await crypto.subtle.exportKey('raw',eph.publicKey));
+  const info0=new Uint8Array(new TextEncoder().encode('WebPush: info\0').length+ua.length+serverPub.length);
+  const prefix=new TextEncoder().encode('WebPush: info\0');info0.set(prefix);info0.set(ua,prefix.length);info0.set(serverPub,prefix.length+ua.length);
+  const ikm=await hkdfExpand(prkKey, info0,32);
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const prk=await hkdfExtract(salt,ikm);
+  const cek=await hkdfExpand(prk,'Content-Encoding: aes128gcm\0',16);
+  const nonce=await hkdfExpand(prk,'Content-Encoding: nonce\0',12);
+  const plain=new Uint8Array(new TextEncoder().encode(JSON.stringify(payload)).length+1); plain.set(new TextEncoder().encode(JSON.stringify(payload))); plain[plain.length-1]=2;
+  const key=await crypto.subtle.importKey('raw',cek,{name:'AES-GCM'},false,['encrypt']);
+  const cipher=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:nonce},key,plain));
+  const body=new Uint8Array(16+4+1+serverPub.length+cipher.length); body.set(salt,0); new DataView(body.buffer).setUint32(16,4096); body[20]=serverPub.length; body.set(serverPub,21); body.set(cipher,21+serverPub.length);
+  return {body};
+}
+async function sendPush(env, sub, payload) {
+  try {
+    const endpoint=String(sub.endpoint||''); if(!endpoint||!sub.keys?.p256dh||!sub.keys?.auth)return false;
+    const u=new URL(endpoint); const keys=await getVapid(env); const jwt=await signVapid(env,u.origin);
+    const enc=await encryptPush(sub,payload);
+    const r=await fetch(endpoint,{method:'POST',headers:{'Authorization':`vapid t=${jwt}, k=${keys.publicKey}`,'Content-Type':'application/octet-stream','Content-Encoding':'aes128gcm','TTL':'86400'},body:enc.body});
+    if(r.status===404||r.status===410) return 'gone';
+    return r.ok;
+  } catch(e){ return false; }
+}
+async function broadcastPush(env,payload,filterFn=null){
+  const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
+  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub)continue;if(filterFn&&!filterFn(sub))continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
+}
+async function notifyOrder(env,order,title,body){
+  const payload={title,body,url:'/track.html?token='+encodeURIComponent(order.trackingToken||''),tag:'order-'+order.id};
+  const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
+  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||sub.orderUpdates===false)continue;if((order.accountId&&sub.accountId===order.accountId)||(order.guestKey&&sub.guestKey===order.guestKey)){const r=await sendPush(env,sub,payload);if(r==='gone')await env.GREEN_MOON_KV.delete(k.name);}}
+}
+
 export default {
 
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
 
     const url =
       new URL(request.url);
@@ -315,6 +402,35 @@ export default {
         }
       });
     }
+
+
+    /* =========================
+       CUSTOMER AUTH
+    ========================= */
+    if (url.pathname === '/api/auth/register' && request.method === 'POST') {
+      try {
+        const b=await request.json(); const name=String(b.name||'').trim().slice(0,100); const phone=normalizePhone(b.phone); const password=String(b.password||''); const guestKey=String(b.guestKey||'').slice(0,120);
+        if(!name||phone.length<8||password.length<6)return json({error:'اكتب الاسم ورقم صحيح وكلمة مرور 6 أحرف على الأقل.'},400);
+        const existing=await env.GREEN_MOON_KV.get('acctphone:'+phone); if(existing)return json({error:'الرقم مسجل بالفعل. سجل دخول بدل إنشاء حساب جديد.'},409);
+        const {salt,hash}=await makePassword(password); const id='C-'+randomToken(18); const account={id,name,phone,passwordHash:hash,passwordSalt:salt,createdAt:new Date().toISOString(),notifications:{promotions:true,newProducts:true,orderUpdates:true}};
+        await env.GREEN_MOON_KV.put(ACCOUNT_PREFIX+id,JSON.stringify(account)); await env.GREEN_MOON_KV.put('acctphone:'+phone,id); await claimGuestOrders(env,guestKey,id);
+        const token=randomToken(32); await env.GREEN_MOON_KV.put(SESSION_PREFIX+token,JSON.stringify({accountId:id,expiresAt:Date.now()+30*86400000}),{expirationTtl:30*86400});
+        return json({success:true,token,account:await safeAccount(account)});
+      }catch(e){return json({error:String(e?.message||e)},500)}
+    }
+    if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+      try { const b=await request.json(); const phone=normalizePhone(b.phone); const guestKey=String(b.guestKey||'').slice(0,120); const id=await env.GREEN_MOON_KV.get('acctphone:'+phone); if(!id)return json({error:'الرقم أو كلمة المرور غير صحيحة.'},401); const a=await accountById(env,id); const h=await pbkdf2(String(b.password||''),a?.passwordSalt||''); if(!a||h!==a.passwordHash)return json({error:'الرقم أو كلمة المرور غير صحيحة.'},401); await claimGuestOrders(env,guestKey,id); const token=randomToken(32); await env.GREEN_MOON_KV.put(SESSION_PREFIX+token,JSON.stringify({accountId:id,expiresAt:Date.now()+30*86400000}),{expirationTtl:30*86400}); return json({success:true,token,account:await safeAccount(a)});}catch(e){return json({error:String(e?.message||e)},500)}
+    }
+    if (url.pathname === '/api/auth/me' && request.method === 'GET') { const sess=await customerSession(request,env); if(!sess)return json({authenticated:false}); const a=await accountById(env,sess.accountId); return json({authenticated:!!a,account:await safeAccount(a)}); }
+    if (url.pathname === '/api/auth/logout' && request.method === 'POST') { const auth=String(request.headers.get('authorization')||''); const t=auth.startsWith('Bearer ')?auth.slice(7).trim():''; if(t)await env.GREEN_MOON_KV.delete(SESSION_PREFIX+t); return json({success:true}); }
+    if (url.pathname === '/api/account/orders' && request.method === 'GET') { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const orders=(await getOrders(env)).filter(o=>o.accountId===sess.accountId).map(publicOrder); return json(orders); }
+    if (url.pathname === '/api/account/preferences' && (request.method==='GET'||request.method==='PUT')) { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const a=await accountById(env,sess.accountId); if(request.method==='GET')return json(a?.notifications||{promotions:true,newProducts:true,orderUpdates:true}); const b=await request.json(); a.notifications={promotions:b.promotions!==false,newProducts:b.newProducts!==false,orderUpdates:b.orderUpdates!==false}; await env.GREEN_MOON_KV.put(ACCOUNT_PREFIX+a.id,JSON.stringify(a)); return json({success:true,notifications:a.notifications}); }
+    if (url.pathname === '/api/push/config' && request.method === 'GET') { const k=await getVapid(env); return json({publicKey:k.publicKey}); }
+    if (url.pathname === '/api/push/subscribe' && request.method === 'POST') { try { const b=await request.json(); if(!b.subscription?.endpoint)return json({error:'اشتراك الإشعارات غير صالح'},400); const sess=await customerSession(request,env); const guestKey=String(b.guestKey||'').slice(0,120); const sub={...b.subscription,accountId:sess?.accountId||'',guestKey,orderUpdates:b.orderUpdates!==false,promotions:b.promotions!==false,newProducts:b.newProducts!==false,updatedAt:new Date().toISOString()}; const key=PUSH_PREFIX+btoa(sub.endpoint).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
+    if (url.pathname.startsWith('/api/track/') && request.method === 'GET') { const token=decodeURIComponent(url.pathname.slice('/api/track/'.length)); const orders=await getOrders(env); const o=orders.find(x=>x.trackingToken===token); if(!o)return json({error:'رابط التتبع غير صالح أو منتهي.'},404); return json({order:publicOrder(o)}); }
+    if (url.pathname === '/api/courier/login' && request.method === 'POST') { const b=await request.json(); const pass=String(b.password||''); const expected=String(env.COURIER_PASSWORD||env.ADMIN_PASSWORD||''); if(!expected||pass!==expected)return json({error:'كود شركة الشحن غير صحيح.'},401); const t=randomToken(24); await env.GREEN_MOON_KV.put(COURIER_SESSION_PREFIX+t,JSON.stringify({expiresAt:Date.now()+12*60*60*1000}),{expirationTtl:43200}); return json({success:true,token:t}); }
+    async function courierOk(){ const h=String(request.headers.get('authorization')||''); const t=h.startsWith('Bearer ')?h.slice(7).trim():''; const s=t?await kvJson(env,COURIER_SESSION_PREFIX+t,null):null; return !!s&&Number(s.expiresAt||0)>Date.now(); }
+    if (url.pathname === '/api/courier/orders' && (request.method==='GET'||request.method==='PUT')) { if(!await courierOk())return json({error:'غير مصرح'},401); const orders=await getOrders(env); if(request.method==='GET')return json(orders.map(o=>({id:o.id,name:o.name,phone:o.phone,address:[o.governorate,o.area,o.street,o.building&&'عمارة '+o.building,o.floor&&'دور '+o.floor,o.apartment&&'شقة '+o.apartment].filter(Boolean).join(' — '),total:o.total,status:o.status,createdAt:o.createdAt,items:o.items||[],trackingToken:o.trackingToken}))); const b=await request.json(); const i=orders.findIndex(o=>String(o.id)===String(b.id)); if(i<0)return json({error:'الطلب غير موجود'},404); const old=orders[i].status, st=String(b.status||old); orders[i].status=st; orders[i].timeline=Array.isArray(orders[i].timeline)?orders[i].timeline:initialTimeline(old); if(st!==old)orders[i].timeline.push({status:st,at:new Date().toISOString(),by:'شركة الشحن'}); await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(orders.slice(0,500))); ctx.waitUntil(notifyOrder(env,orders[i],'🚚 تحديث طلبك من Green Moon',`تم تحديث طلب ${orders[i].id}: ${st}`)); return json({success:true,order:publicOrder(orders[i])}); }
 
     /* =========================
        PUBLIC PRODUCTS
@@ -1180,6 +1296,9 @@ return {
         }
         const total = Math.max(0, productsTotal - promoDiscount) + shipping;
 
+        const customerSess = await customerSession(request, env);
+        const guestKey = String(body.guestKey || '').slice(0,120);
+        const trackingToken = randomToken(ORDER_TOKEN_BYTES);
         const order = {
 
           id:
@@ -1188,18 +1307,19 @@ return {
               .toString(36)
               .toUpperCase(),
 
-          trackingToken:
-            crypto.randomUUID(),
-
           createdAt:
             new Date().toISOString(),
+
+          timeline: initialTimeline('جديد'),
 
           status:
             'جديد',
 
-          statusHistory: [
-            { status: 'جديد', at: new Date().toISOString(), by: 'system', note: 'تم استلام الطلب' }
-          ],
+          trackingToken,
+
+          accountId: customerSess?.accountId || '',
+
+          guestKey,
 
           name:
             String(
@@ -1273,6 +1393,7 @@ return {
             orders.slice(0, 500)
           )
         );
+        ctx.waitUntil(notifyOrder(env,order,'🌿 تم استلام طلبك','تم استلام طلبك من Green Moon وجاري التجهيز.'));
 
         return json({
           success:
@@ -1300,37 +1421,19 @@ return {
     }
 
     /* =========================
+       ADMIN NOTIFICATIONS
+    ========================= */
+    if (url.pathname === '/api/admin/notifications') {
+      if(!adminOk(request,env))return json({error:'غير مصرح'},401);
+      if(request.method==='POST'){
+        try{const b=await request.json();const title=String(b.title||'🔔 Green Moon').slice(0,120);const body=String(b.body||'').slice(0,500);const urlPath=String(b.url||'/').slice(0,500);const filter=b.audience==='newProducts'?(s=>s.newProducts!==false):b.audience==='promotions'?(s=>s.promotions!==false):(s=>true);ctx.waitUntil(broadcastPush(env,{title,body,url:urlPath,tag:'gm-'+Date.now()},filter));return json({success:true,message:'تم تجهيز الإشعار للإرسال.'});}catch(e){return json({error:String(e?.message||e)},500)}
+      }
+      return json({error:'Method Not Allowed'},405);
+    }
+
+    /* =========================
        ADMIN PRODUCTS
     ========================= */
-
-
-    if (url.pathname === '/api/track' && request.method === 'GET') {
-      const token = String(url.searchParams.get('token') || '').trim();
-      if (!token) return json({ error: 'رابط التتبع غير صالح' }, 400);
-      const orders = await getOrders(env);
-      const order = orders.find(o => String(o.trackingToken || '') === token);
-      if (!order) return json({ error: 'الطلب غير موجود أو رابط التتبع غير صالح' }, 404);
-      return json(safeOrder(order));
-    }
-
-    if (url.pathname === '/api/courier/orders') {
-      if (!courierOk(request, env)) return json({ error: 'غير مصرح — تأكد من كود شركة الشحن' }, 401);
-      const orders = await getOrders(env);
-      if (request.method === 'GET') return json(orders.map(safeOrder));
-      if (request.method === 'PUT' || request.method === 'POST') {
-        try {
-          const body = await request.json();
-          const index = orders.findIndex(o => String(o.id) === String(body.id));
-          if (index === -1) return json({ error: 'الطلب غير موجود' }, 404);
-          const status = String(body.status || '').trim();
-          const allowed = ['جديد','قيد التجهيز','تم التجهيز','استلمه المندوب','في الطريق','المندوب قريب','تم التسليم','تعذر التسليم','ملغي'];
-          if (!allowed.includes(status)) return json({ error: 'حالة غير مسموح بها' }, 400);
-          orders[index] = { ...orders[index], status, statusHistory: addStatusHistory(orders[index], status, 'courier', body.note || '') };
-          await env.GREEN_MOON_KV.put(ORDERS_KEY, JSON.stringify(orders.slice(0, 500)));
-          return json({ success: true, order: safeOrder(orders[index]) });
-        } catch (error) { return json({ error: String(error?.message || error) }, 500); }
-      }
-    }
 
     if (
       url.pathname ===
@@ -1393,6 +1496,7 @@ return {
             products.push(
               product
             );
+            ctx.waitUntil(broadcastPush(env,{title:'🌱 منتج جديد في Green Moon',body:`وصل منتج جديد: ${product.name}`,url:'/index.html#products',tag:'new-product-'+product.id},sub=>sub.newProducts!==false));
 
           } else {
 
@@ -1512,6 +1616,7 @@ return {
             deal.id = 'DEAL-' + Date.now().toString(36).toUpperCase();
           }
           deals.push(deal);
+          ctx.waitUntil(broadcastPush(env,{title:'🔥 عرض جديد من Green Moon',body:deal.name,url:'/index.html#deals',tag:'new-deal-'+deal.id},sub=>sub.promotions!==false));
         } else if (request.method === 'PUT') {
           const body = await request.json();
           const index = deals.findIndex(d => String(d.id) === String(body.id));
@@ -1790,16 +1895,15 @@ return {
             );
           }
 
-          const oldStatus = orders[index].status || 'جديد';
-          const nextStatus = String(body.status || oldStatus);
+          const before=orders[index];
+          const nextStatus=String(body.status||before.status||'');
           orders[index] = {
-            ...orders[index],
+            ...before,
             ...body,
             status: nextStatus,
-            statusHistory: body.status && nextStatus !== oldStatus
-              ? addStatusHistory(orders[index], nextStatus, 'admin', body.note || '')
-              : (Array.isArray(orders[index].statusHistory) ? orders[index].statusHistory : addStatusHistory(orders[index], nextStatus, 'admin'))
+            timeline: Array.isArray(before.timeline)?before.timeline.slice():initialTimeline(before.status)
           };
+          if(nextStatus!==before.status) orders[index].timeline.push({status:nextStatus,at:new Date().toISOString(),by:'Green Moon'});
 
           await env.GREEN_MOON_KV.put(
             ORDERS_KEY,
@@ -1807,6 +1911,7 @@ return {
               orders
             )
           );
+          if(nextStatus!==before.status) ctx.waitUntil(notifyOrder(env,orders[index],'📦 تحديث طلبك من Green Moon',`تم تحديث طلب ${orders[index].id}: ${nextStatus}`));
 
           return json({
             success:
