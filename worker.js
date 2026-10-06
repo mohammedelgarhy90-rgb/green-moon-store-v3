@@ -4,6 +4,8 @@ const SETTINGS_KEY = 'settings';
 const ORDERS_KEY = 'orders';
 const SHIPPING_KEY = 'shipping';
 const DEALS_KEY = 'deals';
+const MEDIA_PREFIX = 'media:';
+const MAX_MEDIA_BYTES = 12 * 1024 * 1024;
 const ACCOUNT_PREFIX = 'acct:';
 const SESSION_PREFIX = 'custsess:';
 const COURIER_SESSION_PREFIX = 'couriersess:';
@@ -124,6 +126,16 @@ function normalizeProduct(product) {
 
     shippingPrice:
       Number(product.shippingPrice) || 0,
+
+    giftConfig:
+      product.giftConfig && typeof product.giftConfig === 'object'
+        ? { enabled: product.giftConfig.enabled === true, products: Array.isArray(product.giftConfig.products) ? product.giftConfig.products : [] }
+        : { enabled:false, products:[] },
+
+    voucherConfig:
+      product.voucherConfig && typeof product.voucherConfig === 'object'
+        ? { ...product.voucherConfig, products: Array.isArray(product.voucherConfig.products) ? product.voucherConfig.products : [] }
+        : { enabled:false, value:0, products:[] },
 
     care:
       product.care &&
@@ -310,7 +322,7 @@ function initialTimeline(status='جديد') { return [{status,at:new Date().toIS
 function statusText(status){return String(status||'').trim()}
 function publicOrder(o) {
   if(!o)return null;
-  return {id:o.id,createdAt:o.createdAt,status:o.status,name:o.name||'',items:o.items||[],productsTotal:o.productsTotal||0,shipping:o.shipping||0,total:o.total||0,timeline:Array.isArray(o.timeline)?o.timeline:initialTimeline(o.status),trackingUrl:'/track.html?token='+encodeURIComponent(o.trackingToken||'')};
+  return {id:o.id,createdAt:o.createdAt,status:o.status,name:o.name||'',items:o.items||[],gifts:Array.isArray(o.gifts)?o.gifts:[],voucherItems:Array.isArray(o.voucherItems)?o.voucherItems:[],voucherTotal:o.voucherTotal||0,productsTotal:o.productsTotal||0,shipping:o.shipping||0,promoCode:o.promoCode||'',promoDiscount:o.promoDiscount||0,total:o.total||0,timeline:Array.isArray(o.timeline)?o.timeline:initialTimeline(o.status),trackingUrl:'/track.html?token='+encodeURIComponent(o.trackingToken||'')};
 }
 async function getVapid(env) {
   let keys=await kvJson(env,VAPID_KEY,null);
@@ -381,6 +393,22 @@ async function notifyOrder(env,order,title,body){
   for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||sub.orderUpdates===false)continue;if((order.accountId&&sub.accountId===order.accountId)||(order.guestKey&&sub.guestKey===order.guestKey)){const r=await sendPush(env,sub,payload);if(r==='gone')await env.GREEN_MOON_KV.delete(k.name);}}
 }
 
+
+function decodeBase64(base64) {
+  const bin = atob(base64);
+  const out = new Uint8Array(bin.length);
+  const chunk = 0x8000;
+  for (let i = 0; i < bin.length; i += chunk) {
+    const part = bin.slice(i, i + chunk);
+    for (let j = 0; j < part.length; j++) out[i + j] = part.charCodeAt(j);
+  }
+  return out;
+}
+
+function mediaBytesFromBase64(base64) {
+  return Math.floor((String(base64 || '').length * 3) / 4);
+}
+
 export default {
 
   async fetch(request, env, ctx) {
@@ -430,7 +458,7 @@ export default {
     if (url.pathname.startsWith('/api/track/') && request.method === 'GET') { const token=decodeURIComponent(url.pathname.slice('/api/track/'.length)); const orders=await getOrders(env); const o=orders.find(x=>x.trackingToken===token); if(!o)return json({error:'رابط التتبع غير صالح أو منتهي.'},404); return json({order:publicOrder(o)}); }
     if (url.pathname === '/api/courier/login' && request.method === 'POST') { const b=await request.json(); const pass=String(b.password||''); const expected=String(env.COURIER_PASSWORD||env.ADMIN_PASSWORD||''); if(!expected||pass!==expected)return json({error:'كود شركة الشحن غير صحيح.'},401); const t=randomToken(24); await env.GREEN_MOON_KV.put(COURIER_SESSION_PREFIX+t,JSON.stringify({expiresAt:Date.now()+12*60*60*1000}),{expirationTtl:43200}); return json({success:true,token:t}); }
     async function courierOk(){ const h=String(request.headers.get('authorization')||''); const t=h.startsWith('Bearer ')?h.slice(7).trim():''; const s=t?await kvJson(env,COURIER_SESSION_PREFIX+t,null):null; return !!s&&Number(s.expiresAt||0)>Date.now(); }
-    if (url.pathname === '/api/courier/orders' && (request.method==='GET'||request.method==='PUT')) { if(!await courierOk())return json({error:'غير مصرح'},401); const orders=await getOrders(env); if(request.method==='GET')return json(orders.map(o=>({id:o.id,name:o.name,phone:o.phone,address:[o.governorate,o.area,o.street,o.building&&'عمارة '+o.building,o.floor&&'دور '+o.floor,o.apartment&&'شقة '+o.apartment].filter(Boolean).join(' — '),total:o.total,status:o.status,createdAt:o.createdAt,items:o.items||[],trackingToken:o.trackingToken}))); const b=await request.json(); const i=orders.findIndex(o=>String(o.id)===String(b.id)); if(i<0)return json({error:'الطلب غير موجود'},404); const old=orders[i].status, st=String(b.status||old); orders[i].status=st; orders[i].timeline=Array.isArray(orders[i].timeline)?orders[i].timeline:initialTimeline(old); if(st!==old)orders[i].timeline.push({status:st,at:new Date().toISOString(),by:'شركة الشحن'}); await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(orders.slice(0,500))); ctx.waitUntil(notifyOrder(env,orders[i],'🚚 تحديث طلبك من Green Moon',`تم تحديث طلب ${orders[i].id}: ${st}`)); return json({success:true,order:publicOrder(orders[i])}); }
+    if (url.pathname === '/api/courier/orders' && (request.method==='GET'||request.method==='PUT')) { if(!await courierOk())return json({error:'غير مصرح'},401); const orders=await getOrders(env); if(request.method==='GET')return json(orders.map(o=>({id:o.id,name:o.name,phone:o.phone,address:[o.governorate,o.area,o.street,o.building&&'عمارة '+o.building,o.floor&&'دور '+o.floor,o.apartment&&'شقة '+o.apartment].filter(Boolean).join(' — '),total:o.total,status:o.status,createdAt:o.createdAt,items:o.items||[],trackingToken:o.trackingToken,gifts:o.gifts||[],voucherItems:o.voucherItems||[]}))); const b=await request.json(); const i=orders.findIndex(o=>String(o.id)===String(b.id)); if(i<0)return json({error:'الطلب غير موجود'},404); const old=orders[i].status, st=String(b.status||old); orders[i].status=st; orders[i].timeline=Array.isArray(orders[i].timeline)?orders[i].timeline:initialTimeline(old); if(st!==old)orders[i].timeline.push({status:st,at:new Date().toISOString(),by:'شركة الشحن'}); await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(orders.slice(0,500))); ctx.waitUntil(notifyOrder(env,orders[i],'🚚 تحديث طلبك من Green Moon',`تم تحديث طلب ${orders[i].id}: ${st}`)); return json({success:true,order:publicOrder(orders[i])}); }
 
     /* =========================
        PUBLIC PRODUCTS
@@ -504,7 +532,7 @@ export default {
         };
       }
       const out = json(settings);
-      out.headers.set('cache-control','public, max-age=15, stale-while-revalidate=60');
+      out.headers.set('cache-control','no-store, max-age=0');
       return out;
     }
 
@@ -1160,6 +1188,23 @@ function resolveRelatedOffer(product, offerId) {
         const products =
           await getProducts(env);
 
+        const requestedGifts = Array.isArray(body.gifts) ? body.gifts : [];
+        const gifts = [];
+        const seenGiftKeys = new Set();
+        for (const g of requestedGifts) {
+          const mainId = String(g.mainProductId || '');
+          const giftId = String(g.productId || '');
+          const main = products.find(p => String(p.id) === mainId);
+          const gift = products.find(p => String(p.id) === giftId);
+          const allowed = main?.giftConfig?.enabled === true && Array.isArray(main.giftConfig.products) && main.giftConfig.products.map(String).includes(giftId);
+          const key = mainId + '::' + giftId;
+          if (main && gift && allowed && !seenGiftKeys.has(key)) {
+            seenGiftKeys.add(key);
+            const mainQty = Math.max(1, Number(g.mainQuantity) || 1);
+            gifts.push({productId: gift.id, mainProductId: main.id, name: gift.name, price: 0, quantity: mainQty, lineTotal: 0, isGift: true});
+          }
+        }
+
         const items =
           body.items
             .map(item => {
@@ -1228,6 +1273,77 @@ return {
               sum + item.lineTotal,
             0
           );
+
+        // Voucher-as-free-credit: voucher products are selected inside the same order
+        // and added at 0 EGP. The voucher value is NOT subtracted from the main product.
+        const requestedVoucherItems = Array.isArray(body.voucherItems) ? body.voucherItems : [];
+        const voucherItems = [];
+        const voucherUsedByMain = {};
+
+        for (const vi of requestedVoucherItems) {
+          const mainId = String(vi?.mainProductId || '');
+          const voucherProductId = String(vi?.productId || '');
+          const main = products.find(p => String(p.id) === mainId);
+          const voucherProduct = products.find(p => String(p.id) === voucherProductId);
+
+          if (!main || !voucherProduct) {
+            return json({error:'منتج القسيمة غير صالح.'},400);
+          }
+
+          const vc = main.voucherConfig && typeof main.voucherConfig === 'object'
+            ? main.voucherConfig
+            : {};
+
+          if (vc.enabled !== true) {
+            return json({error:`القسيمة غير مفعلة للمنتج "${main.name}".`},400);
+          }
+
+          const allowed = Array.isArray(vc.products)
+            ? vc.products.map(String)
+            : [];
+
+          if (!allowed.includes(String(voucherProduct.id))) {
+            return json({error:`المنتج "${voucherProduct.name}" غير مسموح باستخدامه مع القسيمة.`},400);
+          }
+
+          const mainItem = items.find(x => String(x.productId) === String(main.id));
+          if (!mainItem) {
+            return json({error:'لا يمكن استخدام القسيمة بدون شراء المنتج الأساسي.'},400);
+          }
+
+          const mainQty = Math.max(1, Number(mainItem.quantity) || 1);
+          const voucherValue = Math.max(0, Number(vc.value) || 0);
+          const budget = voucherValue * mainQty;
+          const q = Math.max(1, Math.min(99, Number(vi.quantity) || 1));
+          const unitPrice = Math.max(0, Number(voucherProduct.price) || 0);
+          const lineValue = unitPrice * q;
+
+          voucherUsedByMain[String(main.id)] =
+            (voucherUsedByMain[String(main.id)] || 0) + lineValue;
+
+          if (voucherUsedByMain[String(main.id)] > budget) {
+            return json({
+              error:`قيمة المنتجات المختارة بالقسيمة لمنتج "${main.name}" تتجاوز رصيد القسيمة المتاح (${budget} جنيه).`
+            },400);
+          }
+
+          voucherItems.push({
+            productId: voucherProduct.id,
+            mainProductId: main.id,
+            name: voucherProduct.name,
+            quantity: q,
+            originalPrice: unitPrice,
+            price: 0,
+            lineTotal: 0,
+            voucherValue: lineValue,
+            isVoucherItem: true
+          });
+        }
+
+        const voucherTotal = voucherItems.reduce(
+          (sum, item) => sum + (Number(item.voucherValue) || 0),
+          0
+        );
 
         const generalShipping =
           await getShipping(env);
@@ -1381,6 +1497,12 @@ return {
           promoShippingDiscount,
 
           items,
+
+          gifts,
+
+          voucherItems,
+
+          voucherTotal,
 
           total
         };
@@ -2000,6 +2122,68 @@ return {
         status: 404,
         headers: { 'content-type': 'text/plain;charset=UTF-8' }
       });
+    }
+
+    /* =========================
+       ADMIN MEDIA UPLOADS
+       Supports images + videos anywhere the admin media picker is used.
+    ========================= */
+    if (url.pathname === '/api/admin/media' && request.method === 'POST') {
+      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
+      try {
+        const body = await request.json();
+        const data = String(body.data || '');
+        const mime = String(body.mime || '').toLowerCase().trim();
+        const name = String(body.name || 'media').slice(0, 160);
+        if (!data.startsWith('data:') || !/^data:[^;]+;base64,/i.test(data)) {
+          return json({ error: 'ملف الوسائط غير صالح.' }, 400);
+        }
+        const match = data.match(/^data:([^;]+);base64,(.*)$/s);
+        const detectedMime = String(match?.[1] || mime).toLowerCase();
+        const base64 = String(match?.[2] || '');
+        const finalMime = mime || detectedMime;
+        if (!(finalMime.startsWith('image/') || finalMime.startsWith('video/'))) {
+          return json({ error: 'مسموح فقط بالصور والفيديوهات.' }, 415);
+        }
+        const bytes = mediaBytesFromBase64(base64);
+        if (!bytes || bytes > MAX_MEDIA_BYTES) {
+          return json({ error: 'حجم الملف كبير. الحد الأقصى 12 ميجابايت.' }, 413);
+        }
+        const id = 'GM-MEDIA-' + Date.now().toString(36).toUpperCase() + '-' + crypto.randomUUID().slice(0, 8);
+        await env.GREEN_MOON_KV.put(MEDIA_PREFIX + id, JSON.stringify({
+          mime: finalMime,
+          name,
+          data: base64,
+          createdAt: new Date().toISOString()
+        }));
+        return json({ success: true, id, url: `/media/${encodeURIComponent(id)}`, mime: finalMime, type: finalMime.startsWith('video/') ? 'video' : 'image' });
+      } catch (e) {
+        return json({ error: String(e?.message || e || 'تعذر رفع الملف') }, 500);
+      }
+    }
+
+    /* =========================
+       PUBLIC MEDIA DELIVERY
+    ========================= */
+    if (url.pathname.startsWith('/media/') && request.method === 'GET') {
+      try {
+        const id = decodeURIComponent(url.pathname.slice('/media/'.length));
+        if (!id) return new Response('Not Found', { status: 404 });
+        const item = await env.GREEN_MOON_KV.get(MEDIA_PREFIX + id, 'json');
+        if (!item?.data || !item?.mime) return new Response('Media Not Found', { status: 404 });
+        const bytes = decodeBase64(item.data);
+        return new Response(bytes, {
+          status: 200,
+          headers: {
+            'content-type': item.mime,
+            'cache-control': 'public, max-age=31536000, immutable',
+            'x-content-type-options': 'nosniff',
+            'content-disposition': 'inline'
+          }
+        });
+      } catch (e) {
+        return new Response('Media Error', { status: 500 });
+      }
     }
 
     /* =========================
