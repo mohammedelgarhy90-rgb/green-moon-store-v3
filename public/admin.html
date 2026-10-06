@@ -22,7 +22,7 @@
 <body>
 <div id="login" class="login">
   <div class="loginbox">
-    <div class="loginmark"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:20px"></div>
+    <div class="loginmark">🌿</div>
     <h1>Green Moon</h1>
     <p class="muted">لوحة التحكم الاحترافية</p>
     <div class="field" style="margin-top:18px"><label>كلمة مرور الإدارة</label><input id="pass" type="password" placeholder="••••••••"></div>
@@ -33,7 +33,7 @@
 
 <div id="app" class="hidden">
 <header class="top"><div class="topin">
-  <div class="brand"><div class="brandmark" style="background:#fff;padding:4px"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:9px"></div><div><b>Green Moon Admin</b><small>إدارة المتجر بالكامل</small></div></div>
+  <div class="brand"><div class="brandmark">🌿</div><div><b>Green Moon Admin</b><small>إدارة المتجر بالكامل</small></div></div>
   <div class="topactions"><button class="iconbtn" title="تحديث" onclick="load()">↻</button><button class="iconbtn" title="خروج" onclick="logout()">↪</button></div>
 </div></header>
 <main class="wrap"><div class="layout">
@@ -87,6 +87,8 @@ async function load(){
  D.settings=await api('/api/admin/settings');
  D.shipping=(await api('/api/admin/shipping')).price||0;
  const s=D.settings||{};
+ const liveLogo=s.gm_site?.header?.logo||s.logo||'/assets/logo.jpg';
+ ['adminLoginLogo','adminTopLogo'].forEach(id=>{const e=$(id);if(e)e.src=liveLogo});
  D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=s.gm_deals||s.deals||[]; D.articles=s.gm_articles||[]; D.reviews=s.gm_reviews||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
  render();
 }
@@ -283,8 +285,8 @@ function orders(){return `<div class="panel"><div class="head"><div><h2>📦 ا�
 async function orderStatus(id,status){await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status})});await load();toast('تم تحديث حالة الطلب')}
 function money(n){return (Number(n)||0)+' ج'}
 function orderItemsHtml(o){const items=Array.isArray(o.items)?o.items:[];if(!items.length)return '<div class="empty">لا توجد تفاصيل منتجات محفوظة لهذا الطلب.</div>';return `<div class="tablewrap"><table class="table" style="min-width:650px"><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr>${items.map(it=>{const p=D.products.find(x=>String(x.id)===String(it.productId));const q=Number(it.quantity||1);const price=Number(it.price??p?.price??0);return `<tr><td><b>${esc(it.name||p?.name||it.productId||'منتج')}</b></td><td>${q}</td><td>${money(price)}</td><td>${money(price*q)}</td></tr>`}).join('')}</table></div>`}
-function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب والمندوب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم التجهيز'?'selected':''}>تم التجهيز</option><option ${o.status==='استلمته شركة الشحن'?'selected':''}>استلمته شركة الشحن</option><option ${o.status==='في الطريق'?'selected':''}>في الطريق</option><option ${o.status==='المندوب قريب'?'selected':''}>المندوب قريب</option><option ${o.status==='تم التسليم'?'selected':''}>تم التسليم</option><option ${o.status==='تعذر التسليم'?'selected':''}>تعذر التسليم</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><div class="grid2" style="margin-top:10px"><div class="field"><label>👤 اسم المندوب</label><input id="detailCourierName" value="${esc(o.courierName||'')}" placeholder="اسم المندوب"></div><div class="field"><label>📞 رقم المندوب</label><input id="detailCourierPhone" value="${esc(o.courierPhone||'')}" placeholder="01xxxxxxxxx"></div></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة وبيانات المندوب</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="modalfoot"><a class="btn soft" href="tel:${esc(o.phone||'')}" style="text-decoration:none">📞 اتصال</a><a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
-async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status,courierName:$('detailCourierName')?.value||'',courierPhone:$('detailCourierPhone')?.value||''})});await load();closeModal();details(id);toast('تم حفظ حالة الطلب وبيانات المندوب')}
+function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم الشحن'?'selected':''}>تم الشحن</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="modalfoot"><a class="btn soft" href="tel:${esc(o.phone||'')}" style="text-decoration:none">📞 اتصال</a><a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
+async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await orderStatus(id,status);closeModal();details(id)}
 function printOrder(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const items=Array.isArray(o.items)?o.items:[];const w=window.open('','_blank');if(!w){toast('اسمح بفتح نافذة الطباعة');return}w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>طلب ${esc(o.id)}</title><style>body{font-family:Tahoma,Arial;padding:25px;color:#15221c}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:right}h1,h2{color:#0b5b3d}</style></head><body><h1>Green Moon 🌿</h1><h2>طلب #${esc(o.id)}</h2><p><b>العميل:</b> ${esc(o.name||'')}<br><b>الهاتف:</b> ${esc(o.phone||'')}<br><b>العنوان:</b> ${esc([o.governorate,o.area,o.street,o.building,o.floor,o.apartment].filter(Boolean).join(' — '))}</p><table><tr><th>المنتج</th><th>الكمية</th><th>السعر</th></tr>${items.map(it=>`<tr><td>${esc(it.name||it.productId||'منتج')}</td><td>${Number(it.quantity||1)}</td><td>${money(it.price||0)}</td></tr>`).join('')}</table><h2>الإجمالي: ${money(o.total)}</h2><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
 
 function homebuilder(){
@@ -382,7 +384,7 @@ function builder(){
       <div class="field"><label>اسم المتجر في الهيدر</label><input id="b_store" value="${esc(header.storeName||s.storeName||'Green Moon Plants and Flowers')}"></div>
       <div class="field"><label>اسم المالك/السطر الثاني</label><input id="b_owner" value="${esc(header.owner||'Mohamed Elgarhy')}"></div>
       <div class="field"><label>الجملة التعريفية</label><input id="b_tag" value="${esc(header.tagline||'نباتات أكتر.. حياة أجمل 🌿')}"></div>
-      <div class="field"><label>رابط الشعار</label><input id="b_logo" value="${esc(header.logo||s.logo||'/assets/logo.jpg')}"></div>
+      <div class="field"><label>شعار الموقع — رفع ملف من الجهاز</label>${uploadBox('b_logo',header.logo||s.logo||'/assets/logo.jpg','اللوجو الرئيسي للموقع والهيدر وشاشة البداية')}</div>
       <div class="field"><label>Placeholder البحث</label><input id="b_search" value="${esc(header.searchPlaceholder||'ابحث عن نباتات، قصاري، مستلزمات...')}"></div>
       <div class="field"><label>نص زر التواصل</label><input id="b_contact" value="${esc(header.contactText||'💬 تواصل معنا')}"></div>
     </div>
@@ -394,7 +396,7 @@ function builder(){
       <div class="field"><label>عنوان Hero</label><input id="b_ht" value="${esc(heroV.title||'الطبيعة أقرب إليك')}"></div>
       <div class="field"><label>الوصف</label><input id="b_hs" value="${esc(heroV.subtitle||'نباتات تضيف حياة وجمال لكل مكان')}"></div>
       <div class="field"><label>نص الزر</label><input id="b_hc" value="${esc(heroV.cta||'تسوق الآن')}"></div>
-      <div class="field"><label>صورة Hero</label><input id="b_hi" value="${esc(heroV.image||'')}"></div>
+      <div class="field"><label>صورة Hero — رفع ملف من الجهاز</label>${uploadBox('b_hi',heroV.image||'','صورة الـ Hero الرئيسية')}</div>
       <div class="field"><label>الرابط</label><input id="b_hl" value="${esc(heroV.link||'#products')}"></div>
       <div class="field"><label>ارتفاع Hero بالموبايل</label><input id="b_hh" type="number" value="${Number(heroV.mobileHeight||390)}"></div>
     </div>
@@ -459,11 +461,11 @@ async function saveBuilder(){
  s.gm_site={
    header:{
      storeName:$('b_store').value,owner:$('b_owner').value,tagline:$('b_tag').value,
-     logo:$('b_logo').value,searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
+     logo:$('b_logo_value').value||header.logo||s.logo||'/assets/logo.jpg',searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
    },
    hero:{
      title:$('b_ht').value,subtitle:$('b_hs').value,cta:$('b_hc').value,
-     image:$('b_hi').value,link:$('b_hl').value,mobileHeight:Number($('b_hh').value)||390
+     image:$('b_hi_value').value||heroV.image||'',link:$('b_hl').value,mobileHeight:Number($('b_hh').value)||390
    },
    colors:{
      primary:$('b_c1').value,dark:$('b_c2').value,gold:$('b_c3').value,

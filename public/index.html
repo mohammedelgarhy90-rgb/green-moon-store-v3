@@ -550,7 +550,7 @@
   <i class="gm-spark s1"></i><i class="gm-spark s2"></i><i class="gm-spark s3"></i><i class="gm-spark s4"></i>
   <div class="gm-splash-content">
     <div class="gm-logo-ring">
-      <img class="gm-logo" src="/assets/splash-logo.webp" alt="Green Moon Plants and Flowers">
+      <img class="gm-logo" src="/assets/logo.jpg" alt="Green Moon Plants and Flowers">
     </div>
     <div class="gm-company">Green Moon</div>
     <div class="gm-sub">Plants and Flowers</div>
@@ -713,7 +713,26 @@ window.gmOpenFinder=gmOpenFinder;window.gmCloseFinder=gmCloseFinder;
 function getCats(){let a=settings.gm_categories||settings.categories;if(Array.isArray(a)&&a.length)return a;return[{name:'نباتات الزينة',image:img(['أجلونيما','بوتس','مونسترا'])},{name:'عالم البامبو',image:img(['بامبو'])},{name:'النباتات الداخلية',image:img(['مونسترا','بوتس'])},{name:'أسمدة ومبيدات',image:img(['سماد','مبيد'])},{name:'فازات وقصاري ومستلزمات',image:img(['فاز','قصاري','قصرية'])}]}
 function getHeroes(){let h=settings.gm_hero||settings.hero,a=Array.isArray(h)?h:(h?.slides||[]);return a?.length?a.filter(x=>x&&x.active!==false):[{image:img(['بامبو']),kicker:'الطبيعة.. أقرب إليك',title:'Green Moon',highlight:'Plants and Flowers',text:'نباتات تضيف حياة وجمال لكل مكان',cta:'تسوق الآن',link:'#products'}]}
 function renderHero(){let a=getHeroes(),h=a[heroIndex%a.length];$('heroImg').src=h.image||fallback();$('heroText').innerHTML='<div class="kicker">'+esc(h.kicker||'الطبيعة.. أقرب إليك')+'</div><h1>'+esc(h.title||'Green Moon')+'<span>'+esc(h.highlight||'Plants and Flowers')+'</span></h1><p>'+esc(h.text||h.subtitle||'نباتات تضيف حياة وجمال لكل مكان')+'</p><a class="cta" href="'+esc(h.link||'#products')+'">'+esc(h.cta||'تسوق الآن')+' ←</a>';$('dots').innerHTML=a.map((_,i)=>'<i class="'+(i===heroIndex?'on':'')+'"></i>').join('')}
-function render(){renderHero();let sv=settings.services||[{icon:'🚚',title:'توصيل سريع',text:'لكل المحافظات'},{icon:'🛡️',title:'منتجات مضمونة',text:'جودة عالية'},{icon:'🌿',title:'اختيارات متنوعة',text:'لكل ذوق'},{icon:'♧',title:'خدمة عملاء مميزة',text:'دائمًا معك'}];$('services').innerHTML=sv.slice(0,4).map(x=>'<div class="service"><span>'+esc(x.icon||'🌿')+'</span><div><b>'+esc(x.title||'خدمة')+'</b><small>'+esc(x.text||'Green Moon')+'</small></div></div>').join('');let ca=getCats();$('cats').innerHTML=ca.map((x,i)=>{let key=x.name||x.title||'';return '<a class="cat" href="#products" role="button" onclick="catFilter(\''+esc(key)+'\');return false"><div class="catImg"><img loading="lazy" src="'+esc(x.image||fallback())+'"></div><b>'+esc(x.name||x.title||'قسم')+'</b></a>'}).join('');let home=settings.gm_home||{};let bs=Array.isArray(home.banners)?home.banners:(Array.isArray(settings.banners)?settings.banners:[]);$('banners').innerHTML=bs.filter(x=>x&&x.active!==false).slice(0,2).map(x=>'<div class="banner"><img loading="lazy" src="'+esc(x.image||fallback())+'"><div class="bannerText"><a class="cta" href="'+esc(x.link||'#products')+'">'+esc(x.cta||'اكتشف الآن')+' ←</a></div></div>').join('');$('dealsHeading').textContent=(home.headings&&home.headings.deals)||'العروض الحالية';renderDeals();renderProducts(products.slice(0,12));renderArticles();$('logo').src='/assets/logo.jpg'}
+function applyGmSite(){
+ const v=settings.gm_site||{},h=v.header||{},hero=v.hero||{},c=v.colors||{},nav=v.nav||{},sec=v.sections||{};
+ const logo=h.logo||settings.logo||'/assets/logo.jpg';
+ const logoEl=$('logo'); if(logoEl) logoEl.src=logo;
+ const splashLogo=document.querySelector('#gmPremiumSplash .gm-logo'); if(splashLogo) splashLogo.src=logo;
+ const brandName=document.querySelector('.brandText b'); if(brandName&&h.storeName) brandName.textContent=h.storeName;
+ const brandSmall=document.querySelector('.brandText small'); if(brandSmall&&h.tagline) brandSmall.textContent=h.tagline;
+ const brandOwner=document.querySelector('.brandText em'); if(brandOwner&&h.owner) brandOwner.textContent=h.owner;
+ if(c.primary)document.documentElement.style.setProperty('--g',c.primary);
+ if(c.dark)document.documentElement.style.setProperty('--g2',c.dark);
+ if(c.gold)document.documentElement.style.setProperty('--gold',c.gold);
+ if(c.background)document.documentElement.style.setProperty('--soft',c.background);
+ if(c.text)document.documentElement.style.setProperty('--ink',c.text);
+ if(hero.image||hero.title||hero.subtitle||hero.cta){
+   settings.gm_hero=[{image:hero.image||'',kicker:'',title:hero.title||'Green Moon',highlight:'Plants and Flowers',text:hero.subtitle||'',cta:hero.cta||'تسوق الآن',link:hero.link||'#products',active:true}];
+ }
+ const sectionMap={categories:'categories',hero:'hero',deals:'deals',products:'products',articles:'articles',reviews:'reviews',rewards:'rewards',doctor:'doctor',contact:'contact',footer:'footer'};
+ Object.entries(sectionMap).forEach(([key,id])=>{const e=document.getElementById(id);if(e&&sec[key]===false)e.style.display='none';});
+}
+function render(){renderHero();let sv=settings.services||[{icon:'🚚',title:'توصيل سريع',text:'لكل المحافظات'},{icon:'🛡️',title:'منتجات مضمونة',text:'جودة عالية'},{icon:'🌿',title:'اختيارات متنوعة',text:'لكل ذوق'},{icon:'♧',title:'خدمة عملاء مميزة',text:'دائمًا معك'}];$('services').innerHTML=sv.slice(0,4).map(x=>'<div class="service"><span>'+esc(x.icon||'🌿')+'</span><div><b>'+esc(x.title||'خدمة')+'</b><small>'+esc(x.text||'Green Moon')+'</small></div></div>').join('');let ca=getCats();$('cats').innerHTML=ca.map((x,i)=>{let key=x.name||x.title||'';return '<a class="cat" href="#products" role="button" onclick="catFilter(\''+esc(key)+'\');return false"><div class="catImg"><img loading="lazy" src="'+esc(x.image||fallback())+'"></div><b>'+esc(x.name||x.title||'قسم')+'</b></a>'}).join('');let home=settings.gm_home||{};let bs=Array.isArray(home.banners)?home.banners:(Array.isArray(settings.banners)?settings.banners:[]);$('banners').innerHTML=bs.filter(x=>x&&x.active!==false).slice(0,2).map(x=>'<div class="banner"><img loading="lazy" src="'+esc(x.image||fallback())+'"><div class="bannerText"><a class="cta" href="'+esc(x.link||'#products')+'">'+esc(x.cta||'اكتشف الآن')+' ←</a></div></div>').join('');$('dealsHeading').textContent=(home.headings&&home.headings.deals)||'العروض الحالية';renderDeals();renderProducts(products.slice(0,12));renderArticles();$('logo').src=settings.logo||'/assets/logo.jpg'}
 function renderProducts(a){$('productGrid').innerHTML=a.length?a.map(p=>{let o=+p.oldPrice||0,n=+p.price||0,s=p.sticker&&typeof p.sticker==='object'?p.sticker:{};let sticker=s.active!==false&&s.image?'<span class="gm-product-sticker"><img src="'+esc(s.image)+'" alt=""></span>':(s.active!==false&&s.text?'<span class="gm-product-sticker" style="background:'+esc(s.color||'#e7bf62')+'22;color:'+esc(s.color||'#7b5a0a')+';border:1px solid '+esc(s.color||'#e7bf62')+'55"><span class="gm-product-sticker-text">'+esc(s.text)+'</span></span>':'');return '<article class="product"><div class="pimg"><img loading="lazy" src="'+esc(p.image||fallback())+'"></div><div class="pbody">'+sticker+'<h3>'+esc(p.name)+'</h3><div class="price">'+(o>n?'<span class="old">'+o+' ج</span>':'')+'<span class="new">'+n+' ج</span></div>'+(o>n?'<div class="save">💚 توفير '+(o-n)+' ج</div>':'')+(p.gift?'<div class="save">🎁 '+esc(p.gift)+'</div>':'')+'<div class="qty"><button onclick="cardQ(\''+esc(p.id)+'\',-1)">−</button><span id="q'+esc(p.id)+'">1</span><button onclick="cardQ(\''+esc(p.id)+'\',1)">+</button></div><button class="add" onclick="add(\''+esc(p.id)+'\')">أضف للسلة 🛒</button><button class="detailBtn" onclick="detail(\''+esc(p.id)+'\')">التفاصيل</button></div></article>'}).join(''):'<p>لا توجد منتجات.</p>'}
 function cardQ(id,n){let e=$('q'+id);if(e)e.textContent=Math.max(1,(+e.textContent||1)+n)}function add(id,forcedQty=null,openCart=true){
 let p=products.find(x=>String(x.id)===String(id));if(!p)return false;
@@ -808,7 +827,7 @@ function customerToken(){return localStorage.getItem('gm_customer_token')||''}
 function gmUrl64(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
 async function gmEnableNotifications(){try{if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)){toast('المتصفح لا يدعم إشعارات المتجر');return false}const p=await Notification.requestPermission();if(p!=='granted'){toast('تم رفض إذن الإشعارات');return false}const reg=await navigator.serviceWorker.register('/sw.js');const cfg=await fetch('/api/push/config').then(r=>r.json());let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:gmUrl64(cfg.publicKey)});const h={'content-type':'application/json'};const t=customerToken();if(t)h.authorization='Bearer '+t;await fetch('/api/push/subscribe',{method:'POST',headers:h,body:JSON.stringify({subscription:sub.toJSON(),guestKey:ensureGuestKey()})});localStorage.setItem('gm_push_enabled','1');toast('تم تفعيل إشعارات Green Moon 🔔');return true}catch(e){toast('تعذر تفعيل الإشعارات');return false}}
 async function load(){let saved=localStorage.getItem('gm_cart_v2');if(saved){try{cart=JSON.parse(saved)||[]}catch(_){cart=[]}}
-try{let [a,b]=await Promise.all([fetch('/api/products'),fetch('/api/settings')]);products=await a.json();settings=await b.json();if(!settings||typeof settings!=='object')settings={};render();updateCart();if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});const qid=new URLSearchParams(location.search).get('product');if(qid){setTimeout(()=>detail(qid),120)}heroTimer=setInterval(()=>{let h=getHeroes();if(h.length>1){heroIndex=(heroIndex+1)%h.length;renderHero()}},5000);setInterval(tick,1000)}catch(e){document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:Cairo">تعذر تحميل المتجر. حدّث الصفحة وحاول مرة أخرى.</div>'}}load();
+try{let [a,b]=await Promise.all([fetch('/api/products'),fetch('/api/settings')]);products=await a.json();settings=await b.json();if(!settings||typeof settings!=='object')settings={};applyGmSite();render();updateCart();if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});const qid=new URLSearchParams(location.search).get('product');if(qid){setTimeout(()=>detail(qid),120)}heroTimer=setInterval(()=>{let h=getHeroes();if(h.length>1){heroIndex=(heroIndex+1)%h.length;renderHero()}},5000);setInterval(tick,1000)}catch(e){document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:Cairo">تعذر تحميل المتجر. حدّث الصفحة وحاول مرة أخرى.</div>'}}load();
 document.addEventListener('click',e=>{const m=e.target.closest('.modal');if(m&&e.target===m)closeM(m.id)});document.addEventListener('keydown',e=>{if(e.key==='Escape'){const fm=$('gmFinderModal');if(fm&&fm.classList.contains('open'))gmCloseFinder();document.querySelectorAll('.modal.open').forEach(m=>{if(m.id!=='gmFinderModal')closeM(m.id)});const d=document.querySelector('.drawer');if(d)d.remove()}});</script>
 <script id="gm-premium-splash-js">
 (function(){
@@ -822,9 +841,9 @@ document.addEventListener('click',e=>{const m=e.target.closest('.modal');if(m&&e
       if(splash && splash.parentNode)splash.parentNode.removeChild(splash);
     },650);
   }
-  // Exactly 8 seconds of the entrance experience; the store underneath is
-  // already present and remains untouched.
-  setTimeout(closeSplash,900);
+  // Exactly 7 seconds total, including the 650ms exit animation.
+  // The store underneath is already present and remains untouched.
+  setTimeout(closeSplash,6350);
 })();
 </script>
 <script id="gm-premium-creative-upgrade">
