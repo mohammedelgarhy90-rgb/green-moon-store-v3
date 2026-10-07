@@ -127,20 +127,19 @@ function normalizeProduct(product) {
         ? product.care
         : {},
 
+    giftConfig:
+      product.giftConfig && typeof product.giftConfig === 'object'
+        ? { enabled: !!product.giftConfig.enabled, maxGiftsPerTrigger: Math.min(5, Math.max(1, Number(product.giftConfig.maxGiftsPerTrigger) || 1)), products: Array.isArray(product.giftConfig.products) ? product.giftConfig.products.map(String) : [] }
+        : { enabled:false, maxGiftsPerTrigger:1, products:[] },
+
+    voucherConfig:
+      product.voucherConfig && typeof product.voucherConfig === 'object'
+        ? { enabled: !!product.voucherConfig.enabled, value: Math.max(0, Number(product.voucherConfig.value || product.voucherConfig.voucherValue) || 0), products: Array.isArray(product.voucherConfig.products) ? product.voucherConfig.products.map(String) : [] }
+        : { enabled:false, value:0, products:[] },
+
     image:
       product.image ||
-      '/assets/logo.jpg',
-
-    giftConfig: product.giftConfig && typeof product.giftConfig === 'object' ? {
-      enabled: product.giftConfig.enabled === true,
-      products: Array.isArray(product.giftConfig.products) ? product.giftConfig.products.map(String).slice(0, 20) : []
-    } : { enabled:false, products:[] },
-
-    voucherConfig: product.voucherConfig && typeof product.voucherConfig === 'object' ? {
-      enabled: product.voucherConfig.enabled === true,
-      value: Math.max(0, Number(product.voucherConfig.value) || 0),
-      products: Array.isArray(product.voucherConfig.products) ? product.voucherConfig.products.map(String).slice(0, 30) : []
-    } : { enabled:false, value:0, products:[] }
+      '/assets/logo.jpg'
   };
 }
 
@@ -198,6 +197,8 @@ async function getShipping(env) {
   return Number(value?.price) || 0;
 }
 
+function itemPrice(products,id){ const p=products.find(x=>String(x.id)===String(id)); return Number(p?.price)||0; }
+
 async function getOrders(env) {
   return (
     await env.GREEN_MOON_KV.get(
@@ -228,9 +229,8 @@ function promoValidation(promo, subtotal, shipping, usedCount) {
   if (type === 'percentage') discount = Math.min(subtotal, Math.round(subtotal * Math.min(100, value) / 100));
   else if (type === 'fixed') discount = Math.min(subtotal, value);
   else if (type === 'free_shipping') discount = Math.max(0, Number(shipping) || 0);
-  else if (type === 'voucher') discount = 0;
   else return {ok:false,error:'نوع البروموكود غير صحيح.'};
-  return {ok:true, type, discount, note:String(promo.note || ''), code:String(promo.code || '').toUpperCase(), voucherValue:type==='voucher'?value:0, productIds:Array.isArray(promo.productIds)?promo.productIds.map(String).slice(0,100):[]};
+  return {ok:true, type, discount, note:String(promo.note || ''), code:String(promo.code || '').toUpperCase()};
 }
 
 function normalizeDeal(deal) {
@@ -321,15 +321,6 @@ export default {
     /* =========================
        PUBLIC LOGO
     ========================= */
-
-    if (url.pathname === '/api/logo/image' && request.method === 'GET') {
-      const raw = await getLogo(env);
-      if (typeof raw === 'string' && raw.startsWith('data:')) {
-        const m = raw.match(/^data:([^;,]+);base64,(.*)$/s);
-        if (m) { const bin=atob(m[2]); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i); return new Response(bytes,{headers:{'content-type':m[1],'cache-control':'no-store'}}); }
-      }
-      return Response.redirect(new URL('/assets/logo.jpg', request.url),302);
-    }
 
     if (
       url.pathname === '/api/logo' &&
@@ -984,10 +975,8 @@ function resolveRelatedOffer(product, offerId) {
           value:Math.max(0, Number(promo?.value) || 0),
           discount:result.discount,
           shippingDiscount:result.type === 'free_shipping' ? Math.max(0, Number(shipping) || 0) : 0,
-          voucherValue:result.voucherValue || 0,
-          productIds:result.productIds || [],
           note:result.note || '',
-          message:result.type === 'voucher' ? '✓ تم فتح رصيد القسيمة. اختار المنتجات التي تريد شراءها بقيمتها.' : (result.note || 'تم تطبيق البروموكود بنجاح 🎉')
+          message:result.note || 'تم تطبيق البروموكود بنجاح 🎉'
         });
       } catch (error) {
         return json({error:String(error?.message || error || 'تعذر التحقق من البروموكود.')},500);
@@ -1011,7 +1000,8 @@ function resolveRelatedOffer(product, offerId) {
         if (
           !body.name ||
           !body.phone ||
-          (!Array.isArray(body.items) || !body.items.length) && (!Array.isArray(body.voucherItems) || !body.voucherItems.length)
+          !Array.isArray(body.items) ||
+          !body.items.length
         ) {
 
           return json(
@@ -1077,16 +1067,48 @@ return {
             })
             .filter(Boolean);
 
-        if (!items.length && !(Array.isArray(body.voucherItems) && body.voucherItems.length)) {
-          return json({error:'المنتجات المطلوبة غير موجودة'},400);
+        if (!items.length) {
+
+          return json(
+            {
+              error:
+                'المنتجات المطلوبة غير موجودة'
+            },
+            400
+          );
         }
 
+        // Server-authoritative gifts and voucher purchases. Client prices for these lines are never trusted.
+        const triggerMap = new Map();
+        for (const it of items) triggerMap.set(String(it.productId), (triggerMap.get(String(it.productId)) || 0) + Number(it.quantity || 1));
+        const submittedGifts = Array.isArray(body.gifts) ? body.gifts : [];
+        const giftLines = [];
+        const voucherLines = Array.isArray(body.voucherItems) ? body.voucherItems : [];
+        for (const g of submittedGifts) {
+          const trigger = products.find(p => String(p.id) === String(g.triggerProductId));
+          const gift = products.find(p => String(p.id) === String(g.productId));
+          const q = Math.max(1, Number(g.quantity) || 1);
+          if (!trigger || !gift || !trigger.giftConfig?.enabled || !trigger.giftConfig.products.map(String).includes(String(gift.id))) return json({error:'الهدية غير متاحة لهذا المنتج.'},400);
+          const allowed = Math.max(1, Number(trigger.giftConfig.maxGiftsPerTrigger) || 1) * (triggerMap.get(String(trigger.id)) || 0);
+          const used = giftLines.filter(x=>String(x.triggerProductId)===String(trigger.id)).reduce((a,x)=>a+x.quantity,0);
+          if (used + q > allowed) return json({error:'تجاوزت عدد الهدايا المسموح بها.'},400);
+          giftLines.push({triggerProductId:trigger.id,productId:gift.id,name:gift.name,price:0,quantity:q,normalPrice:Number(gift.price)||0,lineTotal:0});
+        }
+        for (const v of voucherLines) {
+          const trigger = products.find(p => String(p.id) === String(v.triggerProductId));
+          const item = products.find(p => String(p.id) === String(v.productId));
+          const q = Math.max(1, Number(v.quantity) || 1);
+          if (!trigger || !item || !trigger.voucherConfig?.enabled || !trigger.voucherConfig.products.map(String).includes(String(item.id))) return json({error:'منتج القسيمة غير متاح.'},400);
+          const credit = (triggerMap.get(String(trigger.id)) || 0) * Math.max(0, Number(trigger.voucherConfig.value) || 0);
+          const used = voucherLines.filter(x=>String(x.triggerProductId)===String(trigger.id)).reduce((a,x)=>a + ((Number(itemPrice(products,x.productId))||0) * (Number(x.quantity)||1)),0);
+          const lineValue = (Number(item.price)||0) * q;
+          if (used + lineValue > credit) return json({error:'قيمة منتجات القسيمة تتجاوز الرصيد المتاح.'},400);
+        }
         const productsTotal =
-          items.reduce(
-            (sum, item) =>
-              sum + item.lineTotal,
-            0
-          );
+          items.reduce((sum, item) => sum + item.lineTotal, 0);
+
+        const giftTotal = giftLines.reduce((sum,x)=>sum+x.lineTotal,0);
+        const voucherTotal = voucherLines.reduce((sum,x)=>sum + ((Number(products.find(p=>String(p.id)===String(x.productId))?.price)||0) * (Number(x.quantity)||1)),0);
 
         const generalShipping =
           await getShipping(env);
@@ -1152,27 +1174,6 @@ return {
             discount:promoDiscount,
             shippingDiscount:promoShippingDiscount
           };
-        }
-        let voucherCredit = 0;
-        let voucherUsed = 0;
-        let voucherItems = [];
-        if (appliedPromo?.type === 'voucher') {
-          voucherCredit = Math.max(0, Number(appliedPromo.value) || 0);
-          const allowed = Array.isArray(findPromo(settings, appliedPromo.code)?.productIds) ? findPromo(settings, appliedPromo.code).productIds.map(String) : [];
-          const requested = Array.isArray(body.voucherItems) ? body.voucherItems : [];
-          for (const vi of requested) {
-            const product = products.find(p => String(p.id) === String(vi.productId));
-            if (!product) continue;
-            if (allowed.length && !allowed.includes(String(product.id))) return json({error:'هذا المنتج غير متاح بهذه القسيمة.'},400);
-            const qty = Math.max(1, Number(vi.quantity) || 1);
-            const original = Math.max(0, Number(product.price) || 0);
-            const line = original * qty;
-            if (line <= 0) continue;
-            if (voucherUsed + line > voucherCredit) return json({error:`قيمة المنتجات المختارة للقسيمة تتجاوز رصيد ${voucherCredit} جنيه.`},400);
-            voucherUsed += line;
-            voucherItems.push({productId:product.id,name:product.name,price:0,originalPrice:original,quantity:qty,lineTotal:0,voucherItem:true});
-          }
-          if (!voucherItems.length) return json({error:'اختار منتجًا واحدًا على الأقل لاستخدام القسيمة.'},400);
         }
         const total = Math.max(0, productsTotal - promoDiscount) + shipping;
 
@@ -1249,10 +1250,11 @@ return {
 
           promoShippingDiscount,
 
-          items: items.concat(voucherItems),
+          items,
+          gifts: giftLines,
+          voucherItems: voucherLines.map(v=>({triggerProductId:v.triggerProductId,productId:v.productId,quantity:Number(v.quantity)||1,price:0})),
+          voucherSpent: voucherTotal,
 
-          voucherCredit,
-          voucherUsed,
           total
         };
 
