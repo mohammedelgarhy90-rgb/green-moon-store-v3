@@ -208,6 +208,20 @@ async function getOrders(env) {
   ) || [];
 }
 
+function makeTrackingToken() {
+  return crypto.randomUUID() + '-' + Date.now().toString(36);
+}
+
+function withTimeline(order, status, by = 'Green Moon') {
+  const nextStatus = String(status || order.status || 'جديد');
+  const timeline = Array.isArray(order.timeline) ? [...order.timeline] : [];
+  const last = timeline[timeline.length - 1];
+  if (!last || String(last.status) !== nextStatus) {
+    timeline.push({ status: nextStatus, at: new Date().toISOString(), by: String(by || 'Green Moon') });
+  }
+  return timeline;
+}
+
 function findPromo(settings, code) {
   const list = Array.isArray(settings?.promoCodes) ? settings.promoCodes : [];
   const wanted = String(code || '').trim().toUpperCase();
@@ -984,6 +998,22 @@ function resolveRelatedOffer(product, offerId) {
     }
 
     /* =========================
+       PUBLIC ORDER TRACKING
+    ========================= */
+    if (url.pathname.startsWith('/api/track/') && request.method === 'GET') {
+      try {
+        const token = decodeURIComponent(url.pathname.slice('/api/track/'.length)).trim();
+        if (!token) return json({ error: 'رابط التتبع غير صالح.' }, 400);
+        const orders = await getOrders(env);
+        const order = orders.find(o => String(o.trackingToken || '') === token || String(o.id || '') === token);
+        if (!order) return json({ error: 'لم يتم العثور على الطلب بهذا الرابط.' }, 404);
+        return json({ order });
+      } catch (error) {
+        return json({ error: String(error?.message || error || 'تعذر تحميل الطلب.') }, 500);
+      }
+    }
+
+    /* =========================
        CREATE ORDER
     ========================= */
 
@@ -1185,11 +1215,17 @@ return {
               .toString(36)
               .toUpperCase(),
 
+          trackingToken:
+            makeTrackingToken(),
+
           createdAt:
             new Date().toISOString(),
 
           status:
             'جديد',
+
+          timeline:
+            [{ status: 'جديد', at: new Date().toISOString(), by: 'Green Moon' }],
 
           name:
             String(
@@ -1838,10 +1874,14 @@ return {
             );
           }
 
+          const previous = orders[index];
           orders[index] = {
-            ...orders[index],
+            ...previous,
             ...body
           };
+          if (body.status && String(body.status) !== String(previous.status || '')) {
+            orders[index].timeline = withTimeline(orders[index], body.status, 'Green Moon');
+          }
 
           await env.GREEN_MOON_KV.put(
             ORDERS_KEY,
