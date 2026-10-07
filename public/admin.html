@@ -163,7 +163,31 @@ let orders=[];
 
 async function gmLoadMedia(){const box=$('gmMediaGrid');if(!box)return;box.innerHTML='<div class="loading">جاري تحميل الملفات...</div>';try{const d=await api('/api/admin/media');const a=Array.isArray(d.media)?d.media:[];if(!a.length){box.innerHTML='<div class="loading">لا توجد ملفات مرفوعة حتى الآن.</div>';return}box.innerHTML=a.map(x=>{const isV=String(x.type||'').startsWith('video/');return '<article class="gm-media-card"><div class="gm-media-preview">'+(isV?'<video controls preload="metadata" src="'+esc(x.url)+'"></video>':'<img loading="lazy" src="'+esc(x.url)+'" alt="'+esc(x.name)+'">')+'</div><div class="gm-media-info"><b>'+esc(x.name||'ملف')+'</b><small>'+esc(x.type||'')+' • '+Math.round((Number(x.size)||0)/1024)+' KB</small><div class="gm-media-actions"><button class="btn ghost" onclick="navigator.clipboard?.writeText(location.origin+\''+esc(x.url)+'\').then(()=>toast(\'تم نسخ الرابط\'))">نسخ الرابط</button><button class="btn danger" onclick="gmDeleteMedia(\''+esc(x.id)+'\')">حذف</button></div></div></article>'}).join('')}catch(e){box.innerHTML='<div class="loading">'+esc(e.message)+'</div>'}}
 async function gmDeleteMedia(id){if(!confirm('حذف هذا الملف نهائيًا؟'))return;try{await api('/api/admin/media',{method:'DELETE',body:JSON.stringify({id})});toast('تم حذف الملف');gmLoadMedia()}catch(e){toast(e.message)}}
-async function gmUploadMedia(file){if(!file)return;const status=$('gmMediaStatus'),prog=$('gmMediaProgress'),bar=$('gmMediaProgressBar');prog.classList.remove('hidden');bar.style.width='8%';status.textContent='① جاري قراءة الملف…';status.style.color='#496057';try{if(file.size>20*1024*1024)throw new Error('حجم الملف أكبر من 20 ميجابايت.');const data=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.onprogress=e=>{if(e.lengthComputable)bar.style.width=Math.max(8,Math.round(e.loaded/e.total*45))+'%'};r.readAsDataURL(file)});status.textContent='② جاري رفع الملف…';bar.style.width='65%';const d=await api('/api/admin/media',{method:'POST',body:JSON.stringify({name:file.name,type:file.type||'application/octet-stream',data})});bar.style.width='90%';status.textContent='③ جاري تجهيز المعاينة…';await new Promise(r=>setTimeout(r,180));bar.style.width='100%';status.textContent='✓ تم رفع الملف وحفظه بنجاح — سيتم إغلاق العملية تلقائيًا.';status.style.color='#14743f';setTimeout(()=>{prog.classList.add('hidden');status.textContent='';$('gmMediaFile').value='';gmLoadMedia()},900)}catch(e){bar.style.width='0';status.textContent='✕ تعذر رفع الملف: '+e.message;status.style.color='#b3261e';setTimeout(()=>{prog.classList.add('hidden')},1800)}}
+async function gmUploadMedia(file){
+ if(!file)return;
+ const status=$('gmMediaStatus'),prog=$('gmMediaProgress'),bar=$('gmMediaProgressBar');
+ prog.classList.remove('hidden');bar.style.width='0%';status.textContent='① جاري اختيار وتجهيز الملف…';status.style.color='#496057';
+ try{
+   if(!(file.type.startsWith('image/')||file.type.startsWith('video/')))throw new Error('يسمح برفع الصور والفيديو فقط.');
+   if(file.size>18*1024*1024)throw new Error('حجم الملف أكبر من 18 ميجابايت في التخزين الحالي.');
+   const data=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{bar.style.width='20%';res(r.result)};r.onerror=()=>rej(Error('تعذر قراءة الملف'));r.onprogress=e=>{if(e.lengthComputable){bar.style.width=Math.max(3,Math.round(e.loaded/e.total*20))+'%'} };r.readAsDataURL(file)});
+   status.textContent='② جاري رفع الملف… 0%';bar.style.width='22%';
+   const d=await new Promise((resolve,reject)=>{
+     const x=new XMLHttpRequest();x.open('POST','/api/admin/media');x.setRequestHeader('content-type','application/json');
+     x.upload.onprogress=e=>{if(e.lengthComputable){const pct=22+Math.round(e.loaded/e.total*63);bar.style.width=pct+'%';status.textContent='② جاري رفع الملف… '+pct+'%'}};
+     x.onload=()=>{let j={};try{j=JSON.parse(x.responseText||'{}')}catch(_){}if(x.status>=200&&x.status<300&&j.success)resolve(j);else reject(Error(j.error||'فشل رفع الملف ['+x.status+']'))};
+     x.onerror=()=>reject(Error('تعذر الاتصال بالخادم'));x.send(JSON.stringify({name:file.name,type:file.type||'application/octet-stream',data}));
+   });
+   bar.style.width='88%';status.textContent='③ جاري تجهيز الملف للعرض…';await new Promise(r=>setTimeout(r,180));
+   bar.style.width='96%';status.textContent='④ جاري حفظ بيانات الملف…';await new Promise(r=>setTimeout(r,120));
+   bar.style.width='100%';status.textContent='⑤ تم الحفظ بنجاح ✓ — سيتم إغلاق العملية تلقائيًا.';status.style.color='#14743f';
+   setTimeout(()=>{prog.classList.add('hidden');status.textContent='';$('gmMediaFile').value='';gmLoadMedia()},1200);
+ }catch(e){
+   bar.style.width='0';status.textContent='✕ لم يتم الحفظ: '+String(e?.message||e);status.style.color='#b3261e';
+   setTimeout(()=>{prog.classList.add('hidden');status.textContent='يمكنك المحاولة مرة أخرى.'},2200);
+ }
+}
+
 $('gmMediaFile')?.addEventListener('change',e=>gmUploadMedia(e.target.files?.[0]));
 
 async function loadCore(){const [p,s,ship]=await Promise.all([api('/api/admin/products'),api('/api/admin/settings'),api('/api/admin/shipping')]);products=p||[];siteSettings=s||{};$('storeName').value=s.storeName||'';$('siteTitle').value=s.title||'';$('siteSubtitle').value=s.subtitle||'';$('whatsapp').value=s.whatsapp||s.whatsappNumber||'';$('generalShipping').value=ship.price||0;$('logoPreview').src=s.logo||'/assets/logo.jpg';renderProducts();updateStats(ship.price);renderStickers();updateThemePage();}
