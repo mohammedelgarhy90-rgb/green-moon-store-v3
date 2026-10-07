@@ -1,223 +1,611 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Green Moon • لوحة التحكم</title>
-<link rel="stylesheet" href="/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061f16">
+<title>Green Moon — لوحة التحكم الاحترافية</title>
 <style>
-:root{--gm:#064b35;--gm2:#0d7650;--gold:#d8b65c;--bg:#f4f7f4;--ink:#17372b;--muted:#6f7d76;--line:#e3ebe6;--danger:#b3261e;--shadow:0 10px 35px rgba(12,53,37,.08)}
-*{box-sizing:border-box}html,body{width:100%;max-width:100%;overflow-x:hidden}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}button,input,textarea,select{font:inherit}.hidden{display:none!important}
-.gm-head{position:sticky;top:0;z-index:40;background:rgba(4,57,41,.97);color:#fff;box-shadow:0 4px 20px #0002}.gm-head-in{max-width:1280px;margin:auto;min-height:76px;padding:12px 18px;display:flex;align-items:center;gap:14px}.logo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #e8d38a;background:#fff}.brand{flex:1}.brand h1{margin:0;font-size:20px}.brand small{opacity:.78}.head-actions{display:flex;gap:8px}.btn{border:0;border-radius:12px;padding:10px 15px;cursor:pointer;font-weight:700;transition:.18s}.btn:hover{transform:translateY(-1px)}.btn.green{background:var(--gm2);color:#fff}.btn.light{background:#fff;color:var(--gm)}.btn.ghost{background:#edf5f1;color:var(--gm)}.btn.danger{background:#fff0ef;color:var(--danger)}.btn.gold{background:var(--gold);color:#17372b}
-.shell{max-width:1280px;margin:auto;padding:18px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px}.side{position:sticky;top:94px;height:max-content;background:#fff;border:1px solid var(--line);border-radius:20px;padding:10px;box-shadow:var(--shadow)}.side-title{padding:10px 12px;color:var(--muted);font-size:12px;font-weight:800}.nav-btn{width:100%;border:0;background:transparent;text-align:right;padding:12px;border-radius:12px;cursor:pointer;color:#395449;font-weight:700;margin:2px 0}.nav-btn.active{background:#e9f5ef;color:var(--gm)}.nav-btn span{display:inline-block;width:26px}.main{min-width:0}.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 16px}.page-head h2{margin:0;font-size:24px}.page-head p{margin:4px 0 0;color:var(--muted);font-size:13px}.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:var(--shadow)}.stat .ico{font-size:23px}.stat b{display:block;font-size:27px;margin-top:5px}.stat small{color:var(--muted)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.quick button{text-align:right;background:#f8fbf9;border:1px solid var(--line);border-radius:16px;padding:15px;cursor:pointer}.quick b{display:block;margin-bottom:5px}.quick span{font-size:12px;color:var(--muted)}
-.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:13px}.search{flex:1;min-width:220px}.field{margin-bottom:12px}.field label{display:block;font-weight:800;margin-bottom:6px;font-size:13px}.field small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}input,textarea,select{width:100%;padding:11px 12px;border:1px solid #dce5e0;border-radius:11px;background:#fff;color:var(--ink);outline:none}input:focus,textarea:focus,select:focus{border-color:#75a990;box-shadow:0 0 0 3px #0d765012}textarea{min-height:90px;resize:vertical}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{padding:11px 9px;border-bottom:1px solid #edf1ee;text-align:right;vertical-align:middle}.table th{background:#f7faf8;color:#63736b;font-size:12px}.thumb{width:54px;height:54px;border-radius:11px;object-fit:cover}.product-name{font-weight:800}.product-sub{font-size:11px;color:var(--muted);margin-top:3px}.actions{display:flex;gap:6px;flex-wrap:wrap}.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#eaf6ef;color:var(--gm);font-size:11px;font-weight:800}.badge.off{background:#f1f3f2;color:#78827e}.notice{padding:12px 14px;border-radius:13px;background:#f6faf7;color:#566a60;font-size:12px;line-height:1.7}.loading{padding:30px;text-align:center;color:var(--muted)}
-.modal{position:fixed;inset:0;width:100vw;height:100dvh;box-sizing:border-box;background:#00160f99;display:flex;align-items:center;justify-content:center;padding:14px;z-index:100;overflow:hidden}.modal-card{background:#fff;border-radius:22px;width:min(920px,calc(100vw - 28px));max-width:920px;max-height:calc(100dvh - 28px);overflow:auto;padding:20px;box-shadow:0 25px 80px #0005;box-sizing:border-box;overscroll-behavior:contain}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.close{border:0;background:#edf2ef;width:38px;height:38px;border-radius:50%;font-size:24px;cursor:pointer}.gm-voucher-admin{margin-top:18px;padding:16px;border:1px solid #dfe9e2;border-radius:16px;background:#f7fbf8}.gm-voucher-admin h3{margin:0 0 7px;color:#075c3d}.gm-gift-products{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.gm-gift-product{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #e2e8e3;border-radius:10px;background:#fff}.gm-gift-product img{width:42px;height:42px;object-fit:cover;border-radius:8px}.gm-gift-product small{display:block;color:#68756e}.care{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.order-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px solid #edf1ee}.order-actions .btn{font-size:12px;padding:9px 12px}.order-contact{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.order-total{font-size:16px;color:var(--gm)}.order-items{margin-top:10px;padding:10px 12px;background:#f8fbf9;border-radius:12px;font-size:12px;line-height:1.9}.order-actions .btn.call{background:#e9f7ef;color:#087243}.order-actions .btn.wa{background:#e8f8ef;color:#087243}.order-actions .btn.print{background:#f4f0e3;color:#6c5719}.order-actions .btn.review{background:#fff6d9;color:#705a12}.order-status-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid #edf1ee}.review-admin-card{border:1px solid #e2ebe5;border-radius:16px;padding:14px;margin:10px 0;background:#fff}.review-admin-card.pending{border-color:#eadcae;background:#fffdf5}.review-stars{color:#c69b2e;letter-spacing:2px}.toast{position:fixed;bottom:22px;left:22px;z-index:200;background:#123f2e;color:#fff;padding:12px 16px;border-radius:13px;box-shadow:0 10px 30px #0003;opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}.login-card{width:min(430px,100%);background:#fff;border-radius:24px;padding:26px;box-shadow:0 20px 60px #073d2a18;border:1px solid var(--line)}.login-card .logo{display:block;margin:0 auto 12px;width:74px;height:74px}.login-card h2{text-align:center;margin:8px 0}.login-card p{text-align:center;color:var(--muted);font-size:13px}.login-card .btn{width:100%;margin-top:5px}
-@media(max-width:900px){.shell{grid-template-columns:1fr}.side{position:sticky;top:76px;z-index:30;display:flex;overflow:auto;padding:7px}.side-title{display:none}.nav-btn{min-width:max-content;width:auto;margin:0}.cards{grid-template-columns:repeat(2,1fr)}.quick{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.gm-head-in{min-height:66px;padding:9px 12px}.brand h1{font-size:16px}.brand small{font-size:10px}.head-actions .btn:first-child{display:none}.shell{padding:10px;width:100%;max-width:100%;min-width:0}.main{width:100%;min-width:0}.page-head{align-items:flex-start}.page-head h2{font-size:20px}.cards{grid-template-columns:1fr 1fr;gap:8px}.stat{padding:12px}.stat b{font-size:22px}.grid,.grid3,.care,.gm-gift-products{grid-template-columns:1fr}.panel{padding:14px;border-radius:17px;max-width:100%;min-width:0}.quick{grid-template-columns:1fr}.search{min-width:100%}.modal{padding:8px}.modal-card{width:calc(100vw - 16px);max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);padding:14px;border-radius:18px;margin:0}.table{min-width:680px}}
-
-.gm-themes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.gm-theme{border:2px solid transparent;border-radius:16px;padding:10px;background:#fff;cursor:pointer;text-align:right;transition:.18s}.gm-theme:hover{transform:translateY(-2px);box-shadow:0 8px 20px #0001}.gm-theme.active{border-color:#0d7650}.gm-theme-preview{height:38px;border-radius:10px;display:flex;overflow:hidden;margin-bottom:8px}.gm-theme-preview i{flex:1}.gm-theme b{display:block;font-size:13px}.gm-theme small{color:var(--muted);font-size:10px}.gm-save-state{font-size:12px;font-weight:800}.control-accordion{border:1px solid var(--line);border-radius:18px;background:#fff;margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden}.control-accordion summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:12px}.control-accordion summary::-webkit-details-marker{display:none}.control-accordion summary:after{content:'＋';font-size:20px;color:var(--gm)}.control-accordion[open] summary:after{content:'−'}.control-accordion-body{padding:0 18px 18px}.control-accordion-body>.field:last-child{margin-bottom:0}@media(max-width:900px){.gm-themes{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.gm-themes{grid-template-columns:1fr 1fr}.control-accordion summary{padding:14px}.control-accordion-body{padding:0 14px 14px}}
-.json-editor{width:100%;min-height:190px;direction:ltr;text-align:left;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:13px;border:1px solid var(--line);border-radius:14px;background:#fbfcfb;color:#17372c;resize:vertical}.visual-editor{display:grid;gap:12px}.ve-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ve-list{display:grid;gap:12px}.ve-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff;box-shadow:0 5px 18px rgba(12,53,37,.05)}.ve-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.ve-card-title{font-weight:900}.ve-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ve-grid .full{grid-column:1/-1}.ve-img{display:flex;gap:10px;align-items:center}.ve-img img{width:72px;height:58px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:#f4f7f4}.ve-actions{display:flex;gap:7px;flex-wrap:wrap}.ve-empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed #cfdad3;border-radius:14px;background:#fafcfb}.ve-hint{font-size:12px;color:var(--muted);line-height:1.7}@media(max-width:700px){.ve-grid{grid-template-columns:1fr}.ve-grid .full{grid-column:auto}}.media-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.media-card{border:1px solid var(--line);border-radius:14px;padding:8px;background:#fff}.media-card img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}.media-card small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:6px 0}.media-card .btn{width:100%;padding:7px;font-size:11px}@media(max-width:700px){.media-grid{grid-template-columns:repeat(2,1fr)}.json-editor{min-height:220px}}
-.gm-ticker-admin{border:1px solid #dbe8df;background:linear-gradient(180deg,#fff,#f7fbf8)}.ticker-form{display:grid;grid-template-columns:2fr 1.3fr .8fr auto;gap:10px;align-items:end}.ticker-admin-list{display:grid;gap:8px;margin:14px 0}.ticker-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid #e2e9e4;border-radius:14px;padding:10px;background:#fff}.ticker-row .txt{font-weight:800;color:#17372c}.ticker-row small{display:block;color:#738078;margin-top:3px}.ticker-row .actions{display:flex;gap:6px}.switchline{display:flex;gap:9px;align-items:center;margin:12px 0;font-weight:700}@media(max-width:760px){.ticker-form{grid-template-columns:1fr}.ticker-row{grid-template-columns:1fr}.ticker-row .actions{justify-content:flex-start}}
-
-/* ===== Green Moon Admin V3 ===== */
-.gm-head{position:sticky;top:0;z-index:90;background:linear-gradient(135deg,#062f23,#0b5940);box-shadow:0 8px 30px #04281d22}.gm-head-in{max-width:1500px;margin:auto;padding:12px 22px}.shell{max-width:1500px;grid-template-columns:230px minmax(0,1fr);gap:22px}.side{position:sticky;top:92px;height:calc(100dvh - 112px);overflow:auto;border:1px solid #e1e9e4;background:linear-gradient(180deg,#fff,#f8fbf9);border-radius:22px;padding:12px;box-shadow:0 12px 35px #1233290b}.side-title{font-size:11px;color:#7b8982;padding:8px 10px 12px;font-weight:900}.nav-btn{width:100%;border:0;background:transparent;text-align:right;padding:12px 13px;border-radius:13px;display:flex;align-items:center;gap:10px;font-weight:800;color:#496057;cursor:pointer;margin:3px 0}.nav-btn span{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#eef5f0}.nav-btn.active{background:#073b2b;color:#fff;box-shadow:0 8px 20px #073b2b22}.nav-btn.active span{background:#ffffff1a}.main{min-width:0}.page-head{margin-bottom:14px}.page-head h2{font-size:27px;letter-spacing:-.4px}.page-head p{color:#738078}.cards{grid-template-columns:repeat(4,1fr)}.stat{border:1px solid #e1e9e4;box-shadow:0 12px 30px #1233290a}.stat b{font-size:28px}.panel{box-shadow:0 10px 30px #1233290a;border-color:#e1e9e4}.products-dashboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.product-admin-card{border:1px solid #e1e9e4;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 8px 25px #1233290b}.product-admin-media{height:180px;background:#f0f4f0;position:relative}.product-admin-media img{width:100%;height:100%;object-fit:cover}.product-admin-body{padding:13px}.product-admin-title{font-weight:900;font-size:15px}.product-admin-meta{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.product-admin-meta span{padding:5px 8px;border-radius:999px;background:#f3f6f3;font-size:10px;color:#50635a}.sticker-preview{position:absolute;top:10px;right:10px;padding:7px 10px;border-radius:7px;font-size:11px;font-weight:900;z-index:2}.sticker-preview-img{position:absolute;z-index:2;max-width:90px;max-height:90px;object-fit:contain}.fast-save{display:flex;align-items:center;gap:9px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#eef8f1;color:#087243;font-size:12px;font-weight:800}.save-dot{width:8px;height:8px;border-radius:50%;background:#13a05b;box-shadow:0 0 0 5px #13a05b18}.gm-sticker-box{margin-top:16px;padding:16px;border:1px solid #e3ebe5;border-radius:17px;background:linear-gradient(135deg,#f8fbf8,#fff)}.gm-sticker-preview{height:150px;border-radius:14px;background:linear-gradient(135deg,#edf4ef,#f7f2e7);position:relative;overflow:hidden;display:grid;place-items:center;margin-top:10px}.gm-sticker-preview img.product-preview{width:100%;height:100%;object-fit:cover;opacity:.72}.gm-sticker-help{font-size:11px;color:#708078;line-height:1.7}.sticker-positions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.sticker-positions button{border:1px solid #dfe7e2;background:#fff;padding:9px;border-radius:9px;cursor:pointer}.sticker-positions button.active{background:#073b2b;color:#fff}.theme-live{margin-top:10px;padding:12px;border-radius:14px;background:linear-gradient(135deg,var(--gm),var(--gm2));color:#fff}.section-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.section-nav button{padding:12px;border:1px solid #e0e9e3;border-radius:13px;background:#fff;text-align:right;font-weight:800;cursor:pointer}.section-nav button:hover{border-color:#83ae98;transform:translateY(-1px)}
-@media(max-width:1000px){.shell{grid-template-columns:1fr}.side{position:sticky;top:78px;height:auto;z-index:70;display:flex;gap:6px;overflow:auto;border-radius:16px}.side-title{display:none}.nav-btn{min-width:max-content;margin:0}.products-dashboard{grid-template-columns:repeat(2,1fr)}.section-nav{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.shell{padding:8px}.cards{grid-template-columns:1fr 1fr}.products-dashboard{grid-template-columns:1fr}.section-nav{grid-template-columns:1fr 1fr}.gm-head-in{padding:9px 12px}.side{top:74px}.product-admin-media{height:210px}}
-
-.gm-upload-card{border:2px dashed #cbded3;border-radius:18px;padding:24px;text-align:center;background:linear-gradient(180deg,#fbfdfb,#f3f8f4);margin-top:14px}.gm-upload-icon{font-size:36px}.gm-upload-progress{height:9px;background:#e7eee9;border-radius:99px;overflow:hidden;margin:15px auto 8px;max-width:520px}.gm-upload-progress>div{height:100%;width:0;background:linear-gradient(90deg,#0d7650,#d8b65c);transition:width .2s}.gm-media-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.gm-media-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}.gm-media-preview{height:190px;background:#f2f5f2;display:grid;place-items:center;overflow:hidden}.gm-media-preview img,.gm-media-preview video{width:100%;height:100%;object-fit:contain;background:#f2f5f2}.gm-media-info{padding:11px}.gm-media-info b{display:block;word-break:break-word;font-size:12px}.gm-media-info small{display:block;color:var(--muted);margin-top:4px}.gm-media-actions{display:flex;gap:6px;margin-top:8px}.gm-media-actions button{flex:1}@media(max-width:850px){.gm-media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.gm-media-grid{grid-template-columns:1fr}}
-
+:root{--green:#06251a;--green2:#0b5b3d;--green3:#137451;--gold:#d9bc6a;--cream:#f8f7f1;--bg:#f2f4f1;--card:#fff;--ink:#15221c;--muted:#728078;--line:#e5e9e5;--danger:#b42318;--shadow:0 16px 45px #09251b12}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}.app{min-height:100vh}.top{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,#041b12,#0a4a32);color:#fff;border-bottom:1px solid #ffffff12}.topin{max-width:1500px;margin:auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px}.brandmark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#fff,#d9bc6a);display:grid;place-items:center;color:#06301f;font-size:22px;box-shadow:0 8px 22px #0003}.brand b{display:block;font-size:17px}.brand small{opacity:.68}.topactions{display:flex;gap:8px}.iconbtn{width:42px;height:42px;border-radius:12px;border:1px solid #ffffff18;background:#ffffff0f;color:#fff}.wrap{max-width:1500px;margin:auto;padding:18px}.layout{display:grid;grid-template-columns:245px 1fr;gap:18px}.side{position:sticky;top:78px;height:max-content;background:#fff;border:1px solid var(--line);border-radius:22px;padding:10px;box-shadow:var(--shadow)}.nav{width:100%;border:0;background:transparent;color:#53615a;text-align:right;padding:12px 13px;border-radius:13px;font-weight:800;margin:2px 0;display:flex;align-items:center;gap:10px}.nav:hover,.nav.active{background:#eaf3ee;color:var(--green2)}.nav .ico{width:28px;text-align:center}.sectiontitle{font-size:11px;color:#9aa39e;font-weight:900;padding:14px 13px 5px}.content{min-width:0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}.stat .k{font-size:29px;font-weight:900}.stat .l{color:var(--muted);font-size:13px}.panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:14px;box-shadow:var(--shadow)}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.head h2{margin:0;font-size:19px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:850}.primary{background:var(--green);color:#fff}.gold{background:#f7efda;color:#6d551d}.soft{background:#eaf3ee;color:var(--green2)}.danger{background:#fff0ee;color:var(--danger)}.ghost{background:#f3f5f3;color:#44534c}.btn:disabled{opacity:.5;cursor:not-allowed}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;font-size:12px;font-weight:850;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff}.field textarea{min-height:105px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#83a999;box-shadow:0 0 0 3px #0b5b3d12}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:800px}.table th,.table td{padding:11px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}.table th{font-size:12px;color:#6c7972;background:#fafbfa}.thumb{width:56px;height:56px;border-radius:13px;object-fit:cover;background:#edf1ed}.status{display:inline-flex;padding:5px 9px;border-radius:99px;background:#eaf3ee;color:#0b5b3d;font-size:11px;font-weight:900}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}.cardmedia{height:170px;background:#edf1ed;position:relative}.cardmedia img{width:100%;height:100%;object-fit:cover}.cardbody{padding:13px}.cardbody h3{margin:0 0 5px;font-size:16px}.cardbody p{margin:0 0 10px;color:var(--muted);font-size:12px;line-height:1.6}.cardactions{display:flex;gap:7px;flex-wrap:wrap}.drag{cursor:grab;border:1px dashed #b9c5be}.upload{border:1.5px dashed #aab8b0;border-radius:16px;padding:12px;background:#fafcfa}.uploadrow{display:flex;align-items:center;gap:12px}.preview{width:96px;height:76px;border-radius:13px;object-fit:cover;background:#edf1ed}.upload input{display:none}.dropbtn{display:inline-flex}.hint{font-size:11px;color:var(--muted);margin-top:6px}.check{display:flex;align-items:center;gap:8px}.check input{width:auto}.modal{position:fixed;inset:0;background:#03140db8;z-index:100;display:grid;place-items:center;padding:15px}.modalbox{width:min(900px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:24px;padding:20px;position:relative;box-shadow:0 30px 100px #0005}.x{position:absolute;left:13px;top:13px;width:40px;height:40px;border-radius:50%;border:0;background:#eef2ee;font-size:25px}.modalhead{padding-left:45px;margin-bottom:16px}.modalhead h2{margin:0}.modalfoot{display:flex;justify-content:flex-start;gap:8px;margin-top:16px}.toast{position:fixed;left:18px;bottom:18px;z-index:200;background:#102b20;color:#fff;padding:12px 16px;border-radius:13px;box-shadow:0 12px 35px #0004}.login{min-height:100vh;display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 80% 10%,#d9bc6a22,transparent 25%),linear-gradient(145deg,#031a11,#0a4b33)}.loginbox{width:min(440px,100%);background:#fff;border-radius:28px;padding:30px;box-shadow:0 35px 100px #0005}.loginmark{width:65px;height:65px;border-radius:20px;background:linear-gradient(145deg,#fff,#d9bc6a);display:grid;place-items:center;font-size:34px;margin-bottom:15px}.loginbox h1{margin:0}.muted{color:var(--muted)}.empty{text-align:center;padding:35px;color:var(--muted)}.ticker-row input{direction:rtl}.mobilebar{display:none}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.side{position:static;display:flex;overflow:auto;gap:4px}.sectiontitle{display:none}.nav{width:auto;white-space:nowrap}.stats{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.wrap{padding:10px}.topin{padding:10px}.brand small{display:none}.grid2,.grid3{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.panel{padding:13px;border-radius:18px}.side{border-radius:17px}.stats{gap:8px}.stat{padding:13px}.stat .k{font-size:24px}.mobilebar{display:block;height:8px}.modal{padding:8px}.modalbox{border-radius:19px;padding:15px}}
 </style>
-</head><body>
-
-<div id="loginBox" class="login-wrap"><div class="login-card"><img class="logo" src="/assets/logo.jpg"><h2>لوحة تحكم Green Moon</h2><p>إدارة المتجر بسهولة من مكان واحد</p><div class="field"><label>كلمة المرور</label><input id="password" type="password" placeholder="اكتب كلمة المرور"></div><button class="btn green" id="login">دخول</button><div id="loginMsg" class="msg"></div></div></div>
+<style id="gm-admin-product-sticker">
+.gm-sticker-preview{position:relative;width:180px;height:180px;border-radius:18px;overflow:hidden;background:#f3eee3;border:1px solid #ddd2b9;display:flex;align-items:center;justify-content:center}
+.gm-sticker-preview img{max-width:100%;max-height:100%;object-fit:contain}
+.gm-sticker-preview .st{position:absolute;padding:6px 10px;border-radius:999px;color:#fff;font-size:11px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.gm-sticker-preview .tl{top:8px;left:8px}.gm-sticker-preview .tr{top:8px;right:8px}.gm-sticker-preview .bl{bottom:8px;left:8px}.gm-sticker-preview .br{bottom:8px;right:8px}.gm-sticker-preview .tc{top:8px;left:50%;transform:translateX(-50%)}.gm-sticker-preview .bc{bottom:8px;left:50%;transform:translateX(-50%)}
+</style>
+<style id="gm-save-state-css">#gmSaveState{position:fixed;right:18px;top:76px;z-index:250;display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:12px;background:#fff;border:1px solid #dfe8e2;box-shadow:0 10px 30px #09251b18;color:#0b5b3d;font-size:12px;font-weight:900;opacity:0;transform:translateY(-8px);pointer-events:none;transition:.2s}.gm-save-dot{width:8px;height:8px;border-radius:50%;background:#0b5b3d}.gm-save-loading .gm-save-dot{animation:gmSavePulse .7s infinite}.gm-save-ok .gm-save-dot{background:#087842}@keyframes gmSavePulse{50%{transform:scale(.55);opacity:.45}}@media(max-width:620px){#gmSaveState{right:10px;top:68px;font-size:11px}}</style></head>
+<body>
+<div id="login" class="login">
+  <div class="loginbox">
+    <div class="loginmark"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:20px"></div>
+    <h1>Green Moon</h1>
+    <p class="muted">لوحة التحكم الاحترافية</p>
+    <div class="field" style="margin-top:18px"><label>كلمة مرور الإدارة</label><input id="pass" type="password" placeholder="••••••••"></div>
+    <button class="btn primary" style="width:100%;margin-top:11px" onclick="login()">دخول إلى لوحة التحكم</button>
+    <div id="loginMsg" style="color:#b42318;font-weight:800;margin-top:10px;min-height:22px"></div>
+  </div>
+</div>
 
 <div id="app" class="hidden">
-<header class="gm-head"><div class="gm-head-in"><img id="adminLogo" class="logo" src="/assets/logo.jpg"><div class="brand"><h1>Green Moon • لوحة التحكم</h1><small>تحكم سريع وواضح في المتجر</small></div><div class="head-actions"><a class="btn light" href="/">عرض المتجر</a><button class="btn danger" id="logout">خروج</button></div></div></header>
-<div class="shell">
-<aside class="side"><div class="side-title">إدارة المتجر</div><button class="nav-btn active" data-page="home"><span>🏠</span>نظرة عامة</button><button class="nav-btn" data-page="products"><span>🌿</span>المنتجات</button><button class="nav-btn" data-page="orders"><span>📦</span>الطلبات</button><button class="nav-btn" data-page="reviews"><span>⭐</span>التقييمات</button><button class="nav-btn" data-page="content"><span>🧩</span>محتوى الموقع</button><button class="nav-btn" data-page="themes"><span>🎨</span>الثيمات</button><button class="nav-btn" data-page="stickers"><span>🏷️</span>استيكرات المنتجات</button><button class="nav-btn" data-page="media"><span>🖼️</span>الصور والفيديو</button>
-<button class="nav-btn" data-page="settings"><span>⚙️</span>الإعدادات</button></aside>
-<main class="main">
-<section id="page-home" class="page active"><div class="page-head"><div><h2>نظرة عامة</h2><p>ملخص سريع للمتجر بدون انتظار تحميل الطلبات.</p></div></div><div class="cards"><div class="stat"><div class="ico">🌿</div><b id="statProducts">—</b><small>عدد المنتجات</small></div><div class="stat"><div class="ico">🎟️</div><b id="statVouchers">—</b><small>قسائم مفعلة</small></div><div class="stat"><div class="ico">📦</div><b id="statOrders">—</b><small>عدد الطلبات</small></div><div class="stat"><div class="ico">🚚</div><b id="statShipping">—</b><small>التوصيل العام</small></div></div><div class="panel" style="margin-top:16px"><h3>اختصارات سريعة</h3><div class="quick"><button data-go="products" data-action="new"><b>➕ إضافة منتج</b><span>أضف منتج جديد بسرعة</span></button><button data-go="orders"><b>📦 متابعة الطلبات</b><span>افتح الطلبات فقط عند الحاجة</span></button><button data-go="settings"><b>⚙️ إعدادات المتجر</b><span>الاسم والواتساب والتوصيل</span></button></div></div><div class="panel"><div class="notice">⚡ <b>تسريع اللوحة:</b> الطلبات لا يتم تحميلها عند فتح اللوحة. يتم تحميلها فقط عند فتح قسم «الطلبات»، لذلك الدخول أصبح أخف وأسرع.</div></div></section>
+<header class="top"><div class="topin">
+  <div class="brand"><div class="brandmark" style="background:#fff;padding:4px"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:9px"></div><div><b>Green Moon Admin</b><small>إدارة المتجر بالكامل</small></div></div>
+  <div class="topactions"><button class="iconbtn" title="تحديث" onclick="load()">↻</button><button class="iconbtn" title="خروج" onclick="logout()">↪</button></div>
+</div></header>
+<main class="wrap"><div class="layout">
+<aside class="side">
+  <div class="sectiontitle">المتجر</div>
+  <button class="nav active" data-tab="home"><span class="ico">📊</span> الرئيسية</button>
+  <button class="nav" data-tab="products"><span class="ico">🌿</span> المنتجات</button>
+  <button class="nav" data-tab="categories"><span class="ico">🗂️</span> التصنيفات</button>
+  <div class="sectiontitle">المحتوى</div>
+  <button class="nav" data-tab="hero"><span class="ico">🖼️</span> Hero والعروض الرئيسية</button>
+  <button class="nav" data-tab="deals"><span class="ico">🎯</span> الصفقات</button>
+  <button class="nav" data-tab="articles"><span class="ico">📰</span> المقالات</button>
+  <button class="nav" data-tab="reviews"><span class="ico">💬</span> ماذا قالوا عنا</button>
+  <button class="nav" data-tab="rewards"><span class="ico">🎁</span> المكافآت</button>
+  <button class="nav" data-tab="vouchers"><span class="ico">🎟️</span> القسائم الشرائية</button>
+  <button class="nav" data-tab="promos"><span class="ico">🏷️</span> البروموكودات</button>
+  <button class="nav" data-tab="ticker"><span class="ico">📰</span> شريط الأخبار</button>
+  <div class="sectiontitle">التشغيل</div>
+  <button class="nav" data-tab="orders"><span class="ico">📦</span> الطلبات</button>
+  <button class="nav" data-tab="notifications"><span class="ico">🔔</span> الإشعارات</button>
+  <button class="nav" data-tab="settings"><span class="ico">⚙️</span> الإعدادات</button>
+  <button class="nav" data-tab="builder"><span class="ico">🎨</span> تحكم كامل في الواجهة</button><button class="nav" data-tab="media"><span class="ico">🗂️</span> الصور والنصوص</button><button class="nav" data-tab="homebuilder"><span class="ico">🏠</span> منشئ الصفحة الرئيسية</button>
+</aside>
+<section id="content" class="content"></section>
+</div></main></div>
 
-<section id="page-products" class="page"><div class="page-head"><div><h2>المنتجات</h2><p>إضافة وتعديل الأسعار والصور والقسائم والعناية بالنبات.</p></div><button class="btn green" id="newProduct">+ إضافة منتج</button></div><div class="panel"><div class="toolbar"><input id="productSearch" class="search" placeholder="🔎 ابحث باسم المنتج..."><select id="voucherFilter" style="max-width:190px"><option value="all">كل المنتجات</option><option value="voucher">بها قسيمة</option><option value="no-voucher">بدون قسيمة</option></select><button class="btn ghost" id="refreshProducts">تحديث</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الصورة</th><th>المنتج</th><th>البيع</th><th>الجملة</th><th>التوصيل</th><th>القسيمة</th><th>إجراء</th></tr></thead><tbody id="productsTable"></tbody></table></div></div></section>
+<div id="modal" class="modal hidden"><div class="modalbox"><button class="x" onclick="closeModal()">×</button><div id="modalBody"></div></div></div>
+<div id="toast" class="toast hidden"></div><div id="gmSaveState"><span class="gm-save-dot"></span><span id="gmSaveText">جاري الحفظ...</span></div>
 
-<section id="page-orders" class="page"><div class="page-head"><div><h2>الطلبات</h2><p>اعرض الطلبات عند الحاجة فقط.</p></div><button class="btn green" id="reloadOrders">تحديث الطلبات</button></div><div class="panel"><div id="ordersList" class="loading">اضغط «تحديث الطلبات» لتحميل الطلبات.</div></div></section>
-
-<section id="page-reviews" class="page"><div class="page-head"><div><h2>⭐ تقييمات العملاء</h2><p>راجع التقييمات، انشرها، وفعّل كود خصم 10% بعد النشر.</p></div><button class="btn green" id="reloadReviews">تحديث التقييمات</button></div><div class="panel"><div class="notice">التقييم لا يظهر للناس إلا بعد الضغط على «نشر». كود الخصم <b>10%</b> لا يعمل إلا بعد نشر التقييم، ويُستخدم مرة واحدة.</div><div id="reviewsAdminList" class="loading">اضغط «تحديث التقييمات» لتحميل التقييمات.</div></div></section>
-<section id="page-content" class="page">
-<div class="page-head"><div><h2>🧩 التحكم الكامل في الموقع</h2><p>من هنا تتحكم في محتوى الواجهة: البانرات، الهيرو، الأقسام، الخدمات، المقالات، النوافذ، الألوان وأي بلوكات إضافية.</p></div><button class="btn green" id="loadContent">تحديث</button></div>
-<div class="panel"><div class="notice">⚡ <b>وضع التحكم الكامل:</b> أي تغيير تحفظه هنا يظهر للعميل من خلال نفس بيانات الموقع. يمكنك إضافة أو تعديل أو حذف أي عنصر، ورفع الصور من «مكتبة الوسائط» ثم استخدام رابطها داخل أي عنصر.</div></div>
-<div class="panel"><h3>🏪 الهوية والعناوين</h3><div class="grid"><div class="field"><label>اسم المتجر</label><input id="cStoreName"></div><div class="field"><label>عنوان الموقع</label><input id="cTitle"></div><div class="field"><label>الوصف</label><input id="cSubtitle"></div><div class="field"><label>واتساب</label><input id="cWhatsapp"></div></div></div>
-<div class="panel"><h3>🎨 ثيمات الموقع</h3><p class="ve-hint">اختار ثيم جاهز بضغطة واحدة، أو عدّل الألوان يدويًا. الثيم يتم حفظه مع إعدادات الموقع.</p><div id="themePresets" class="gm-themes"></div><div class="grid" style="margin-top:12px"><div class="field"><label>الأخضر الأساسي</label><input id="cGreen" placeholder="#063b2b"></div><div class="field"><label>الأخضر الثاني</label><input id="cGreen2" placeholder="#0a513c"></div><div class="field"><label>الذهبي</label><input id="cGold" placeholder="#e7bf62"></div></div></div>
-<div class="panel gm-ticker-admin"><h3>📢 شريط الأخبار والعروض المتحرك</h3><p class="muted">أضف خبرًا أو عرضًا يظهر أعلى المتجر. بدون JSON.</p><div class="ticker-form"><div class="field"><label>النص</label><input id="tickerText" placeholder="🎁 عرض خاص اليوم — خصم 10%"></div><div class="field"><label>الرابط (اختياري)</label><input id="tickerLink" placeholder="#products"></div><div class="field"><label>النوع</label><select id="tickerType"><option value="offer">عرض</option><option value="news">خبر</option><option value="info">إعلان</option></select></div><button class="btn green" id="addTicker">➕ إضافة</button></div><div id="tickerList" class="ticker-admin-list"></div><label class="switchline"><input id="tickerEnabled" type="checkbox" checked><span>تشغيل الشريط</span></label><div class="field"><label>سرعة الحركة</label><input id="tickerSpeed" type="number" min="8" max="120" value="28"></div></div>
-<div class="panel"><h3>🦸 Hero / السلايدر الرئيسي</h3><p class="ve-hint">أضف الشرائح وعدّل الصور والنصوص من هنا بدون JSON.</p><div id="editorHero"></div><textarea id="cHero" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>🚚 الخدمات الأربع</h3><div id="editorServices"></div><textarea id="cServices" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>🗂️ الأقسام</h3><div id="editorCategories"></div><textarea id="cCategories" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>🖼️ البانرات والمساحات الإعلانية</h3><div id="editorBanners"></div><textarea id="cBanners" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>📝 المقالات والأخبار</h3><div id="editorArticles"></div><textarea id="cArticles" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>✨ البلوكات المخصصة</h3><p class="ve-hint">أنشئ أقسامًا مخصصة من خلال الحقول فقط. لا تحتاج إلى HTML أو JSON.</p><div id="editorBlocks"></div><textarea id="cBlocks" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>🔔 Popup / رسالة الموقع</h3><div id="editorPopup"></div><textarea id="cPopup" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>🦶 الفوتر</h3><div id="editorFooter"></div><textarea id="cFooter" class="json-editor hidden" spellcheck="false"></textarea></div>
-<div class="panel"><h3>🖼️ مكتبة الوسائط</h3><div class="toolbar"><input id="mediaFile" type="file" accept="image/*"><input id="mediaName" placeholder="اسم الصورة (اختياري)"><button class="btn green" id="uploadMedia">رفع الصورة</button></div><div id="mediaList" class="media-grid"></div></div>
-<div class="panel" style="position:sticky;bottom:10px;z-index:20"><div class="toolbar"><button class="btn green" id="saveContent">💾 حفظ كل تعديلات الموقع</button><button class="btn ghost" id="resetContent">↶ تحميل آخر نسخة محفوظة</button><span id="contentMsg" class="msg"></span></div></div>
-</section>
-<section id="page-themes" class="page"><div class="page-head"><div><h2>🎨 مركز الثيمات</h2><p>اختار شكل الموقع بالكامل من مكان واحد، وشوف معاينة سريعة قبل الحفظ.</p></div></div><div class="theme-live"><b>المعاينة الحالية</b><div style="margin-top:7px">الأخضر الأساسي: <span id="themeLiveG"></span> • الثاني: <span id="themeLiveG2"></span> • الذهبي: <span id="themeLiveGold"></span></div></div><div class="panel" style="margin-top:14px"><h3>الثيمات الجاهزة</h3><div id="themePresetsPage" class="gm-themes"></div></div><div class="panel"><h3>تخصيص الثيم</h3><div class="grid3"><div class="field"><label>اللون الأساسي</label><input id="themePageG" type="color"></div><div class="field"><label>اللون الثاني</label><input id="themePageG2" type="color"></div><div class="field"><label>الذهبي</label><input id="themePageGold" type="color"></div></div><button class="btn green" id="saveThemePage">✓ تطبيق الثيم وحفظه</button></div></section>
-<section id="page-stickers" class="page"><div class="page-head"><div><h2>🏷️ استيكرات المنتجات</h2><p>شوف كل المنتجات اللي عليها استيكر، وعدّلها بسرعة بدون فتح كل منتج.</p></div></div><div class="panel"><div class="toolbar"><input id="stickerSearch" class="search" placeholder="🔎 ابحث عن منتج..."><select id="stickerStatus" style="max-width:180px"><option value="all">كل المنتجات</option><option value="active">استيكر مفعل</option><option value="none">بدون استيكر</option></select></div><div id="stickersGrid" class="products-dashboard"></div></div></section>
-
-<section id="page-media" class="page">
-  <div class="page-head"><div><h2>🖼️ مكتبة الصور والفيديو</h2><p>ارفع أي صورة أو فيديو، وسيحتفظ الموقع بنسبة الأبعاد الأصلية بدون قص أو تشويه.</p></div></div>
-  <div class="panel">
-    <div class="notice">اختر صورة أو فيديو من جهازك. سنعرض لك كل خطوة: اختيار الملف → الرفع → المعالجة → النجاح أو الفشل. عند النجاح تُغلق نافذة العملية تلقائيًا.</div>
-    <div class="gm-upload-card" id="gmMediaUploadCard">
-      <div class="gm-upload-icon">☁️</div>
-      <h3 style="margin:5px 0">رفع ملف جديد</h3>
-      <p class="muted" style="font-size:12px">JPG / PNG / WEBP / GIF / MP4 / WEBM وغيرها حسب دعم المتصفح والخادم.</p>
-      <input id="gmMediaFile" type="file" accept="image/*,video/*" style="margin-top:10px">
-      <div id="gmMediaProgress" class="gm-upload-progress hidden"><div id="gmMediaProgressBar"></div></div>
-      <div id="gmMediaStatus" class="msg"></div>
-    </div>
-  </div>
-  <div class="panel"><div class="page-head" style="margin-bottom:8px"><div><h3 style="margin:0">الملفات المرفوعة</h3><small class="muted">تقدر تنسخ رابط الملف وتستخدمه في المحتوى أو المنتجات.</small></div><button class="btn ghost" onclick="gmLoadMedia()">↻ تحديث</button></div><div id="gmMediaGrid" class="gm-media-grid"><div class="loading">جاري التحميل...</div></div></div>
-</section>
-
-<section id="page-settings" class="page"><div class="page-head"><div><h2>الإعدادات</h2><p>الإعدادات الأساسية والتوصيل.</p></div></div><div class="panel"><h3>🏪 بيانات المتجر</h3><div class="grid"><div class="field"><label>اسم الموقع</label><input id="storeName"></div><div class="field"><label>العنوان الرئيسي</label><input id="siteTitle"></div><div class="field"><label>الوصف الفرعي</label><input id="siteSubtitle"></div><div class="field"><label>واتساب استقبال الطلبات</label><input id="whatsapp" placeholder="مثال: 2010xxxxxxxx"></div></div><div class="field"><label>اللوجو</label><input id="logoFile" type="file" accept="image/*"><img id="logoPreview" class="thumb" src="/assets/logo.jpg" style="margin-top:8px"></div><button class="btn green" id="saveSettings">حفظ بيانات المتجر</button><span id="settingsMsg" class="msg"></span></div><div class="panel"><h3>🚚 التوصيل</h3><div class="notice">سعر التوصيل العام يُستخدم عند شراء أكثر من منتج مختلف. يمكن للمنتج نفسه أن يكون له سعر توصيل خاص.</div><div class="field" style="margin-top:12px"><label>سعر التوصيل العام</label><input id="generalShipping" type="number" min="0"></div><button class="btn green" id="saveShipping">حفظ سعر التوصيل</button><span id="shippingMsg" class="msg"></span></div></section>
-</main></div></div>
-
-<div id="modal" class="modal hidden"><div class="modal-card"><div class="modal-head"><div><h2 id="modalTitle" style="margin:0">تعديل المنتج</h2><small class="muted">كل الإعدادات في مكان واحد</small></div><button class="close" id="closeModal">×</button></div><input id="pId" type="hidden"><div class="grid3"><div class="field"><label>اسم المنتج</label><input id="pName"></div><div class="field"><label>سعر البيع</label><input id="pPrice" type="number" min="0"></div><div class="field"><label>سعر الجملة</label><input id="pWholesale" type="number" min="0"></div><div class="field"><label>🚚 توصيل المنتج</label><input id="pShipping" type="number" min="0"></div></div><div class="field"><label>تفاصيل المنتج</label><textarea id="pDetails"></textarea></div><div class="field"><label>صورة المنتج</label><input id="pImageFile" type="file" accept="image/*"><img id="pPreview" class="thumb" style="margin-top:8px"></div>
-<div class="gm-sticker-box"><h3 style="margin:0 0 5px">🏷️ استيكر المنتج</h3><div class="gm-sticker-help">الاستيكر هو اللي بيظهر فوق صورة المنتج في المتجر. تقدر تكتب نص، تختار اللون والمكان، أو ترفع صورة استيكر جاهزة.</div><div class="grid" style="margin-top:12px"><div class="field"><label><input id="stickerEnabled" type="checkbox"> إظهار الاستيكر</label></div><div class="field"><label>نص الاستيكر</label><input id="stickerText" placeholder="🔥 عرض خاص"></div><div class="field"><label>لون الاستيكر</label><input id="stickerColor" type="color" value="#e7bf62" style="height:45px;padding:4px"></div><div class="field"><label>صورة الاستيكر</label><input id="stickerImageFile" type="file" accept="image/*"><small>لو رفعت صورة، هتظهر بدل النص.</small></div></div><div class="field"><label>مكان الاستيكر</label><div class="sticker-positions"><button type="button" data-sticker-pos="tr">أعلى يمين</button><button type="button" data-sticker-pos="tl">أعلى شمال</button><button type="button" data-sticker-pos="br">أسفل يمين</button><button type="button" data-sticker-pos="bl">أسفل شمال</button><button type="button" data-sticker-pos="bc">أسفل وسط</button><button type="button" data-sticker-pos="tc">أعلى وسط</button></div></div><div class="gm-sticker-preview"><img id="stickerProductPreview" class="product-preview" src="/assets/logo.jpg"><span id="stickerPreviewText" class="sticker-preview">🔥 عرض خاص</span><img id="stickerPreviewImg" class="sticker-preview-img hidden" src=""></div></div>
-<div class="gm-voucher-admin"><h3>🎟️ قسيمة مشتريات مع هذا المنتج</h3><div class="notice">فعّل القسيمة وحدد قيمتها، ثم اختر المنتجات التي يستطيع العميل شراءها بالقسيمة. العميل لا يرى أسعار الجملة أو أي قواعد داخلية.</div><div class="grid" style="margin-top:12px"><div class="field"><label><input id="giftEnabled" type="checkbox"> تفعيل القسيمة</label></div><div class="field"><label>قيمة القسيمة</label><input id="voucherValue" type="number" min="1" step="1" value="300"><small>مثال: 300 جنيه. العميل يستطيع اختيار أقل أو أكثر، والفرق يظهر له قبل إتمام الطلب.</small></div></div><div id="giftProducts" class="gm-gift-products"></div></div>
-<h3>🌱 تعليمات العناية</h3><div class="care"><div class="field"><label>الإضاءة</label><input id="cLight"></div><div class="field"><label>الري</label><input id="cWater"></div><div class="field"><label>درجة الحرارة</label><input id="cTemperature"></div><div class="field"><label>الرطوبة</label><input id="cHumidity"></div><div class="field"><label>التربة</label><input id="cSoil"></div><div class="field"><label>التسميد</label><input id="cFertilizer"></div><div class="field"><label>التقليم</label><input id="cPruning"></div><div class="field"><label>الإكثار</label><input id="cPropagation"></div><div class="field"><label>المشاكل والأمراض</label><input id="cProblems"></div><div class="field"><label>الآفات</label><input id="cPests"></div><div class="field"><label>الأخطاء الشائعة</label><input id="cMistakes"></div><div class="field"><label>نصائح Green Moon</label><input id="cTips"></div></div><div class="toolbar" style="justify-content:flex-start"><button class="btn green" id="saveProduct">حفظ المنتج</button><button class="btn ghost" id="cancelProduct">إلغاء</button></div><span id="productMsg" class="msg"></span></div></div>
-<div id="toast" class="toast"></div>
 <script>
-const $=id=>document.getElementById(id);let products=[],editing=null,ordersLoaded=false;
-const auth=()=>sessionStorage.getItem('gm_admin_password')||'';
-function headers(){return {'Content-Type':'application/json','Authorization':'Bearer '+auth()}}
-async function api(path,options={}){options.headers={...(options.headers||{}),...headers()};const r=await fetch(path,options);let d={};try{d=await r.json()}catch(e){}if(r.status===401)throw new Error('كلمة المرور غير صحيحة أو انتهت الجلسة');if(!r.ok)throw new Error(d.error||'حدث خطأ');return d}
-function esc(v){return String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
-function showMsg(id,t,ok=false){$(id).textContent=t;$(id).style.color=ok?'#14743f':'#b3261e'}
-function toast(t){const x=$('toast');x.textContent=t;x.classList.add('show');clearTimeout(window._gmToast);window._gmToast=setTimeout(()=>x.classList.remove('show'),2200)}
-async function readFile(file){if(!file)return null;if(file.size>20*1024*1024)throw new Error('حجم الملف أكبر من 20 ميجابايت.');const data=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)});const d=await api('/api/admin/media',{method:'POST',body:JSON.stringify({name:file.name,type:file.type||'application/octet-stream',data})});return d.url||data}
-let siteSettings={};
-function pretty(v){try{return JSON.stringify(v??[],null,2)}catch(_){return '[]'}}
-function parseJson(id,fallback=[]){try{const v=JSON.parse($(id).value||'');return v}catch(e){throw new Error('راجع JSON في '+id.replace(/^c/,'قسم '))}}
-const GM_THEMES={
-  forest:{name:'🌿 Forest Luxury',g:'#063b2b',g2:'#0a513c',gold:'#d8b65c'},
-  emerald:{name:'💚 Emerald',g:'#064e3b',g2:'#059669',gold:'#f5c451'},
-  olive:{name:'🫒 Olive Garden',g:'#39451f',g2:'#667a2f',gold:'#d4b45c'},
-  blackgold:{name:'🖤 Black & Gold',g:'#111714',g2:'#26352e',gold:'#d8b65c'},
-  sand:{name:'🏜️ Sand & Green',g:'#315044',g2:'#7b8f65',gold:'#c9a86a'},
-  burgundy:{name:'🍷 Burgundy',g:'#401d25',g2:'#6d2936',gold:'#d9b56a'},
-  ocean:{name:'🌊 Ocean',g:'#073b4c',g2:'#087e8b',gold:'#f0c808'},
-  premium:{name:'✨ Premium',g:'#17251f',g2:'#315846',gold:'#b8944b'}
-};
-function renderThemePresets(){const wrap=$('themePresets');if(!wrap)return;const t=siteSettings?.gm_theme||{};wrap.innerHTML=Object.entries(GM_THEMES).map(([id,x])=>`<button type="button" class="gm-theme ${t.preset===id?'active':''}" data-theme="${id}"><span class="gm-theme-preview"><i style="background:${x.g}"></i><i style="background:${x.g2}"></i><i style="background:${x.gold}"></i></span><b>${x.name}</b><small>${x.g} · ${x.g2} · ${x.gold}</small></button>`).join('');wrap.querySelectorAll('[data-theme]').forEach(b=>b.onclick=()=>applyThemePreset(b.dataset.theme));}
-function applyThemePreset(id){const x=GM_THEMES[id];if(!x)return;$('cGreen').value=x.g;$('cGreen2').value=x.g2;$('cGold').value=x.gold;siteSettings={...siteSettings,gm_theme:{...(siteSettings.gm_theme||{}),preset:id,g:x.g,g2:x.g2,gold:x.gold}};document.documentElement.style.setProperty('--gm',x.g);document.documentElement.style.setProperty('--gm2',x.g2);document.documentElement.style.setProperty('--gold',x.gold);renderThemePresets();saveContent();}
-function organizeContentPanels(){const page=$('page-content');if(!page||page.dataset.organized)return;page.dataset.organized='1';[...page.children].forEach(panel=>{if(!panel.classList.contains('panel')||panel.id||panel.querySelector('#saveContent'))return;const h=panel.querySelector(':scope > h3');if(!h)return;const d=document.createElement('details');d.className='control-accordion';d.open=false;const sum=document.createElement('summary');sum.textContent=h.textContent.trim();const body=document.createElement('div');body.className='control-accordion-body';[...panel.children].forEach(ch=>{if(ch!==h)body.appendChild(ch)});d.append(sum,body);panel.replaceWith(d)});}
-function fillContent(s){siteSettings=s||{};$('cStoreName').value=s.storeName||'';$('cTitle').value=s.title||'';$('cSubtitle').value=s.subtitle||'';$('cWhatsapp').value=s.whatsapp||'';const theme=s.gm_theme||{};$('cGreen').value=theme.g||'#063b2b';$('cGreen2').value=theme.g2||'#0a513c';$('cGold').value=theme.gold||'#e7bf62';renderThemePresets();renderTickerAdmin(s.gm_ticker||{});renderVisualEditors(s);}
-let tickerDraft={enabled:true,speed:28,items:[]};
-function renderTickerAdmin(v){tickerDraft={enabled:v?.enabled!==false,speed:Number(v?.speed)||28,items:Array.isArray(v?.items)?v.items.map(x=>({...x,id:String(x.id||Date.now()+Math.random())})):[]};if($('tickerEnabled'))$('tickerEnabled').checked=tickerDraft.enabled;if($('tickerSpeed'))$('tickerSpeed').value=tickerDraft.speed;const box=$('tickerList');if(!box)return;box.innerHTML=tickerDraft.items.length?tickerDraft.items.map((x,i)=>`<div class="ticker-row"><div><div class="txt">${esc(x.text||'بدون نص')}</div><small>${esc(x.type||'info')}${x.link?' • '+esc(x.link):''}</small></div><div class="actions"><button class="btn soft" onclick="editTicker(${i})">✏️ تعديل</button><button class="btn danger" onclick="deleteTicker(${i})">🗑️ حذف</button></div></div>`).join(''):'<div class="empty">لا توجد أخبار أو عروض.</div>';}
-function getTickerAdmin(){return {enabled:$('tickerEnabled')?.checked!==false,speed:Math.max(8,Math.min(120,Number($('tickerSpeed')?.value)||28)),items:tickerDraft.items||[]};}
-function editTicker(i){const x=tickerDraft.items[i];if(!x)return;$('tickerText').value=x.text||'';$('tickerLink').value=x.link||'';$('tickerType').value=x.type||'info';tickerDraft.editIndex=i;$('addTicker').textContent='💾 حفظ التعديل';}
-function deleteTicker(i){tickerDraft.items.splice(i,1);renderTickerAdmin(tickerDraft);}
-function addOrUpdateTicker(){const text=$('tickerText').value.trim();if(!text)return toast('اكتب نص الشريط أولاً');const i=tickerDraft.editIndex;const item={id:String(i!=null?tickerDraft.items[i]?.id:Date.now()),text,link:$('tickerLink').value.trim(),type:$('tickerType').value||'info',active:true};if(i!=null){tickerDraft.items[i]=item;delete tickerDraft.editIndex;}else tickerDraft.items.push(item);$('tickerText').value='';$('tickerLink').value='';$('tickerType').value='offer';$('addTicker').textContent='➕ إضافة';renderTickerAdmin(tickerDraft);}
-async function loadContent(){try{const s=await api('/api/admin/settings');fillContent(s);await loadMedia()}catch(e){showMsg('contentMsg',e.message)}}
-let visualState={hero:[],services:[],categories:[],banners:[],articles:[],blocks:[],popup:{},footer:{}};
-const visualSchemas={
- hero:{title:'شريحة',add:'إضافة شريحة',fields:[['kicker','الشريط الصغير','input'],['title','العنوان','input'],['text','الوصف','textarea'],['cta','نص الزر','input'],['link','الرابط','input'],['image','الصورة','image']]},
- services:{title:'خدمة',add:'إضافة خدمة',fields:[['icon','الأيقونة','input'],['title','العنوان','input'],['text','الوصف','input']]},
- categories:{title:'قسم',add:'إضافة قسم',fields:[['name','اسم القسم','input'],['title','العنوان','input'],['image','الصورة','image']]},
- banners:{title:'بانر',add:'إضافة بانر',fields:[['title','العنوان','input'],['text','الوصف','textarea'],['cta','نص الزر','input'],['link','الرابط','input'],['image','الصورة','image'],['active','ظاهر للعميل','check']]},
- articles:{title:'مقال',add:'إضافة مقال',fields:[['title','عنوان المقال','input'],['excerpt','المقدمة المختصرة','textarea'],['text','محتوى المقال الكامل','textarea'],['image','الصورة','image'],['active','منشور','check']]},
- blocks:{title:'بلوك',add:'إضافة بلوك',fields:[['title','العنوان','input'],['text','النص','textarea'],['cta','نص الزر','input'],['link','الرابط','input'],['image','الصورة','image'],['type','نوع البلوك','select:normal|offer|info'],['active','ظاهر للعميل','check']]},
- popup:{title:'Popup',add:null,fields:[['enabled','تشغيل Popup','check'],['title','العنوان','input'],['text','الرسالة','textarea'],['cta','نص الزر','input'],['link','الرابط','input'],['image','الصورة','image']]},
- footer:{title:'الفوتر',add:null,fields:[['title','العنوان','input'],['text','النص','textarea'],['whatsapp','واتساب','input'],['facebook','فيسبوك','input'],['instagram','إنستجرام','input'],['tiktok','TikTok','input']]}
-};
-function normalizeVisual(s){visualState.hero=Array.isArray(s.gm_hero||s.hero)?s.gm_hero||s.hero:[];visualState.services=Array.isArray(s.services)?s.services:[];visualState.categories=Array.isArray(s.gm_categories||s.categories)?s.gm_categories||s.categories:[];visualState.banners=Array.isArray((s.gm_home&&s.gm_home.banners)||s.banners)?((s.gm_home&&s.gm_home.banners)||s.banners):[];visualState.articles=Array.isArray(s.gm_articles||s.articles)?s.gm_articles||s.articles:[];visualState.blocks=Array.isArray(s.gm_blocks)?s.gm_blocks:[];visualState.popup=(s.gm_popup&&typeof s.gm_popup==='object')?s.gm_popup:{};visualState.footer=(s.gm_footer&&typeof s.gm_footer==='object')?s.gm_footer:{};}
-function inputHtml(key,label,type,val,path){const id='ve_'+path+'_'+key;const safe=esc(val??'');if(type==='textarea')return `<div class="field full"><label>${esc(label)}</label><textarea id="${id}">${safe}</textarea></div>`;if(type==='check')return `<div class="field"><label><input type="checkbox" id="${id}" ${val!==false?'checked':''} style="width:auto;margin-left:6px">${esc(label)}</label></div>`;if(type==='image')return `<div class="field full"><label>${esc(label)}</label><div class="ve-img"><img id="${id}_preview" src="${safe||'/assets/logo.jpg'}"><div style="flex:1"><input id="${id}" value="${safe}" placeholder="رابط الصورة"><input id="${id}_file" type="file" accept="image/*" style="margin-top:6px"></div></div></div>`;if(type.startsWith('select:')){const opts=type.slice(7).split('|');return `<div class="field"><label>${esc(label)}</label><select id="${id}">${opts.map(o=>`<option value="${esc(o)}" ${String(val||opts[0])===o?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`}return `<div class="field"><label>${esc(label)}</label><input id="${id}" value="${safe}"></div>`}
-function renderVisualEditor(kind){const box=$('editor'+kind[0].toUpperCase()+kind.slice(1));if(!box)return;const schema=visualSchemas[kind],state=visualState[kind];const arr=Array.isArray(state)?state:[state];box.innerHTML=`<div class="visual-editor"><div class="ve-toolbar"><span class="ve-hint">${kind==='popup'||kind==='footer'?'عدّل البيانات من الحقول فقط.':'أضف وعدّل واحذف العناصر من هنا.'}</span>${schema.add?`<button class="btn green" onclick="veAdd('${kind}')">➕ ${schema.add}</button>`:''}</div><div class="ve-list">${arr.map((item,i)=>`<div class="ve-card"><div class="ve-card-head"><div class="ve-card-title">${esc(item.title||item.name||schema.title+' '+(i+1))}</div>${schema.add?`<button class="btn danger" onclick="veDelete('${kind}',${i})">🗑️ حذف</button>`:''}</div><div class="ve-grid">${schema.fields.map(([k,l,t])=>inputHtml(k,l,t,item[k],kind+'_'+i)).join('')}</div></div>`).join('')}</div></div>`;arr.forEach((item,i)=>schema.fields.forEach(([k,l,t])=>{if(t==='image'){const id='ve_'+kind+'_'+i+'_'+k;const inp=$(id),file=$(id+'_file'),prev=$(id+'_preview');if(inp&&prev)inp.oninput=()=>prev.src=inp.value||'/assets/logo.jpg';if(file)file.onchange=async()=>{const x=await readFile(file.files[0]);if(x){inp.value=x;prev.src=x}}}}));if((kind==='popup'||kind==='footer')&&(!state||Object.keys(state).length===0)){const card=box.querySelector('.ve-card');if(card){} }}
-function renderVisualEditors(s){normalizeVisual(s);['hero','services','categories','banners','articles','blocks','popup','footer'].forEach(renderVisualEditor);}
-let visualAutoSaveTimer=null;function scheduleVisualAutoSave(){clearTimeout(visualAutoSaveTimer);visualAutoSaveTimer=setTimeout(()=>{try{saveContent()}catch(_){ }},650)}
-document.addEventListener('input',e=>{if(e.target.closest('#page-content'))scheduleVisualAutoSave()});document.addEventListener('change',e=>{if(e.target.closest('#page-content'))scheduleVisualAutoSave()});
-function readVisual(kind){const schema=visualSchemas[kind],state=visualState[kind],arr=Array.isArray(state)?state:[state];return arr.map((item,i)=>{const out={...item};schema.fields.forEach(([k,l,t])=>{const id='ve_'+kind+'_'+i+'_'+k,el=$(id);if(!el)return;if(t==='check')out[k]=!!el.checked;else out[k]=el.value;});return out});}
-function syncVisualEditors(){for(const kind of Object.keys(visualSchemas)){const data=readVisual(kind);visualState[kind]=(kind==='popup'||kind==='footer')?(data[0]||{}):data;const target={hero:'cHero',services:'cServices',categories:'cCategories',banners:'cBanners',articles:'cArticles',blocks:'cBlocks',popup:'cPopup',footer:'cFooter'}[kind];$(target).value=JSON.stringify(visualState[kind],null,2);}}
-window.veAdd=kind=>{if(!Array.isArray(visualState[kind]))visualState[kind]=[];visualState[kind].push({active:true});renderVisualEditor(kind);scheduleVisualAutoSave()};
-window.veDelete=(kind,i)=>{if(!confirm('حذف هذا العنصر؟'))return;visualState[kind].splice(i,1);renderVisualEditor(kind);scheduleVisualAutoSave()};
-let contentSaveSeq=0;
-function buildContentPayload(){syncVisualEditors();return {...siteSettings,storeName:$('cStoreName').value.trim(),title:$('cTitle').value.trim(),subtitle:$('cSubtitle').value.trim(),whatsapp:$('cWhatsapp').value.trim(),gm_theme:{...((siteSettings&&siteSettings.gm_theme)||{}),g:$('cGreen').value.trim()||'#063b2b',g2:$('cGreen2').value.trim()||'#0a513c',gold:$('cGold').value.trim()||'#e7bf62'},gm_ticker:getTickerAdmin(),gm_hero:JSON.parse($('cHero').value||'[]'),services:JSON.parse($('cServices').value||'[]'),gm_categories:JSON.parse($('cCategories').value||'[]'),gm_home:{...(siteSettings.gm_home||{}),banners:JSON.parse($('cBanners').value||'[]')},gm_articles:JSON.parse($('cArticles').value||'[]'),gm_blocks:JSON.parse($('cBlocks').value||'[]'),gm_popup:JSON.parse($('cPopup').value||'{}'),gm_footer:JSON.parse($('cFooter').value||'{}')}}
-function saveContent(){let s;try{s=buildContentPayload()}catch(e){showMsg('contentMsg',e.message);return}const seq=++contentSaveSeq;siteSettings=s;try{localStorage.setItem('gm_admin_draft',JSON.stringify(s))}catch(_){};showMsg('contentMsg','⚡ تم حفظ التعديلات فورًا — جاري مزامنتها مع الموقع…',true);toast('تم حفظ التعديل');const btn=$('saveContent');btn.disabled=true;btn.textContent='⏳ مزامنة…';fetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+(sessionStorage.getItem('gm_admin_password')||'')},body:JSON.stringify(s),cache:'no-store',keepalive:true}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'تعذر حفظ التعديلات');siteSettings=d.settings||s;if(seq===contentSaveSeq){showMsg('contentMsg','✓ تم الحفظ على الموقع بنجاح',true);btn.textContent='✓ تم الحفظ';setTimeout(()=>{btn.disabled=false;btn.textContent='💾 حفظ كل التعديلات'},700)}}).catch(e=>{if(seq===contentSaveSeq){btn.disabled=false;btn.textContent='💾 حفظ كل التعديلات';showMsg('contentMsg','⚠️ التعديل محفوظ محليًا، لكن المزامنة فشلت: '+e.message);toast('تعذر مزامنة التعديل مع الموقع')}})}
-$('saveContent').onclick=saveContent;$('resetContent').onclick=()=>loadContent();$('loadContent').onclick=loadContent;
+const $=id=>document.getElementById(id), KEY='gm_admin_password_new';
+let D={products:[],orders:[],settings:{},shipping:0,categories:[],hero:[],deals:[],articles:[],reviews:[],rewards:{},home:{},ticker:{},voucherProducts:[]},tab='home';
 
-function giftCfg(p){const g=p?.voucherConfig;if(g&&typeof g==='object')return g;const old=p?.giftConfig;if(old&&typeof old==='object')return {enabled:old.enabled,value:old.giftBudgetWholesale,products:old.gifts||[]};return {enabled:false,value:0,products:[]}}
-function voucherLabel(p){const g=giftCfg(p),ids=Array.isArray(g.products)?g.products:(g.gifts||[]);return g.enabled&&ids.length?'<span class="badge">🎟️ '+(Number(g.value)||0)+' ج • '+ids.length+'</span>':'<span class="badge off">—</span>'}
-function renderGiftProducts(selected=[]){const ids=(Array.isArray(selected)?selected:[]).map(String);$('giftProducts').innerHTML=products.filter(x=>x?.id!=null).map(p=>'<label class="gm-gift-product"><input class="giftProductCheck" type="checkbox" value="'+esc(p.id)+'"'+(ids.includes(String(p.id))?' checked':'')+'><img src="'+esc(p.image||'/assets/logo.jpg')+'"><span><b>'+esc(p.name||'منتج')+'</b><small>متاح بالقسيمة</small></span></label>').join('')||'<div class="muted">أضف منتجات أولًا لتظهر هنا.</div>'}
-function getSticker(p){const s=p?.sticker;return s&&typeof s==='object'?{active:s.active!==false,text:s.text||'',color:s.color||'#e7bf62',image:s.image||'',position:s.position||'tr'}:{active:false,text:'',color:'#e7bf62',image:'',position:'tr'}}
-function stickerMarkup(p){const s=getSticker(p);if(!s.active)return '<span class="badge off">بدون استيكر</span>';return s.image?'<span class="badge">🏷️ صورة</span>':'<span class="badge">🏷️ '+esc(s.text||'استيكر')+'</span>'}
-function renderStickerPreview(p){const s=getSticker(p);return s.active?(s.image?'<img class="sticker-preview-img '+esc(s.position)+'" src="'+esc(s.image)+'">':'<span class="sticker-preview '+esc(s.position)+'" style="background:'+esc(s.color)+'">'+esc(s.text||'عرض')+'</span>'):''}
-function renderStickers(){const q=($('stickerSearch')?.value||'').toLowerCase(),f=$('stickerStatus')?.value||'all';const arr=products.filter(p=>{const s=getSticker(p),ok=f==='all'||(f==='active'&&s.active)||(f==='none'&&!s.active);return (!q||String(p.name||'').toLowerCase().includes(q))&&ok});$('stickersGrid').innerHTML=arr.map(p=>'<div class="product-admin-card"><div class="product-admin-media"><img src="'+esc(p.image||'/assets/logo.jpg')+'">'+renderStickerPreview(p)+'</div><div class="product-admin-body"><div class="product-admin-title">'+esc(p.name||'منتج')+'</div><div class="product-admin-meta">'+stickerMarkup(p)+'</div><div class="actions"><button class="btn green" onclick="editProduct('+JSON.stringify(p.id)+')">تعديل الاستيكر</button></div></div></div>').join('')||'<div class="loading">لا توجد منتجات.</div>'}
-function updateThemePage(){const t=siteSettings.gm_theme||{};const g=t.g||'#063b2b',g2=t.g2||'#0a513c',gold=t.gold||'#e7bf62';['themePageG','themePageG2','themePageGold'].forEach((id,i)=>{const el=$(id);if(el)el.value=[g,g2,gold][i]});if($('themeLiveG'))$('themeLiveG').textContent=g;if($('themeLiveG2'))$('themeLiveG2').textContent=g2;if($('themeLiveGold'))$('themeLiveGold').textContent=gold;const box=$('themePresetsPage');if(box){box.innerHTML=Object.entries(GM_THEMES).map(([id,x])=>`<button type="button" class="gm-theme ${t.preset===id?'active':''}" data-theme-page="${id}"><span class="gm-theme-preview"><i style="background:${x.g}"></i><i style="background:${x.g2}"></i><i style="background:${x.gold}"></i></span><b>${x.name}</b><small>${x.g} · ${x.g2} · ${x.gold}</small></button>`).join('');box.querySelectorAll('[data-theme-page]').forEach(btn=>btn.onclick=()=>chooseThemePage(btn.dataset.themePage))}}
-async function persistSettingsPatch(patch){const h=headers();let r=await fetch('/api/admin/settings',{method:'PATCH',headers:h,body:JSON.stringify(patch),cache:'no-store'});if(r.status===405||r.status===404){const merged={...(siteSettings||{}),...patch};if(patch.gm_theme)merged.gm_theme={...((siteSettings&&siteSettings.gm_theme)||{}),...patch.gm_theme};r=await fetch('/api/admin/settings',{method:'PUT',headers:h,body:JSON.stringify(merged),cache:'no-store'});}const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'فشل حفظ الإعدادات');siteSettings=d.settings||{...(siteSettings||{}),...patch};return siteSettings;}
-window.chooseThemePage=async id=>{const x=GM_THEMES[id];if(!x)return;const theme={...(siteSettings.gm_theme||{}),preset:id,g:x.g,g2:x.g2,gold:x.gold};siteSettings={...siteSettings,gm_theme:theme};updateThemePage();document.documentElement.style.setProperty('--gm',x.g);document.documentElement.style.setProperty('--gm2',x.g2);document.documentElement.style.setProperty('--gold',x.gold);const oldText=document.querySelector('.theme-live b');if(oldText)oldText.textContent='⏳ جاري حفظ الثيم…';try{await persistSettingsPatch({gm_theme:theme});if(oldText)oldText.textContent='✓ تم حفظ الثيم داخل الموقع';toast('✓ تم حفظ الثيم داخل الموقع');setTimeout(()=>{if(oldText)oldText.textContent='المعاينة الحالية'},1400)}catch(e){if(oldText)oldText.textContent='⚠️ فشل حفظ الثيم';toast('تعذر حفظ الثيم: '+e.message)}};
+const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const token=()=>sessionStorage.getItem(KEY)||'';
+const H=()=>({'Content-Type':'application/json','Authorization':'Bearer '+token()});
+function saveState(mode,text){const e=$('gmSaveState'),t=$('gmSaveText');if(!e)return;e.style.opacity='1';e.style.transform='translateY(0)';e.classList.toggle('gm-save-loading',mode==='loading');e.classList.toggle('gm-save-ok',mode==='ok');if(t)t.textContent=text||'جاري الحفظ...';clearTimeout(window.gmSaveTimer);if(mode==='ok')window.gmSaveTimer=setTimeout(()=>{e.style.opacity='0';e.style.transform='translateY(-8px)'},1400)}
+async function api(url,opt={}){const method=String(opt.method||'GET').toUpperCase(),mutating=['POST','PUT','PATCH','DELETE'].includes(method);if(mutating)saveState('loading','جاري الحفظ...');try{const r=await fetch(url,{...opt,headers:{...H(),...(opt.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error((d.error||'حدث خطأ')+(d.details?' — '+d.details:'')+' ['+r.status+']');if(mutating)saveState('ok','تم الحفظ بنجاح ✓');return d}catch(e){if(mutating)saveState('ok','تعذر الحفظ ✕');throw e}}
+function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');clearTimeout(window.tt);window.tt=setTimeout(()=>$('toast').classList.add('hidden'),1800)}
+function logout(){sessionStorage.removeItem(KEY);location.reload()}
 
-function renderProducts(){const q=($('productSearch')?.value||'').trim().toLowerCase(),f=$('voucherFilter')?.value||'all';const arr=products.filter(p=>{const g=giftCfg(p),has=g.enabled&&(g.products||g.gifts||[]).length;return (!q||String(p.name||'').toLowerCase().includes(q))&&(f==='all'||(f==='voucher'?has:!has))});$('productsTable').innerHTML=arr.length?arr.map(p=>{const s=getSticker(p);return '<tr><td><div style="position:relative;width:54px;height:54px"><img class="thumb" src="'+esc(p.image||'/assets/logo.jpg')+'">'+(s.active&&!s.image?'<span style="position:absolute;right:-5px;top:-5px;background:'+esc(s.color)+';font-size:8px;padding:3px 5px;border-radius:5px">'+esc(s.text||'🏷️')+'</span>':'')+'</div></td><td><div class="product-name">'+esc(p.name)+'</div><div class="product-sub">ID: '+esc(p.id)+'</div></td><td>'+Number(p.price||0)+' ج</td><td>'+Number(p.wholesalePrice||0)+' ج</td><td>'+Number(p.shippingPrice||0)+' ج</td><td>'+voucherLabel(p)+' '+stickerMarkup(p)+'</td><td><div class="actions"><button class="btn green" onclick="editProduct('+JSON.stringify(p.id)+')">تعديل كل شيء</button></div></td></tr>'}).join(''):'<tr><td colspan="7" class="loading">لا توجد منتجات مطابقة.</td></tr>';renderStickers()}
-function updateStats(shipping){$('statProducts').textContent=products.length;$('statVouchers').textContent=products.filter(p=>{const g=giftCfg(p);return g.enabled&&(g.products||g.gifts||[]).length}).length;$('statShipping').textContent=(Number(shipping)||0)+' ج';$('statOrders').textContent=ordersLoaded?orders.length:'—'}
-let orders=[];
+async function login(){
+ const p=$('pass').value.trim(); if(!p){$('loginMsg').textContent='اكتب كلمة المرور';return}
+ sessionStorage.setItem(KEY,p);
+ try{await load();$('login').classList.add('hidden');$('app').classList.remove('hidden')}
+ catch(e){sessionStorage.removeItem(KEY);$('loginMsg').textContent=e.message}
+}
+async function applyAdminBrand(){
+ try{const s=await fetch('/api/settings').then(r=>r.json());const logo=s?.gm_site?.media?.logo||s?.gm_site?.header?.logo||s?.logo||'/assets/logo.jpg';document.querySelectorAll('.brandmark img,.loginmark img').forEach(i=>i.src=logo);}
+ catch(_){}
+}
+async function load(){
+ D.products=await api('/api/admin/products');
+ D.orders=await api('/api/admin/orders');
+ D.settings=await api('/api/admin/settings');
+ D.shipping=(await api('/api/admin/shipping')).price||0;
+ const s=D.settings||{};
+ D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=s.gm_deals||s.deals||[]; D.articles=s.gm_articles||[]; D.reviews=s.gm_reviews||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
+ render();
+}
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
+function render(){const f={home,products,categories,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,media,homebuilder};$('content').innerHTML=f[tab]()}
+function home(){
+ return `<div class="stats">
+ <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
+ <div class="stat"><div class="k">${D.categories.length}</div><div class="l">التصنيفات</div></div>
+ <div class="stat"><div class="k">${D.deals.length}</div><div class="l">الصفقات</div></div>
+ <div class="stat"><div class="k">${D.orders.length}</div><div class="l">الطلبات</div></div></div>
+ <div class="panel"><div class="head"><div><h2>مرحبًا بك في Green Moon 🌿</h2><p>من هنا تقدر تدير كل محتوى المتجر بدون كتابة روابط صور.</p></div></div>
+ <div class="grid3"><button class="btn soft" onclick="go('products')">🌿 إدارة المنتجات</button><button class="btn soft" onclick="go('hero')">🖼️ إدارة Hero</button><button class="btn soft" onclick="go('deals')">🎯 إدارة الصفقات</button></div></div>
+ <div class="panel"><div class="head"><div><h2>آخر الطلبات</h2><p>أحدث الطلبات المسجلة</p></div><button class="btn ghost" onclick="go('orders')">عرض الكل</button></div>${D.orders.length?`<div class="tablewrap"><table class="table"><tr><th>رقم</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th></tr>${D.orders.slice(0,5).map(o=>`<tr><td>${esc(o.id)}</td><td>${esc(o.name)}</td><td>${+o.total||0} ج</td><td><span class="status">${esc(o.status||'جديد')}</span></td></tr>`).join('')}</table></div>`:`<div class="empty">لا توجد طلبات حتى الآن.</div>`}</div>`;
+}
+function go(t){tab=t;document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));render()}
 
-async function gmLoadMedia(){const box=$('gmMediaGrid');if(!box)return;box.innerHTML='<div class="loading">جاري تحميل الملفات...</div>';try{const d=await api('/api/admin/media');const a=Array.isArray(d.media)?d.media:[];if(!a.length){box.innerHTML='<div class="loading">لا توجد ملفات مرفوعة حتى الآن.</div>';return}box.innerHTML=a.map(x=>{const isV=String(x.type||'').startsWith('video/');return '<article class="gm-media-card"><div class="gm-media-preview">'+(isV?'<video controls preload="metadata" src="'+esc(x.url)+'"></video>':'<img loading="lazy" src="'+esc(x.url)+'" alt="'+esc(x.name)+'">')+'</div><div class="gm-media-info"><b>'+esc(x.name||'ملف')+'</b><small>'+esc(x.type||'')+' • '+Math.round((Number(x.size)||0)/1024)+' KB</small><div class="gm-media-actions"><button class="btn ghost" onclick="navigator.clipboard?.writeText(location.origin+\''+esc(x.url)+'\').then(()=>toast(\'تم نسخ الرابط\'))">نسخ الرابط</button><button class="btn danger" onclick="gmDeleteMedia(\''+esc(x.id)+'\')">حذف</button></div></div></article>'}).join('')}catch(e){box.innerHTML='<div class="loading">'+esc(e.message)+'</div>'}}
-async function gmDeleteMedia(id){if(!confirm('حذف هذا الملف نهائيًا؟'))return;try{await api('/api/admin/media',{method:'DELETE',body:JSON.stringify({id})});toast('تم حذف الملف');gmLoadMedia()}catch(e){toast(e.message)}}
-async function gmUploadMedia(file){
- if(!file)return;
- const status=$('gmMediaStatus'),prog=$('gmMediaProgress'),bar=$('gmMediaProgressBar');
- prog.classList.remove('hidden');bar.style.width='0%';status.textContent='① جاري اختيار وتجهيز الملف…';status.style.color='#496057';
- try{
-   if(!(file.type.startsWith('image/')||file.type.startsWith('video/')))throw new Error('يسمح برفع الصور والفيديو فقط.');
-   if(file.size>18*1024*1024)throw new Error('حجم الملف أكبر من 18 ميجابايت في التخزين الحالي.');
-   const data=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{bar.style.width='20%';res(r.result)};r.onerror=()=>rej(Error('تعذر قراءة الملف'));r.onprogress=e=>{if(e.lengthComputable){bar.style.width=Math.max(3,Math.round(e.loaded/e.total*20))+'%'} };r.readAsDataURL(file)});
-   status.textContent='② جاري رفع الملف… 0%';bar.style.width='22%';
-   const d=await new Promise((resolve,reject)=>{
-     const x=new XMLHttpRequest();x.open('POST','/api/admin/media');x.setRequestHeader('content-type','application/json');
-     x.upload.onprogress=e=>{if(e.lengthComputable){const pct=22+Math.round(e.loaded/e.total*63);bar.style.width=pct+'%';status.textContent='② جاري رفع الملف… '+pct+'%'}};
-     x.onload=()=>{let j={};try{j=JSON.parse(x.responseText||'{}')}catch(_){}if(x.status>=200&&x.status<300&&j.success)resolve(j);else reject(Error(j.error||'فشل رفع الملف ['+x.status+']'))};
-     x.onerror=()=>reject(Error('تعذر الاتصال بالخادم'));x.send(JSON.stringify({name:file.name,type:file.type||'application/octet-stream',data}));
-   });
-   bar.style.width='88%';status.textContent='③ جاري تجهيز الملف للعرض…';await new Promise(r=>setTimeout(r,180));
-   bar.style.width='96%';status.textContent='④ جاري حفظ بيانات الملف…';await new Promise(r=>setTimeout(r,120));
-   bar.style.width='100%';status.textContent='⑤ تم الحفظ بنجاح ✓ — سيتم إغلاق العملية تلقائيًا.';status.style.color='#14743f';
-   setTimeout(()=>{prog.classList.add('hidden');status.textContent='';$('gmMediaFile').value='';gmLoadMedia()},1200);
- }catch(e){
-   bar.style.width='0';status.textContent='✕ لم يتم الحفظ: '+String(e?.message||e);status.style.color='#b3261e';
-   setTimeout(()=>{prog.classList.add('hidden');status.textContent='يمكنك المحاولة مرة أخرى.'},2200);
+function products(){
+ return `<div class="panel"><div class="head"><div><h2>🌿 المنتجات</h2><p>كل المنتجات الموجودة حاليًا في الموقع تظهر هنا. تقدر تبحث، تعدّل، أو تحذف أي منتج.</p></div><button class="btn primary" onclick="productForm()">+ إضافة منتج</button></div>
+ <div class="grid2" style="margin-bottom:12px"><div class="field"><label>بحث عن منتج</label><input id="productSearch" placeholder="اكتب اسم المنتج..." oninput="filterProductTable()"></div><div class="field"><label>التصنيف</label><select id="productFilter" onchange="filterProductTable()"><option value="">كل التصنيفات</option>${D.categories.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('')}</select></div></div>
+ <div class="tablewrap"><table class="table"><tr><th>الصورة</th><th>المنتج</th><th>قبل الخصم</th><th>بعد الخصم</th><th>الجملة</th><th>التصنيف</th><th>إجراءات</th></tr>
+ ${D.products.length?D.products.map(p=>`<tr class="product-row" data-name="${esc(String(p.name||'').toLowerCase())}" data-category="${esc(p.category||'')}"><td><img class="thumb" src="${esc(p.image||'/assets/logo.jpg')}"></td><td><b>${esc(p.name)}</b><br><small class="muted">${esc(p.details||'')}</small></td><td>${+p.oldPrice||0} ج</td><td><b>${+p.price||0} ج</b></td><td>${+p.wholesalePrice||0} ج</td><td>${esc(p.category||'—')}</td><td><button class="btn soft" onclick="productForm('${esc(p.id)}')">تعديل</button> <button class="btn danger" onclick="delProduct('${esc(p.id)}')">حذف</button></td></tr>`).join(''):`<tr><td colspan="7" class="empty">لا توجد منتجات.</td></tr>`}
+ </table></div></div>`;
+}
+function filterProductTable(){const q=String($('productSearch')?.value||'').trim().toLowerCase(),c=String($('productFilter')?.value||'');document.querySelectorAll('.product-row').forEach(r=>{const ok=(!q||r.dataset.name.includes(q))&&(!c||r.dataset.category===c);r.style.display=ok?'':'none'})}
+function productForm(id){
+ const p=id?D.products.find(x=>String(x.id)===String(id)):{name:'',details:'',price:0,oldPrice:0,wholesalePrice:0,shippingPrice:0,image:'',category:'',sticker:{text:'',color:'#e5222e',position:'tr',active:false}};
+ const st=p.sticker&&typeof p.sticker==='object'?p.sticker:{};
+ const rel=Array.isArray(p.relatedOffers)?p.relatedOffers:[];
+ const relatedRows=rel.map((r,i)=>relatedOfferRow(r,i)).join('');
+ openModal(id?'تعديل المنتج':'إضافة منتج',`<div class="grid2">
+ <div class="field"><label>اسم المنتج</label><input id="pn" value="${esc(p.name)}"></div>
+ <div class="field"><label>التصنيف</label><select id="pc">${D.categories.map(c=>`<option ${String(c.name)===String(p.category)?'selected':''}>${esc(c.name)}</option>`).join('')}<option ${!p.category?'selected':''}>بدون تصنيف</option></select></div>
+ <div class="field"><label>السعر قبل الخصم</label><input id="po" type="number" value="${+p.oldPrice||0}"></div>
+ <div class="field"><label>السعر بعد الخصم</label><input id="pp" type="number" value="${+p.price||0}"></div>
+ <div class="field"><label>سعر الجملة</label><input id="pw" type="number" value="${+p.wholesalePrice||0}"></div>
+ <div class="field"><label>شحن المنتج</label><input id="ps" type="number" value="${+p.shippingPrice||0}"></div>
+ </div>
+ <div class="field" style="margin-top:12px"><label>صورة المنتج</label>${uploadBox('pi',p.image||'', 'أي مقاس — يتم التصغير تلقائيًا')}</div>
+ <div class="grid2" style="margin-top:12px">
+   <div class="field"><label>نص الاستيكر</label><input id="st_text" value="${esc(st.text||'')}" placeholder="جديد / عرض / خصم 20%"></div>
+   <div class="field"><label>لون الاستيكر</label><input id="st_color" type="color" value="${/^#[0-9a-fA-F]{6}$/.test(st.color||'')?st.color:'#e5222e'}"></div>
+   <div class="field"><label>مكان الاستيكر</label><select id="st_pos"><option value="tr" ${st.position==='tr'?'selected':''}>أعلى يمين</option><option value="tl" ${st.position==='tl'?'selected':''}>أعلى يسار</option><option value="tc" ${st.position==='tc'?'selected':''}>أعلى منتصف</option><option value="br" ${st.position==='br'?'selected':''}>أسفل يمين</option><option value="bl" ${st.position==='bl'?'selected':''}>أسفل يسار</option><option value="bc" ${st.position==='bc'?'selected':''}>أسفل منتصف</option></select></div>
+   <label class="field" style="display:flex;align-items:center;gap:9px"><input id="st_active" type="checkbox" ${st.active!==false&&st.text?'checked':''}><span>إظهار الاستيكر</span></label>
+ </div>
+ <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>🎟️ القسيمة الشرائية لهذا المنتج</b><div class="hint">العميل يخدش القسيمة ثم يختار من المنتجات المشاركة.</div></div></div><div class="grid2" style="margin-top:10px"><label class="field" style="display:flex;align-items:center;gap:9px"><input id="vc_enabled" type="checkbox" ${(p.voucherConfig?.enabled||p.giftConfig?.enabled)?'checked':''}><span>تفعيل القسيمة</span></label><div class="field"><label>قيمة القسيمة</label><input id="vc_value" type="number" min="1" value="${Number(p.voucherConfig?.value??p.voucherConfig?.voucherValue??p.giftConfig?.value??0)}"></div></div><div class="field" style="margin-top:10px"><label>المنتجات المشاركة</label><div style="display:grid;gap:7px;max-height:210px;overflow:auto;border:1px solid #e2e8e3;padding:10px;border-radius:12px;background:#fff">${D.products.filter(q=>String(q.id)!==String(p.id)).map(q=>{const ids=Array.isArray(p.voucherConfig?.products)?p.voucherConfig.products:(Array.isArray(p.giftConfig?.products)?p.giftConfig.products:[]);return `<label class="check"><input type="checkbox" class="vc_product" value="${esc(q.id)}" ${ids.map(String).includes(String(q.id))?'checked':''}> ${esc(q.name)} — ${Number(q.price||0)} ج</label>`}).join('')}</div></div></div>
+ <div class="field" style="margin-top:12px"><label>تفاصيل المنتج</label><textarea id="pd">${esc(p.details||'')}</textarea></div>
+ <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>🌿 اقتراحات مناسبة مع المنتج</b><div class="hint">تظهر داخل تفاصيل المنتج للعميل بسعر العرض الذي تحدده.</div></div><button type="button" class="btn soft" onclick="addRelatedOfferRow()">+ إضافة اقتراح</button></div><div id="relatedOffersRows" style="display:grid;gap:9px;margin-top:10px">${relatedRows}</div></div>
+ <div class="modalfoot"><button class="btn primary" onclick="saveProduct('${id||''}')">حفظ المنتج<button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
+}
+function relatedOfferRow(r={},i=Date.now()){
+ return `<div class="related-offer-row" style="padding:10px;border:1px solid #e2e8e3;border-radius:13px;background:#fff"><div class="grid2"><div class="field"><label>المنتج المقترح</label><select class="ro-product">${D.products.map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(r.productId)?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div class="field"><label>سعر العرض</label><input class="ro-price" type="number" value="${Number(r.offerPrice||0)}"></div><div class="field"><label>السعر قبل العرض</label><input class="ro-old" type="number" value="${Number(r.oldPrice||0)}"></div><div class="field"><label>النص التسويقي</label><input class="ro-text" value="${esc(r.text||'اختيار مناسب مع المنتج ده 💚')}"></div></div><div style="display:flex;justify-content:space-between;margin-top:7px"><label><input class="ro-active" type="checkbox" ${r.active!==false?'checked':''}> تفعيل</label><button type="button" class="btn danger" onclick="this.closest('.related-offer-row').remove()">حذف الاقتراح</button></div></div>`;
+}
+function addRelatedOfferRow(){const box=$('relatedOffersRows');if(box)box.insertAdjacentHTML('beforeend',relatedOfferRow({active:true}));}
+function collectRelatedOffers(){return [...document.querySelectorAll('.related-offer-row')].map(row=>({productId:row.querySelector('.ro-product')?.value||'',offerPrice:+(row.querySelector('.ro-price')?.value||0),oldPrice:+(row.querySelector('.ro-old')?.value||0),text:row.querySelector('.ro-text')?.value||'',active:!!row.querySelector('.ro-active')?.checked})).filter(x=>x.productId&&x.offerPrice>0)}
+function uploadBox(id,val,hint){
+ return `<div class="upload"><div class="uploadrow"><img id="${id}_preview" class="preview" src="${esc(val||'/assets/logo.jpg')}"><div><label class="btn soft dropbtn" for="${id}_file">📷 اختيار صورة</label><input id="${id}_file" type="file" accept="image/*" onchange="handleImage(this,'${id}_preview','${id}_value')"><input id="${id}_value" type="hidden" value="${esc(val||'')}"><div class="hint">${hint}. الصورة يتم تصغيرها تلقائيًا وتحويلها إلى WebP.</div></div></div></div>`;
+}
+async function handleImage(input,previewId,valueId){
+ const f=input.files?.[0];if(!f)return;
+ if(!f.type.startsWith('image/')){toast('اختار ملف صورة');return}
+ try{const data=await resizeImage(f,1400,1400,.84);$(previewId).src=data;$(valueId).value=data;toast('تم تجهيز الصورة')}catch(e){toast('تعذر تجهيز الصورة')}
+}
+function resizeImage(file,maxW,maxH,quality){
+ return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{let w=im.width,h=im.height,s=Math.min(1,maxW/w,maxH/h);w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);resolve(c.toDataURL('image/webp',quality))};im.onerror=reject;im.src=r.result};r.onerror=reject;r.readAsDataURL(file)})
+}
+async function saveProduct(id){
+ const b={
+   name:$('pn').value,
+   category:$('pc').value==='بدون تصنيف'?'':$('pc').value,
+   oldPrice:+$('po').value||0,
+   price:+$('pp').value||0,
+   wholesalePrice:+$('pw').value||0,
+   shippingPrice:+$('ps').value||0,
+   image:$('pi_value').value,
+   details:$('pd').value,
+   sticker:{text:$('st_text').value,color:$('st_color').value,position:$('st_pos').value,active:$('st_active').checked},
+   relatedOffers:collectRelatedOffers(),
+   voucherConfig:{enabled:!!$('vc_enabled')?.checked,value:Math.max(0,Number($('vc_value')?.value)||0),products:[...document.querySelectorAll('.vc_product:checked')].map(e=>e.value)},
+ };
+ if(id)b.id=id;
+ await api('/api/admin/products',{method:id?'PUT':'POST',body:JSON.stringify(b)});
+ closeModal();await load();toast('تم حفظ المنتج بنجاح')}
+async function delProduct(id){if(!confirm('هل تريد حذف المنتج؟'))return;await api('/api/admin/products',{method:'DELETE',body:JSON.stringify({id})});await load();toast('تم حذف المنتج')}
+
+function categories(){return collection('categories','🗂️ التصنيفات','اسم التصنيف + صورة + المنتجات التابعة له','category')}
+function hero(){return collection('hero','🖼️ Hero الرئيسي','حتى 10 شرائح — صورة، عنوان، نص، زر، ورابط','hero')}
+function deals(){return collection('deals','🎯 الصفقات والعروض','العروض مع وقت بداية ونهاية وعدّاد تنازلي','deal')}
+function articles(){return collection('articles','📰 المقالات والأخبار','محتوى تثقيفي أو أخبار المتجر','article')}
+function collection(type,title,sub,kind){
+ const a=D[type]||[];
+ return `<div class="panel"><div class="head"><div><h2>${title}</h2><p>${sub}</p></div><button class="btn primary" onclick="collectionForm('${type}')">+ إضافة</button></div>
+ <div class="cards">${a.length?a.map((x,i)=>`<div class="card drag" draggable="true" data-id="${esc(x.id)}" ondragstart="dragStart(event,'${type}')" ondragover="event.preventDefault()" ondrop="dropItem(event,'${type}')"><div class="cardmedia"><img src="${esc(x.image||'/assets/logo.jpg')}"></div><div class="cardbody"><h3>${esc(x.title||x.name||'بدون عنوان')}</h3><p>${esc(x.text||x.description||'')}</p>${type==='deals'&&x.endAt?`<p><b>ينتهي:</b> ${esc(x.endAt)}</p>`:''}<div class="cardactions"><button class="btn soft" onclick="collectionForm('${type}','${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="collectionDelete('${type}','${esc(x.id)}')">حذف</button><span class="btn ghost">☰ ${i+1}</span></div></div></div>`).join(''):`<div class="empty">لا يوجد محتوى. اضغط إضافة للبدء.</div>`}</div></div>`;
+}
+function collectionForm(type,id){
+ const a=D[type]||[],x=id?a.find(z=>String(z.id)===String(id)):{id:Date.now(),title:'',name:'',text:'',description:'',image:'',link:'',cta:'اطلب الآن',startAt:'',endAt:'',active:true};
+ let extra='';
+ if(type==='categories') extra=`<div class="field"><label>المنتجات داخل التصنيف — اختيار يدوي فقط</label><div class="hint" style="margin-bottom:8px">الموقع لن يضيف أي منتج تلقائيًا لهذا القسم. اختر المنتجات المطلوبة فقط.</div><div style="display:grid;gap:7px;max-height:210px;overflow:auto">${D.products.map(p=>`<label class="check"><input type="checkbox" class="catprod" value="${esc(p.id)}" ${(x.productIds||[]).map(String).includes(String(p.id))?'checked':''}> ${esc(p.name)}</label>`).join('')}</div></div>`;
+ if(type==='hero') extra=`<div class="grid2"><div class="field"><label>نوع الشريحة</label><select id="ctype"><option value="offer" ${x.type==='offer'?'selected':''}>عرض</option><option value="article" ${x.type==='article'?'selected':''}>مقال</option><option value="product" ${x.type==='product'?'selected':''}>منتج</option></select></div><div class="field"><label>الرابط / الإجراء</label><input id="cl" value="${esc(x.link||'')}"></div></div>`;
+ if(type==='deals') extra=`<div class="grid2">
+<div class="field"><label>السعر قبل الخصم</label><input id="dop" type="number" min="0" value="${Number(x.oldPrice||0)}"></div>
+<div class="field"><label>سعر الصفقة</label><input id="dp" type="number" min="0" value="${Number(x.price||0)}"></div>
+<div class="field"><label>مدة الصفقة بالدقائق</label><input id="ddur" type="number" min="1" value="${Number(x.durationMinutes||30)}"></div>
+<div class="field"><label>الحالة</label><select id="dactive"><option value="1" ${x.active!==false?'selected':''}>مفعلة</option><option value="0" ${x.active===false?'selected':''}>موقوفة</option></select></div>
+<div class="field"><label>بداية العرض</label><input id="cs" type="datetime-local" value="${esc(x.startAt||'')}"></div>
+<div class="field"><label>نهاية العرض</label><input id="ce" type="datetime-local" value="${esc(x.endAt||'')}"></div>
+<div class="field full"><label>المنتجات والكميات داخل الصفقة</label><div style="display:grid;gap:7px;max-height:240px;overflow:auto;border:1px solid #dce6df;padding:10px;border-radius:12px;background:#fafcfb">
+${D.products.map(p=>{const it=(x.items||[]).find(z=>String(z.productId)===String(p.id));return `<label style="display:grid;grid-template-columns:25px 1fr 80px;gap:8px;align-items:center;padding:7px;border-bottom:1px solid #edf1ee"><input type="checkbox" class="dealprod" value="${esc(p.id)}" ${it?'checked':''}><span>${esc(p.name)}<small style="display:block;color:#65736c">${Number(p.price||0)} جنيه</small></span><input class="dealqty" data-id="${esc(p.id)}" type="number" min="1" value="${it?Math.max(1,Number(it.quantity)||1):1}"></label>`}).join('')}</div></div>
+<div class="field"><label>المقاسات — كل سطر</label><textarea id="dsizes">${esc(Array.isArray(x.sizes)?x.sizes.join('\n'):x.sizes||'')}</textarea></div>
+<div class="field"><label>المميزات — كل سطر</label><textarea id="dfeatures">${esc(Array.isArray(x.features)?x.features.join('\n'):x.features||'')}</textarea></div>
+<div class="field"><label>الشحن</label><input id="dshipping" value="${esc(x.shipping||'')}"></div>
+<div class="field"><label>ملاحظات</label><input id="dnotes" value="${esc(x.notes||'')}"></div>
+</div>`;
+ openModal(id?'تعديل المحتوى':'إضافة محتوى',`<div class="grid2">
+ <div class="field"><label>العنوان</label><input id="ct" value="${esc(x.title||x.name||'')}"></div>
+ <div class="field"><label>زر الإجراء</label><input id="cc" value="${esc(x.cta||'')}"></div>
+ </div>
+ <div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('ci',x.image||'',type==='hero'?'1920 × 800 بكسل':'1200 × 800 بكسل')}</div>
+ <div class="field" style="margin-top:12px"><label>الوصف</label><textarea id="cx">${esc(x.text||x.description||'')}</textarea></div>
+ ${extra}
+ <div class="modalfoot"><button class="btn primary" onclick="saveCollection('${type}','${id||''}')">حفظ</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
+}
+async function saveCollection(type,id){
+ const x={id:id||Date.now(),title:$('ct').value,image:$('ci_value').value,text:$('cx').value,cta:$('cc').value,link:$('cl')?.value||'',startAt:$('cs')?.value||'',endAt:$('ce')?.value||'',type:$('ctype')?.value||''};
+ if(type==='categories'){
+   x.name=x.title;
+   x.productIds=[...document.querySelectorAll('.catprod:checked')].map(e=>e.value);
  }
+ if(type==='deals'){
+   const selected=[...document.querySelectorAll('.dealprod:checked')].map(e=>{
+     const q=document.querySelector('.dealqty[data-id="'+CSS.escape(e.value)+'"]');
+     return {productId:e.value,quantity:Math.max(1,Number(q?.value)||1)};
+   });
+   if(!selected.length){toast('اختار منتجًا واحدًا على الأقل داخل الصفقة');return}
+   const oldPrice=Number($('dop').value)||0,price=Number($('dp').value)||0;
+   if(!price){toast('اكتب سعر الصفقة');return}
+   x.name=x.title||'صفقة Green Moon';
+   x.oldPrice=oldPrice;
+   x.price=price;
+   x.durationMinutes=Math.max(1,Number($('ddur').value)||30);
+   x.active=$('dactive').value==='1';
+   x.items=selected;
+   x.productIds=selected.map(v=>v.productId);
+   x.contents=selected.map(v=>{const p=D.products.find(p=>String(p.id)===String(v.productId));return p?p.name+' × '+v.quantity:''}).filter(Boolean);
+   x.sizes=String($('dsizes').value||'').split(/\r?\n/).map(v=>v.trim()).filter(Boolean);
+   x.features=String($('dfeatures').value||'').split(/\r?\n/).map(v=>v.trim()).filter(Boolean);
+   x.shipping=$('dshipping').value.trim();
+   x.notes=$('dnotes').value.trim();
+ }
+ let a=D[type]||[];
+ if(id){const i=a.findIndex(z=>String(z.id)===String(id));if(i>=0)a[i]=x}else a.push(x);
+ D[type]=a;await saveContent();closeModal();toast('تم حفظ الصفقة بنجاح')
 }
 
-$('gmMediaFile')?.addEventListener('change',e=>gmUploadMedia(e.target.files?.[0]));
+async function saveContent(){const s={...D.settings,gm_categories:D.categories,gm_hero:D.hero,gm_deals:D.deals,deals:D.deals,gm_articles:D.articles,gm_reviews:D.reviews||D.settings.gm_reviews||[],gm_rewards:D.rewards,gm_ticker:D.ticker};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});D.settings=s;render()}
+async function collectionDelete(type,id){if(!confirm('حذف العنصر؟'))return;D[type]=(D[type]||[]).filter(x=>String(x.id)!==String(id));await saveContent();render();toast('تم الحذف')}
+let dragData=null;function dragStart(e,type){dragData={type,id:e.currentTarget.dataset.id}}async function dropItem(e,type){if(!dragData||dragData.type!==type)return;const target=e.currentTarget.dataset.id,a=D[type]||[],from=a.findIndex(x=>String(x.id)===String(dragData.id)),to=a.findIndex(x=>String(x.id)===String(target));if(from<0||to<0||from===to)return;const [it]=a.splice(from,1);a.splice(to,0,it);await saveContent();render();dragData=null;toast('تم تغيير الترتيب')}
 
-async function loadCore(){const [p,s,ship]=await Promise.all([api('/api/admin/products'),api('/api/admin/settings'),api('/api/admin/shipping')]);products=p||[];siteSettings=s||{};$('storeName').value=s.storeName||'';$('siteTitle').value=s.title||'';$('siteSubtitle').value=s.subtitle||'';$('whatsapp').value=s.whatsapp||s.whatsappNumber||'';$('generalShipping').value=ship.price||0;$('logoPreview').src=s.logo||'/assets/logo.jpg';renderProducts();updateStats(ship.price);renderStickers();updateThemePage();}
-async function loadOrders(){if(ordersLoaded&&orders.length)return; $('ordersList').innerHTML='<div class="loading">جاري تحميل الطلبات...</div>';try{orders=await api('/api/admin/orders');orders=orders||[];ordersLoaded=true;updateStats($('generalShipping').value);renderOrders()}catch(e){$('ordersList').innerHTML='<div class="loading">'+esc(e.message)+'</div>'}}
-function normalizePhone(v){let x=String(v||'').replace(/[^0-9+]/g,'');if(x.startsWith('00'))x='+'+x.slice(2);if(/^01\d{9}$/.test(x))x='+20'+x.slice(1);return x}
-function orderAddress(o){return [o.governorate,o.area,o.street,o.building?'مبنى '+o.building:'',o.floor?'دور '+o.floor:'',o.apartment?'شقة '+o.apartment:''].filter(Boolean).join('، ')}
-function orderItemsText(o){const arr=Array.isArray(o.items)?o.items:[];return arr.map(x=>{const q=Number(x.quantity)||1;let t=(x.name||'منتج')+' × '+q+' — '+((Number(x.price)||0)*q)+' ج';if(Array.isArray(x.voucherItems)&&x.voucherItems.length)t+=' | قسيمة: '+x.voucherItems.map(v=>(v.name||'منتج')+' ('+(Number(v.price)||0)+' ج)').join('، ');return t}).join('\n')||'لا توجد تفاصيل منتجات محفوظة.'}
-function reviewUrl(o){if(!o?.reviewToken||!o?.id)return '';return location.origin+'/?reviewOrder='+encodeURIComponent(o.id)+'&reviewToken='+encodeURIComponent(o.reviewToken)+'#reviews'}
-async function setOrderStatus(i,status){const o=orders[i];if(!o)return;try{const d=await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id:o.id,status})});orders[i]=d.order||{...o,status};renderOrders();toast(status==='تم التسليم'?'تم تسجيل التسليم — التقييم أصبح متاحًا للعميل ⭐':'تم تحديث حالة الطلب')}catch(e){toast(e.message)}}
-function renderOrders(){if(!orders.length){$('ordersList').innerHTML='<div class="loading">لا توجد طلبات حتى الآن.</div>';return}$('ordersList').innerHTML=orders.map((o,i)=>{const address=orderAddress(o);const items=orderItemsText(o);const link=reviewUrl(o);return '<div class="panel" style="margin:10px 0;border:1px solid #e8eeea;box-shadow:none"><div class="top"><div><b>'+esc(o.id||'طلب')+'</b><div class="product-sub">'+esc(o.createdAt||o.date||'')+'</div></div><span class="badge">'+esc(o.status||'جديد')+'</span></div><div class="order-contact" style="margin-top:10px"><b>'+esc(o.name||'عميل بدون اسم')+'</b><span class="badge off">📞 '+esc(o.phone||'—')+'</span></div><div class="product-sub" style="margin-top:7px">'+esc(address||'لا يوجد عنوان مكتمل')+'</div><div class="order-items">'+esc(items).replace(/\n/g,'<br>')+'</div><div class="order-total" style="margin-top:10px">المنتجات: '+Number(o.productsTotal||0)+' ج • التوصيل: '+Number(o.shipping||0)+' ج • <b>الإجمالي: '+Number(o.total||0)+' ج</b></div><div class="order-status-row"><select onchange="setOrderStatus('+i+',this.value)" style="max-width:190px"><option '+(o.status==='جديد'?'selected':'')+'>جديد</option><option '+(o.status==='قيد التجهيز'?'selected':'')+'>قيد التجهيز</option><option '+(o.status==='خرج للتوصيل'?'selected':'')+'>خرج للتوصيل</option><option '+(o.status==='تم التسليم'?'selected':'')+'>تم التسليم</option><option '+(o.status==='ملغي'?'selected':'')+'>ملغي</option></select><span class="product-sub">عند اختيار «تم التسليم» يصبح التقييم متاحًا للعميل.</span></div><div class="order-actions"><button class="btn call" onclick="callCustomer('+i+')">📞 اتصال بالعميل</button><button class="btn wa" onclick="openWhatsApp('+i+')">💬 إرسال واتساب</button><button class="btn print" onclick="printOrder('+i+')">🖨️ طباعة</button>'+(link?'<button class="btn review" onclick="sendReviewWhatsApp('+i+')">⭐ إرسال رابط التقييم</button>':'')+'</div></div>'}).join('')}
+function rewards(){
+ const r=D.rewards||{};
+ const items=Array.isArray(r.popupItems)&&r.popupItems.length?r.popupItems:[{icon:'🚚',title:'توصيل مجاني',text:'اطلب بقيمة 500 جنيه أو أكثر واستمتع بتوصيل مجاني على طلبك.',active:true},{icon:'🎁',title:'هدية مع طلبك',text:'عند وصول طلبك إلى 750 جنيه، استمتع بهدية مميزة من Green Moon.',active:true},{icon:'⭐',title:'مكافأة إضافية',text:'اطلب بقيمة 1000 جنيه أو أكثر واحصل على مكافأة إضافية مع طلبك.',active:true}];
+ return `<div class="panel"><div class="head"><div><h2>🎁 مكافآت دخول المتجر</h2><p>المكافآت التي تظهر للعميل عند أول دخول — عددها وترتيبها والنصوص كلها تحت سيطرتك.</p></div><button class="btn primary" onclick="saveRewards()">حفظ المكافآت</button></div>
+ <div class="grid2"><label class="field" style="display:flex;align-items:center;gap:9px"><input id="rp_enabled" type="checkbox" ${r.popupEnabled!==false?'checked':''}><span><b>إظهار نافذة المكافآت عند الدخول</b></span></label><div class="field"><label>عدد المكافآت الظاهرة</label><input id="rp_max" type="number" min="1" max="10" value="${Math.min(10,Math.max(1,Number(r.popupMax)||items.length))}"><div class="hint">مثلاً 2 أو 3 أو 4</div></div><div class="field"><label>عنوان النافذة</label><input id="rp_title" value="${esc(r.popupTitle||'مكافآت Green Moon 🎁')}"></div><div class="field"><label>الجملة التسويقية</label><input id="rp_sub" value="${esc(r.popupSubtitle||'كل ما تكمل طلبك، مكافأتك تقرب أكتر 💚')}"></div></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:8px"><h3 style="margin:0">المكافآت</h3><button class="btn soft" onclick="addRewardRow()">+ إضافة مكافأة</button></div><div id="rewardRows" style="display:grid;gap:10px;margin-top:10px">${items.map((x,i)=>rewardRow(x,i)).join('')}</div></div>`;
+}
+function rewardRow(x={},i=Date.now()){
+ return `<div class="reward-admin-row" style="padding:12px;border:1px solid #e2e8e3;border-radius:14px;background:#fff"><div class="grid2"><div class="field"><label>الأيقونة</label><input class="rr-icon" value="${esc(x.icon||'🎁')}"></div><div class="field"><label>العنوان</label><input class="rr-title" value="${esc(x.title||'مكافأة Green Moon')}"></div><div class="field" style="grid-column:1/-1"><label>النص التسويقي</label><textarea class="rr-text" style="min-height:75px">${esc(x.text||'')}</textarea></div></div><div style="display:flex;justify-content:space-between;margin-top:7px"><label><input class="rr-active" type="checkbox" ${x.active!==false?'checked':''}> إظهار</label><button type="button" class="btn danger" onclick="this.closest('.reward-admin-row').remove()">حذف</button></div></div>`;
+}
+function addRewardRow(){const box=$('rewardRows');if(box)box.insertAdjacentHTML('beforeend',rewardRow({icon:'🎁',title:'مكافأة جديدة',text:'اكتب هنا المكافأة بطريقة تسويقية واضحة.',active:true}));}
+async function saveRewards(){
+ const items=[...document.querySelectorAll('.reward-admin-row')].map(x=>({id:Date.now()+Math.random(),icon:x.querySelector('.rr-icon')?.value||'🎁',title:x.querySelector('.rr-title')?.value||'',text:x.querySelector('.rr-text')?.value||'',active:!!x.querySelector('.rr-active')?.checked})).filter(x=>x.title||x.text);
+ D.rewards={...D.rewards,popupEnabled:$('rp_enabled').checked,popupMax:Math.min(10,Math.max(1,+$('rp_max').value||items.length||1)),popupTitle:$('rp_title').value,popupSubtitle:$('rp_sub').value,popupItems:items};
+ await saveContent();toast('تم حفظ مكافآت الدخول');
+}
 
-window.callCustomer=i=>{const p=normalizePhone(orders[i]?.phone);if(!p)return toast('رقم العميل غير موجود');location.href='tel:'+p}
-window.openWhatsApp=i=>{const o=orders[i],p=normalizePhone(o?.phone);if(!p)return toast('رقم العميل غير موجود');const u='https://wa.me/'+p.replace('+','')+'?text='+encodeURIComponent('أهلاً '+(o.name||'')+'، معاك Green Moon بخصوص طلبك رقم '+(o.id||'')+' 🌿');window.open(u,'_blank','noopener,noreferrer')}
-window.printOrder=i=>{const o=orders[i];if(!o)return;const items=orderItemsText(o).replace(/\n/g,'<br>');const address=orderAddress(o);const w=window.open('','_blank','width=900,height=800');if(!w){toast('اسمح بفتح النوافذ المنبثقة للطباعة');return}w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>طلب '+esc(o.id||'')+'</title><style>body{font-family:Arial,sans-serif;padding:30px;color:#17372b}h1{color:#064b35;margin:0 0 4px}.head{display:flex;justify-content:space-between;border-bottom:2px solid #d8b65c;padding-bottom:15px;margin-bottom:20px}.box{border:1px solid #dfe7e2;border-radius:14px;padding:14px;margin:12px 0}.total{font-size:20px;font-weight:bold;color:#064b35}.muted{color:#68776f;font-size:13px}</style></head><body><div class="head"><div><h1>Green Moon</h1><div>فاتورة / طلب شراء</div></div><div><b>رقم الطلب:</b> '+esc(o.id||'')+'<br><span class="muted">'+esc(o.createdAt||o.date||'')+'</span></div></div><div class="box"><b>بيانات العميل</b><p>'+esc(o.name||'')+'<br>الهاتف: '+esc(o.phone||'')+'<br>'+esc(address)+'</p></div><div class="box"><b>المنتجات</b><p>'+items+'</p></div><div class="box">المنتجات: '+Number(o.productsTotal||0)+' ج<br>التوصيل: '+Number(o.shipping||0)+' ج<br>الخصم: '+Number(o.discount||o.voucherDiscount||0)+' ج<p class="total">الإجمالي: '+Number(o.total||0)+' ج</p></div><script>window.onload=()=>{window.print();setTimeout(()=>window.close(),500)}<\/script></body></html>');w.document.close()}
-async function loadReviews(){ $('reviewsAdminList').innerHTML='<div class="loading">جاري تحميل التقييمات...</div>';try{const rows=await api('/api/admin/reviews');const a=Array.isArray(rows)?rows:[];if(!a.length){$('reviewsAdminList').innerHTML='<div class="loading">لا توجد تقييمات حتى الآن.</div>';return}$('reviewsAdminList').innerHTML=a.map((r,i)=>'<div class="review-admin-card '+(r.status==='pending'?'pending':'')+'"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b>'+esc(r.name||'عميل')+'</b><div class="review-stars">'+('★'.repeat(Number(r.rating)||5))+('☆'.repeat(5-(Number(r.rating)||5)))+'</div></div><span class="badge">'+esc(r.status==='published'?'منشور':'بانتظار المراجعة')+'</span></div><p style="line-height:1.9;color:#56675f">'+esc(r.text||'')+'</p><div class="product-sub">طلب: '+esc(r.orderId||'—')+' • '+esc(r.createdAt||'')+'</div><div class="order-actions">'+(r.status!=='published'?'<button class="btn green" onclick="publishReview('+i+')">✓ نشر التقييم</button>':'<button class="btn ghost" onclick="unpublishReview('+i+')">إخفاء</button>')+'<button class="btn danger" onclick="deleteReview('+i+')">🗑 حذف</button>'+(r.status==='published'&&!r.rewardUsed?'<span class="badge">🎁 كود 10%: '+esc(r.rewardCode||'')+'</span>':'')+(r.rewardUsed?'<span class="badge off">تم استخدام كود الخصم</span>':'')+'</div></div>').join('');window._gmReviews=a}catch(e){$('reviewsAdminList').innerHTML='<div class="loading">'+esc(e.message)+'</div>'}}
-async function reviewUpdate(i,status){const r=(window._gmReviews||[])[i];if(!r)return;try{await api('/api/admin/reviews',{method:'PUT',body:JSON.stringify({id:r.id,status})});await loadReviews();toast(status==='published'?'تم نشر التقييم':'تم إخفاء التقييم')}catch(e){toast(e.message)}}
-window.publishReview=i=>reviewUpdate(i,'published');window.unpublishReview=i=>reviewUpdate(i,'hidden');window.deleteReview=async i=>{const r=(window._gmReviews||[])[i];if(!r)return;if(!confirm('حذف التقييم نهائيًا؟'))return;try{await api('/api/admin/reviews',{method:'DELETE',body:JSON.stringify({id:r.id})});await loadReviews();toast('تم حذف التقييم')}catch(e){toast(e.message)}};
-window.sendReviewWhatsApp=i=>{const o=orders[i],p=normalizePhone(o?.phone),u=reviewUrl(o);if(!p||!u)return toast('لا يوجد رابط تقييم لهذا الطلب');const msg='أهلاً '+(o.name||'')+' 🌿\nنتمنى تكون مبسوط بطلبك من Green Moon.\nبعد استلام الطلب، شاركنا رأيك من هنا ⭐\n'+u+'\nوبعد نشر التقييم هتاخد كود خصم 10% لطلبك القادم 💚';window.open('https://wa.me/'+p.replace('+','')+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
+function promos(){
+ const list=Array.isArray(D.settings?.promoCodes)?D.settings.promoCodes:[];
+ return `<div class="panel"><div class="head"><div><h2>🎟️ البروموكودات</h2><p>اعمل أكواد خصم وتتحكم في نوع الخصم والحد الأدنى والمدة وعدد مرات الاستخدام.</p></div><button class="btn primary" onclick="promoForm()">+ إضافة بروموكود</button></div><div class="cards">${list.length?list.map(x=>{const type=x.type==='percentage'?'نسبة مئوية':x.type==='free_shipping'?'شحن مجاني':'خصم ثابت';return `<div class="card"><div class="cardbody"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3 style="margin:0;font-family:monospace;letter-spacing:1px">${esc(x.code||'')}</h3><span class="status" style="background:${x.active===false?'#fff0ee':'#eaf3ee'};color:${x.active===false?'#b42318':'#0b5b3d'}">${x.active===false?'موقوف':'مفعل'}</span></div><p style="margin-top:10px">${type} — <b>${x.type==='free_shipping'?'':Number(x.value||0)+(x.type==='percentage'?'%':' جنيه')}</b></p><p>حد أدنى: ${Number(x.minOrder||0)} ج<br>أقصى استخدام: ${Number(x.maxUses||0)||'غير محدود'}<br>من: ${esc(x.startsAt||'فورًا')}<br>إلى: ${esc(x.endsAt||'بدون نهاية')}</p><div class="cardactions"><button class="btn soft" onclick="promoForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="deletePromo('${esc(x.id)}')">حذف</button></div></div></div>`}).join(''):'<div class="empty">لا توجد بروموكودات. أضف أول كود من الزر بالأعلى.</div>'}</div></div>`;
+}
+function promoForm(id){
+ const list=Array.isArray(D.settings?.promoCodes)?D.settings.promoCodes:[],x=id?list.find(z=>String(z.id)===String(id)):{id:Date.now().toString(),code:'',type:'percentage',value:10,minOrder:0,maxUses:0,startsAt:'',endsAt:'',active:true,note:''};
+ openModal(id?'تعديل البروموكود':'إضافة بروموكود',`<div class="grid2"><div class="field"><label>الكود</label><input id="pc_code" value="${esc(x.code||'')}" placeholder="GREEN10" style="text-transform:uppercase;direction:ltr;text-align:left"></div><div class="field"><label>نوع الخصم</label><select id="pc_type"><option value="percentage" ${x.type==='percentage'?'selected':''}>نسبة مئوية %</option><option value="fixed" ${x.type==='fixed'?'selected':''}>مبلغ ثابت</option><option value="free_shipping" ${x.type==='free_shipping'?'selected':''}>شحن مجاني</option></select></div><div class="field"><label>قيمة الخصم</label><input id="pc_value" type="number" min="0" value="${Number(x.value||0)}" placeholder="10"></div><div class="field"><label>الحد الأدنى للطلب</label><input id="pc_min" type="number" min="0" value="${Number(x.minOrder||0)}"></div><div class="field"><label>أقصى عدد استخدامات</label><input id="pc_max" type="number" min="0" value="${Number(x.maxUses||0)}"><div class="hint">0 = غير محدود</div></div><div class="field"><label>الحالة</label><select id="pc_active"><option value="1" ${x.active!==false?'selected':''}>مفعل</option><option value="0" ${x.active===false?'selected':''}>موقوف</option></select></div><div class="field"><label>بداية الكود</label><input id="pc_start" type="datetime-local" value="${esc(x.startsAt||'')}"></div><div class="field"><label>نهاية الكود</label><input id="pc_end" type="datetime-local" value="${esc(x.endsAt||'')}"></div><div class="field" style="grid-column:1/-1"><label>ملاحظة للعميل</label><input id="pc_note" value="${esc(x.note||'')}" placeholder="مثلاً: خصم 10% على الطلب"></div></div><div class="modalfoot"><button class="btn primary" onclick="savePromo('${esc(x.id)}')">حفظ البروموكود</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
+}
+async function savePromo(id){
+ const code=String($('pc_code').value||'').trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'');if(!code){toast('اكتب البروموكود');return}
+ const type=$('pc_type').value,value=Math.max(0,Number($('pc_value').value)||0),minOrder=Math.max(0,Number($('pc_min').value)||0),maxUses=Math.max(0,Number($('pc_max').value)||0);if(type!=='free_shipping'&&!value){toast('اكتب قيمة الخصم');return}if(type==='percentage'&&value>100){toast('النسبة لا يمكن أن تتجاوز 100%');return}
+ let list=Array.isArray(D.settings?.promoCodes)?[...D.settings.promoCodes]:[];const x={id:id||Date.now().toString(),code,type,value,minOrder,maxUses,startsAt:$('pc_start').value||'',endsAt:$('pc_end').value||'',active:$('pc_active').value==='1',note:$('pc_note').value||''};const i=list.findIndex(z=>String(z.id)===String(id));if(i>=0)list[i]=x;else list.push(x);D.settings={...D.settings,promoCodes:list};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});closeModal();render();toast('تم حفظ البروموكود بنجاح')
+}
+async function deletePromo(id){if(!confirm('حذف البروموكود؟'))return;D.settings={...D.settings,promoCodes:(D.settings.promoCodes||[]).filter(x=>String(x.id)!==String(id))};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});render();toast('تم حذف البروموكود')}
 
-function openPage(name){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+name));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.page===name));if(name==='orders')loadOrders();if(name==='reviews')loadReviews();if(name==='content')loadContent();if(name==='stickers')renderStickers();if(name==='media')gmLoadMedia();if(name==='themes'){updateThemePage();renderThemePresets()}}
-document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>openPage(b.dataset.page));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{openPage(b.dataset.go);if(b.dataset.action==='new')openModal(null)});
-$('productSearch').oninput=renderProducts;$('voucherFilter').onchange=renderProducts;$('stickerSearch').oninput=renderStickers;$('stickerStatus').onchange=renderStickers;$('refreshProducts').onclick=async()=>{try{products=await api('/api/admin/products');renderProducts();updateStats($('generalShipping').value);toast('تم تحديث المنتجات')}catch(e){toast(e.message)}};
-function openModal(p){editing=p||null;$('modal').classList.remove('hidden');$('modalTitle').textContent=p?'تعديل المنتج':'إضافة منتج';$('pId').value=p?.id||'';$('pName').value=p?.name||'';$('pPrice').value=p?.price||0;$('pWholesale').value=p?.wholesalePrice||0;$('pShipping').value=p?.shippingPrice||0;$('pDetails').value=p?.details||'';$('pPreview').src=p?.image||'/assets/logo.jpg';$('pImageFile').value='';showMsg('productMsg','');const st=getSticker(p);$('stickerEnabled').checked=!!st.active;$('stickerText').value=st.text||'';$('stickerColor').value=st.color||'#e7bf62';$('stickerPreviewText').textContent=st.text||'🔥 عرض خاص';$('stickerPreviewText').style.background=st.color||'#e7bf62';$('stickerPreviewImg').src=st.image||'';$('stickerPreviewImg').classList.toggle('hidden',!st.image);document.querySelectorAll('[data-sticker-pos]').forEach(b=>b.classList.toggle('active',(b.dataset.stickerPos||'tr')===st.position));$('stickerProductPreview').src=p?.image||'/assets/logo.jpg';const g=giftCfg(p);$('giftEnabled').checked=!!g.enabled;$('voucherValue').value=Math.max(1,Number(g.value)||Number(g.giftBudgetWholesale)||300);renderGiftProducts(g.products||g.gifts||[]);const c=p?.care||{};[['cLight','light'],['cWater','water'],['cTemperature','temperature'],['cHumidity','humidity'],['cSoil','soil'],['cFertilizer','fertilizer'],['cPruning','pruning'],['cPropagation','propagation'],['cProblems','problems'],['cPests','pests'],['cMistakes','mistakes'],['cTips','tips']].forEach(([id,k])=>$(id).value=c[k]||'')}
-window.editProduct=id=>openModal(products.find(p=>String(p.id)===String(id)));$('newProduct').onclick=()=>openModal(null);$('closeModal').onclick=()=>$('modal').classList.add('hidden');$('cancelProduct').onclick=()=>$('modal').classList.add('hidden');$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.add('hidden')};$('pImageFile').onchange=async e=>{const x=await readFile(e.target.files[0]);if(x)$('pPreview').src=x};document.querySelectorAll('[data-sticker-pos]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-sticker-pos]').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('stickerPreviewText').className='sticker-preview '+b.dataset.stickerPos;$('stickerPreviewImg').className='sticker-preview-img '+b.dataset.stickerPos});$('stickerText').oninput=()=>{$('stickerPreviewText').textContent=$('stickerText').value||'🔥 عرض خاص'};$('stickerColor').oninput=()=>{$('stickerPreviewText').style.background=$('stickerColor').value};$('stickerImageFile').onchange=async e=>{const x=await readFile(e.target.files[0]);if(x){$('stickerPreviewImg').src=x;$('stickerPreviewImg').classList.remove('hidden');$('stickerPreviewText').classList.add('hidden')}};$('logoFile').onchange=async e=>{const x=await readFile(e.target.files[0]);if(x)$('logoPreview').src=x};
-$('saveProduct').onclick=async()=>{try{const care={};[['cLight','light'],['cWater','water'],['cTemperature','temperature'],['cHumidity','humidity'],['cSoil','soil'],['cFertilizer','fertilizer'],['cPruning','pruning'],['cPropagation','propagation'],['cProblems','problems'],['cPests','pests'],['cMistakes','mistakes'],['cTips','tips']].forEach(([id,k])=>care[k]=$(id).value.trim());const image=await readFile($('pImageFile').files[0])||$('pPreview').src;const body={id:$('pId').value||undefined,name:$('pName').value.trim(),price:Number($('pPrice').value)||0,wholesalePrice:Number($('pWholesale').value)||0,shippingPrice:Number($('pShipping').value)||0,details:$('pDetails').value.trim(),image,care,sticker:{active:$('stickerEnabled').checked,text:$('stickerText').value.trim(),color:$('stickerColor').value||'#e7bf62',image:$('stickerPreviewImg').classList.contains('hidden')?'':$('stickerPreviewImg').src,position:document.querySelector('[data-sticker-pos].active')?.dataset.stickerPos||'tr'},voucherConfig:{enabled:$('giftEnabled').checked,value:Math.max(1,Number($('voucherValue').value)||0),products:[...document.querySelectorAll('.giftProductCheck:checked')].map(x=>x.value).slice(0,30)}};const d=await api('/api/admin/products',{method:editing?'PUT':'POST',body:JSON.stringify(body)});products=d.products||products;renderProducts();updateStats($('generalShipping').value);$('modal').classList.add('hidden');toast('تم حفظ المنتج بنجاح')}catch(e){showMsg('productMsg',e.message)}};
-$('saveShipping').onclick=async()=>{try{const d=await api('/api/admin/shipping',{method:'PUT',body:JSON.stringify({price:Number($('generalShipping').value)||0})});$('generalShipping').value=d.price;updateStats(d.price);toast('تم حفظ سعر التوصيل')}catch(e){showMsg('shippingMsg',e.message)}};
-$('saveSettings').onclick=async()=>{try{const f=$('logoFile').files[0];if(f)await api('/api/admin/logo',{method:'PUT',body:JSON.stringify({logo:await readFile(f)})});await api('/api/admin/settings',{method:'PUT',body:JSON.stringify({storeName:$('storeName').value,title:$('siteTitle').value,subtitle:$('siteSubtitle').value,whatsapp:$('whatsapp').value})});toast('تم حفظ بيانات المتجر')}catch(e){showMsg('settingsMsg',e.message)}};
-$('saveThemePage').onclick=()=>{const t={...(siteSettings.gm_theme||{}),g:$('themePageG').value,g2:$('themePageG2').value,gold:$('themePageGold').value};siteSettings={...siteSettings,gm_theme:t};updateThemePage();window.chooseThemePage(siteSettings.gm_theme.preset||Object.keys(GM_THEMES)[0])};$('reloadOrders').onclick=async()=>{ordersLoaded=false;orders=[];await loadOrders()};$('reloadReviews').onclick=loadReviews;
-$('login').onclick=async()=>{const p=$('password').value.trim();if(!p){showMsg('loginMsg','اكتب كلمة المرور');return}sessionStorage.setItem('gm_admin_password',p);try{await api('/api/admin/products');$('loginBox').classList.add('hidden');$('app').classList.remove('hidden');await loadCore();toast('أهلاً بك في لوحة التحكم')}catch(e){sessionStorage.removeItem('gm_admin_password');showMsg('loginMsg',e.message)}};$('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});$('logout').onclick=()=>{sessionStorage.removeItem('gm_admin_password');location.reload()};
-organizeContentPanels();
-(async function start(){
-  gmLoadMedia();if(!auth())return;try{await api('/api/admin/products');$('loginBox').classList.add('hidden');$('app').classList.remove('hidden');await loadCore()}catch(e){sessionStorage.removeItem('gm_admin_password')}})();
-</script></body></html>
+function notifications(){return `<div class="panel"><div class="head"><div><h2>🔔 إشعارات العملاء</h2><p>ابعت إشعار فوري للعملاء المشتركين على الموبايل.</p></div></div><div class="grid2"><div class="field"><label>عنوان الإشعار</label><input id="nt_title" placeholder="🌿 عرض جديد من Green Moon"></div><div class="field"><label>الجمهور</label><select id="nt_audience"><option value="all">كل المشتركين</option><option value="promotions">المهتمين بالعروض</option><option value="newProducts">المهتمين بالمنتجات الجديدة</option></select></div></div><div class="field" style="margin-top:12px"><label>نص الإشعار</label><textarea id="nt_body" placeholder="خصم جديد لفترة محدودة..."></textarea></div><div class="grid2" style="margin-top:12px"><div class="field"><label>الرابط عند الضغط</label><input id="nt_url" value="/index.html"></div><div style="display:flex;align-items:end"><button class="btn primary" style="width:100%" onclick="sendNotification()">🚀 إرسال الإشعار</button></div></div><div class="hint" style="margin-top:12px">الإشعارات الخاصة بالطلبات والمنتجات الجديدة والعروض الجديدة يتم إرسالها تلقائيًا حسب إعدادات العميل.</div></div>`}
+async function sendNotification(){const title=$('nt_title').value.trim(),body=$('nt_body').value.trim(),audience=$('nt_audience').value,url=$('nt_url').value.trim()||'/';if(!title||!body){toast('اكتب عنوان ونص الإشعار');return}await api('/api/admin/notifications',{method:'POST',body:JSON.stringify({title,body,audience,url})});toast('تم تجهيز الإشعار للإرسال 🔔')}
+function orders(){return `<div class="panel"><div class="head"><div><h2>📦 الطلبات</h2><p>اضغط على رقم الطلب أو اسم العميل لعرض كل التفاصيل والتحكم في الطلب.</p></div><button class="btn soft" onclick="load()">↻ تحديث</button></div><div class="tablewrap"><table class="table"><tr><th>رقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th>تفاصيل</th></tr>${D.orders.map(o=>`<tr><td><button class="btn ghost" onclick="details('${esc(o.id)}')">${esc(o.id)}</button></td><td><button class="btn ghost" onclick="details('${esc(o.id)}')"><b>${esc(o.name||'—')}</b></button></td><td>${esc(o.phone||'—')}</td><td>${+o.total||0} ج</td><td><select onchange="orderStatus('${esc(o.id)}',this.value)"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم الشحن'?'selected':''}>تم الشحن</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></td><td><button class="btn soft" onclick="details('${esc(o.id)}')">عرض التفاصيل</button></td></tr>`).join('')}</table></div></div>`}
+async function orderStatus(id,status){await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status})});await load();toast('تم تحديث حالة الطلب')}
+function money(n){return (Number(n)||0)+' ج'}
+function orderItemsHtml(o){const items=Array.isArray(o.items)?o.items:[];if(!items.length)return '<div class="empty">لا توجد تفاصيل منتجات محفوظة لهذا الطلب.</div>';return `<div class="tablewrap"><table class="table" style="min-width:650px"><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr>${items.map(it=>{const p=D.products.find(x=>String(x.id)===String(it.productId));const q=Number(it.quantity||1);const price=Number(it.price??p?.price??0);return `<tr><td><b>${esc(it.name||p?.name||it.productId||'منتج')}</b></td><td>${q}</td><td>${money(price)}</td><td>${money(price*q)}</td></tr>`}).join('')}</table></div>`}
+function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب والمندوب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم التجهيز'?'selected':''}>تم التجهيز</option><option ${o.status==='استلمته شركة الشحن'?'selected':''}>استلمته شركة الشحن</option><option ${o.status==='في الطريق'?'selected':''}>في الطريق</option><option ${o.status==='المندوب قريب'?'selected':''}>المندوب قريب</option><option ${o.status==='تم التسليم'?'selected':''}>تم التسليم</option><option ${o.status==='تعذر التسليم'?'selected':''}>تعذر التسليم</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><div class="grid2" style="margin-top:10px"><div class="field"><label>👤 اسم المندوب</label><input id="detailCourierName" value="${esc(o.courierName||'')}" placeholder="اسم المندوب"></div><div class="field"><label>📞 رقم المندوب</label><input id="detailCourierPhone" value="${esc(o.courierPhone||'')}" placeholder="01xxxxxxxxx"></div></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة وبيانات المندوب</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="modalfoot"><a class="btn soft" href="tel:${esc(o.phone||'')}" style="text-decoration:none">📞 اتصال</a><a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
+async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status,courierName:$('detailCourierName')?.value||'',courierPhone:$('detailCourierPhone')?.value||''})});await load();closeModal();details(id);toast('تم حفظ حالة الطلب وبيانات المندوب')}
+function printOrder(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const items=Array.isArray(o.items)?o.items:[];const w=window.open('','_blank');if(!w){toast('اسمح بفتح نافذة الطباعة');return}w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>طلب ${esc(o.id)}</title><style>body{font-family:Tahoma,Arial;padding:25px;color:#15221c}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:right}h1,h2{color:#0b5b3d}</style></head><body><h1>Green Moon 🌿</h1><h2>طلب #${esc(o.id)}</h2><p><b>العميل:</b> ${esc(o.name||'')}<br><b>الهاتف:</b> ${esc(o.phone||'')}<br><b>العنوان:</b> ${esc([o.governorate,o.area,o.street,o.building,o.floor,o.apartment].filter(Boolean).join(' — '))}</p><table><tr><th>المنتج</th><th>الكمية</th><th>السعر</th></tr>${items.map(it=>`<tr><td>${esc(it.name||it.productId||'منتج')}</td><td>${Number(it.quantity||1)}</td><td>${money(it.price||0)}</td></tr>`).join('')}</table><h2>الإجمالي: ${money(o.total)}</h2><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
+
+function homebuilder(){
+ const h=D.home||{}, hs=h.headings||{}, nav=h.bottomNav||{}, sec=h.sections||{};
+ const services=Array.isArray(h.services)?h.services:[];
+ const banners=Array.isArray(h.banners)?h.banners:[];
+ const selected=Array.isArray(h.newProductIds)?h.newProductIds.map(String):[];
+ return `<div class="panel">
+   <div class="head"><div><h2>🏠 منشئ الصفحة الرئيسية — Mobile</h2><p>كل جزء في الواجهة الجديدة قابل للإضافة والتعديل والحذف والترتيب.</p></div><button class="btn primary" onclick="saveHomeBuilder()">حفظ الصفحة الرئيسية</button></div>
+   <div class="panel">
+    <div class="head"><div><h3>✍️ عناوين الأقسام</h3><p>النصوص التي تظهر للعميل.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>عنوان التصنيفات</label><input id="hh_cat" value="${esc(hs.categories||'تسوق حسب الفئة')}"></div>
+      <div class="field"><label>عنوان المنتجات</label><input id="hh_prod" value="${esc(hs.products||'وصل حديثًا')}"></div>
+      <div class="field"><label>عنوان قسم العروض</label><input id="hh_deals" value="${esc(hs.deals||'العروض الحالية')}"></div>
+      <div class="field"><label>عنوان المساحة</label><input id="hh_space" value="${esc(hs.space||'حوّل مساحتك إلى عالم من الجمال')}"></div>
+      <div class="field"><label>نص المساحة</label><input id="h_space_text" value="${esc(h.spaceText||'نباتات تناسب منزلك ومكتبك ومساحتك المفضلة')}"></div>
+      <div class="field"><label>زر المساحة</label><input id="h_space_cta" value="${esc(h.spaceCta||'تسوق الآن')}"></div>
+      <div class="field"><label>رابط المساحة</label><input id="h_space_link" value="${esc(h.spaceLink||'#gmNewProducts')}"></div>
+    </div>
+    <div class="field" style="margin-top:12px"><label>صورة قسم المساحة</label>${uploadBox('hsimg',h.spaceImage||'', 'الصورة الخلفية')}</div>
+   </div>
+   <div class="panel">
+    <div class="head"><div><h3>🚚 شريط الخدمات</h3><p>أضف حتى 4 خدمات، عدّلها أو احذفها ورتبها.</p></div><button class="btn soft" onclick="homeServiceForm()">+ إضافة خدمة</button></div>
+    <div class="cards">${services.map((x,i)=>`<div class="card drag" draggable="true" data-id="${esc(x.id)}" ondragstart="homeDragStart(event,'services')" ondragover="event.preventDefault()" ondrop="homeDrop(event,'services')"><div class="cardbody"><h3>${esc(x.icon||'🌿')} ${esc(x.title||'')}</h3><p>${esc(x.text||'')}</p><div class="cardactions"><button class="btn soft" onclick="homeServiceForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="homeDelete('services','${esc(x.id)}')">حذف</button><span class="btn ghost">☰ ${i+1}</span></div></div></div>`).join('')||'<div class="empty">لا توجد خدمات.</div>'}</div>
+   </div>
+   <div class="panel">
+    <div class="head"><div><h3>🖼️ البانرات</h3><p>بانرات مثل مهرجان البامبو أو الفازات والإكسسوارات.</p></div><button class="btn soft" onclick="homeBannerForm()">+ إضافة Banner</button></div>
+    <div class="cards">${banners.map((x,i)=>`<div class="card drag" draggable="true" data-id="${esc(x.id)}" ondragstart="homeDragStart(event,'banners')" ondragover="event.preventDefault()" ondrop="homeDrop(event,'banners')"><div class="cardmedia"><img src="${esc(x.image||'/assets/logo.jpg')}"></div><div class="cardbody"><h3>${esc(x.title||'بدون عنوان')}</h3><p>${esc(x.text||'')}</p><div class="cardactions"><button class="btn soft" onclick="homeBannerForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="homeDelete('banners','${esc(x.id)}')">حذف</button><span class="btn ghost">☰ ${i+1}</span></div></div></div>`).join('')||'<div class="empty">لا توجد بانرات.</div>'}</div>
+   </div>
+   <div class="panel">
+    <div class="head"><div><h3>🌿 منتجات "وصل حديثًا"</h3><p>حدد المنتجات التي تظهر في الصف الأفقي، واسحب لترتيبها.</p></div></div>
+    <div style="display:grid;gap:8px;max-height:360px;overflow:auto">${D.products.map(p=>`<label class="check" style="padding:9px;border:1px solid #e5e9e5;border-radius:12px"><input type="checkbox" class="homeprod" value="${esc(p.id)}" ${selected.includes(String(p.id))?'checked':''}> <img src="${esc(p.image||'/assets/logo.jpg')}" style="width:42px;height:42px;border-radius:9px;object-fit:cover"> <span>${esc(p.name||'منتج')}</span></label>`).join('')}</div>
+   </div>
+   <div class="panel">
+    <div class="head"><div><h3>📱 الشريط السفلي</h3></div></div>
+    <div class="grid2">
+      <div class="field"><label>الرئيسية</label><input id="hn1" value="${esc(nav.home||'الرئيسية')}"></div>
+      <div class="field"><label>الأقسام</label><input id="hn2" value="${esc(nav.categories||'الأقسام')}"></div>
+      <div class="field"><label>العروض</label><input id="hn3" value="${esc(nav.deals||'العروض')}"></div>
+      <div class="field"><label>المقالات</label><input id="hn4" value="${esc(nav.articles||'المقالات')}"></div>
+      <div class="field"><label>تواصل معنا</label><input id="hn5" value="${esc(nav.contact||'تواصل معنا')}"></div>
+    </div>
+   </div>
+   <div class="panel">
+    <div class="head"><div><h3>👁️ إظهار / إخفاء</h3></div></div>
+    <div class="grid3">${[['hero','Hero'],['services','الخدمات'],['categories','التصنيفات'],['banners','البانرات'],['products','وصل حديثًا'],['space','Banner المساحة']].map(([k,l])=>`<label class="field" style="display:flex;align-items:center;gap:8px"><input id="hs_${k}" type="checkbox" ${sec[k]!==false?'checked':''}><span>${l}</span></label>`).join('')}</div>
+   </div>
+ </div>`;
+}
+function homeServiceForm(id){
+ const a=D.home.services||[],x=id?a.find(z=>String(z.id)===String(id)):{id:Date.now(),icon:'🚚',title:'',text:'',active:true};
+ openModal(id?'تعديل الخدمة':'إضافة خدمة',`<div class="grid2"><div class="field"><label>الأيقونة</label><input id="svc_i" value="${esc(x.icon||'🌿')}"></div><div class="field"><label>العنوان</label><input id="svc_t" value="${esc(x.title||'')}"></div></div><div class="field" style="margin-top:12px"><label>الوصف القصير</label><input id="svc_x" value="${esc(x.text||'')}"></div><div class="modalfoot"><button class="btn primary" onclick="saveHomeService('${id||''}')">حفظ</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
+}
+async function saveHomeService(id){
+ const a=Array.isArray(D.home.services)?D.home.services:[],x={id:id||String(Date.now()),icon:$('svc_i').value,title:$('svc_t').value,text:$('svc_x').value,active:true},i=a.findIndex(z=>String(z.id)===String(x.id));
+ if(i>=0)a[i]=x;else a.push(x);D.home.services=a;await saveHomeOnly();closeModal();render();toast('تم حفظ الخدمة');
+}
+function homeBannerForm(id){
+ const a=D.home.banners||[],x=id?a.find(z=>String(z.id)===String(id)):{id:Date.now(),title:'',text:'',cta:'اكتشف العروض',link:'#deals',image:'',active:true};
+ openModal(id?'تعديل البانر':'إضافة Banner',`<div class="grid2"><div class="field"><label>العنوان</label><input id="bn_t" value="${esc(x.title||'')}"></div><div class="field"><label>نص الزر</label><input id="bn_c" value="${esc(x.cta||'اكتشف العروض')}"></div><div class="field"><label>الرابط</label><input id="bn_l" value="${esc(x.link||'#deals')}"></div></div><div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('bn_i',x.image||'', 'صورة Banner')}</div><div class="field" style="margin-top:12px"><label>الوصف</label><textarea id="bn_x">${esc(x.text||'')}</textarea></div><div class="modalfoot"><button class="btn primary" onclick="saveHomeBanner('${id||''}')">حفظ</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
+}
+async function saveHomeBanner(id){
+ const a=Array.isArray(D.home.banners)?D.home.banners:[],x={id:id||String(Date.now()),title:$('bn_t').value,text:$('bn_x').value,cta:$('bn_c').value,link:$('bn_l').value,image:$('bn_i_value').value,active:true},i=a.findIndex(z=>String(z.id)===String(x.id));
+ if(i>=0)a[i]=x;else a.push(x);D.home.banners=a;await saveHomeOnly();closeModal();render();toast('تم حفظ الـBanner');
+}
+async function homeDelete(type,id){if(!confirm('حذف العنصر؟'))return;D.home[type]=(D.home[type]||[]).filter(x=>String(x.id)!==String(id));await saveHomeOnly();render();toast('تم الحذف')}
+let homeDrag=null;
+function homeDragStart(e,type){homeDrag={type,id:e.currentTarget.dataset.id}}
+async function homeDrop(e,type){if(!homeDrag||homeDrag.type!==type)return;const a=D.home[type]||[],toId=e.currentTarget.dataset.id,from=a.findIndex(x=>String(x.id)===String(homeDrag.id)),to=a.findIndex(x=>String(x.id)===String(toId));if(from<0||to<0||from===to)return;const [it]=a.splice(from,1);a.splice(to,0,it);await saveHomeOnly();render();homeDrag=null;toast('تم تغيير الترتيب')}
+async function saveHomeOnly(){
+ const s={...D.settings,gm_home:D.home};
+ await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});D.settings=s;
+}
+async function saveHomeBuilder(){
+ const h={...D.home,
+   headings:{categories:$('hh_cat').value,products:$('hh_prod').value,deals:$('hh_deals').value,space:$('hh_space').value},
+   spaceText:$('h_space_text').value,spaceCta:$('h_space_cta').value,spaceLink:$('h_space_link').value,spaceImage:$('hsimg_value').value,
+   newProductIds:[...document.querySelectorAll('.homeprod:checked')].map(x=>x.value),
+   bottomNav:{home:$('hn1').value,categories:$('hn2').value,deals:$('hn3').value,articles:$('hn4').value,contact:$('hn5').value},
+   sections:{hero:$('hs_hero').checked,services:$('hs_services').checked,categories:$('hs_categories').checked,banners:$('hs_banners').checked,products:$('hs_products').checked,space:$('hs_space').checked}
+ };
+ D.home=h;await saveHomeOnly();toast('تم حفظ الصفحة الرئيسية بالكامل');
+}
+
+function media(){
+ const v=(D.settings&&D.settings.gm_site)||{},m=v.media||{},c=v.content||{};
+ return `<div class="panel"><div class="head"><div><h2>🗂️ الصور والنصوص — تحكم مركزي</h2><p>كل الصور هنا تُرفع من الجهاز كملف صورة، ولا تحتاج كتابة روابط. المنتجات/التصنيفات/العروض/المقالات لها إدارة مستقلة بنفس نظام الرفع.</p></div><button class="btn primary" onclick="saveMediaCenter()">حفظ</button></div>
+ <div class="grid2">
+   <div><label>اللوجو الرئيسي</label>${uploadBox('mc_logo',m.logo||v.header?.logo||'/assets/logo.jpg','PNG / JPG / WEBP')}</div>
+   <div><label>لوجو شاشة الدخول</label>${uploadBox('mc_splash',m.splashLogo||'/assets/green-moon-logo-transparent.png','PNG / JPG / WEBP')}</div>
+   <div><label>صورة Green Moon Doctor</label>${uploadBox('mc_doctor',m.doctor||'/assets/green-moon-doctor.png','PNG / JPG / WEBP')}</div>
+   <div><label>الصورة الاحتياطية</label>${uploadBox('mc_fallback',m.defaultFallback||'/assets/logo.jpg','PNG / JPG / WEBP')}</div>
+   <div><label>صورة Hero الاحتياطية</label>${uploadBox('mc_hero',m.heroFallback||'/assets/logo.jpg','تظهر فقط لو مفيش Hero مرفوع')}</div>
+ </div>
+ <div class="panel" style="margin-top:14px"><div class="head"><div><h3>✍️ نصوص أساسية</h3></div></div><div class="grid2">
+  <div class="field"><label>التصنيفات</label><input id="mc_cat" value="${esc(c.categoriesHeading||'تسوق حسب الفئة')}"></div>
+  <div class="field"><label>المنتجات</label><input id="mc_prod" value="${esc(c.productsHeading||'وصل حديثًا')}"></div>
+  <div class="field"><label>العروض</label><input id="mc_deal" value="${esc(c.dealsHeading||'العروض الحالية')}"></div>
+  <div class="field"><label>المقالات</label><input id="mc_art" value="${esc(c.articlesHeading||'مقالات Green Moon')}"></div>
+ </div></div></div>`;
+}
+async function saveMediaCenter(){
+ const v={...(D.settings.gm_site||{})},m={...(v.media||{})},c={...(v.content||{})};
+ m.logo=$('mc_logo_value').value;m.splashLogo=$('mc_splash_value').value;m.doctor=$('mc_doctor_value').value;m.defaultFallback=$('mc_fallback_value').value;m.heroFallback=$('mc_hero_value').value;
+ c.categoriesHeading=$('mc_cat').value;c.productsHeading=$('mc_prod').value;c.dealsHeading=$('mc_deal').value;c.articlesHeading=$('mc_art').value;
+ v.media=m;v.content=c;D.settings={...D.settings,gm_site:v};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});toast('تم حفظ الصور والنصوص ✓');await load();
+}
+
+function builder(){
+ const s=D.settings||{}, v=s.gm_site||{};
+ const header=v.header||{}, heroV=v.hero||{}, colors=v.colors||{}, nav=v.nav||{}, footer=v.footer||{}, sections=v.sections||{};
+ return `<div class="panel">
+   <div class="head"><div><h2>🎨 التحكم الكامل في واجهة الموقع</h2><p>من هنا تتحكم في الشكل والمحتوى والترتيب بدون تعديل الكود. كل القيم تُحفظ في إعدادات المتجر.</p></div><button class="btn primary" onclick="saveBuilder()">حفظ كل التعديلات</button></div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🧭 الهيدر</h3><p>الشعار، الاسم، السطر التعريفي، أزرار الهيدر.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>اسم المتجر في الهيدر</label><input id="b_store" value="${esc(header.storeName||s.storeName||'Green Moon Plants and Flowers')}"></div>
+      <div class="field"><label>اسم المالك/السطر الثاني</label><input id="b_owner" value="${esc(header.owner||'Mohamed Elgarhy')}"></div>
+      <div class="field"><label>الجملة التعريفية</label><input id="b_tag" value="${esc(header.tagline||'نباتات أكتر.. حياة أجمل 🌿')}"></div>
+      <div class="field"><label>شعار Green Moon — ارفع صورة فقط</label>${uploadBox('b_logo',header.logo||s.logo||'/assets/logo.jpg','اللوجو الرئيسي')}</div>
+      <div class="field"><label>Placeholder البحث</label><input id="b_search" value="${esc(header.searchPlaceholder||'ابحث عن نباتات، قصاري، مستلزمات...')}"></div>
+      <div class="field"><label>نص زر التواصل</label><input id="b_contact" value="${esc(header.contactText||'💬 تواصل معنا')}"></div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🖼️ الـ Hero</h3><p>الصورة، العنوان، الوصف، زر الدعوة لاتخاذ إجراء.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>عنوان Hero</label><input id="b_ht" value="${esc(heroV.title||'الطبيعة أقرب إليك')}"></div>
+      <div class="field"><label>الوصف</label><input id="b_hs" value="${esc(heroV.subtitle||'نباتات تضيف حياة وجمال لكل مكان')}"></div>
+      <div class="field"><label>نص الزر</label><input id="b_hc" value="${esc(heroV.cta||'تسوق الآن')}"></div>
+      <div class="field"><label>صورة Hero — ارفع صورة فقط</label>${uploadBox('b_hi',heroV.image||'','صورة Hero')}</div>
+      <div class="field"><label>الرابط</label><input id="b_hl" value="${esc(heroV.link||'#products')}"></div>
+      <div class="field"><label>ارتفاع Hero بالموبايل</label><input id="b_hh" type="number" value="${Number(heroV.mobileHeight||390)}"></div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🎨 الألوان والهوية</h3><p>غيّر ألوان الموقع بالكامل من مكان واحد.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>الأخضر الأساسي</label><input id="b_c1" value="${esc(colors.primary||'#063c2b')}"></div>
+      <div class="field"><label>الأخضر الداكن</label><input id="b_c2" value="${esc(colors.dark||'#021c14')}"></div>
+      <div class="field"><label>الذهبي</label><input id="b_c3" value="${esc(colors.gold||'#d9b866')}"></div>
+      <div class="field"><label>خلفية الموقع</label><input id="b_c4" value="${esc(colors.background||'#f7f3e9')}"></div>
+      <div class="field"><label>لون النص</label><input id="b_c5" value="${esc(colors.text||'#17362b')}"></div>
+      <div class="field"><label>شكل الحواف</label><input id="b_radius" type="number" value="${Number(colors.radius||22)}"></div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>📱 شريط الموبايل السفلي</h3><p>النصوص والظهور والترتيب.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>الرئيسية</label><input id="b_n1" value="${esc(nav.home||'الرئيسية')}"></div>
+      <div class="field"><label>الأقسام</label><input id="b_n2" value="${esc(nav.categories||'الأقسام')}"></div>
+      <div class="field"><label>العروض</label><input id="b_n3" value="${esc(nav.deals||'العروض')}"></div>
+      <div class="field"><label>المقالات</label><input id="b_n4" value="${esc(nav.articles||'المقالات')}"></div>
+      <div class="field"><label>تواصل معنا</label><input id="b_n5" value="${esc(nav.contact||'تواصل معنا')}"></div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>👁️ إظهار وإخفاء أقسام الصفحة</h3><p>اقفل أو افتح أي قسم بدون حذف بياناته.</p></div></div>
+    <div class="grid2">
+      ${[
+        ['showCategories','تسوق حسب الفئة'],
+        ['showHero','Hero'],
+        ['showDeals','الصفقات'],
+        ['showProducts','المنتجات'],
+        ['showArticles','المقالات'],
+        ['showReviews','ماذا قالوا عنا'],
+        ['showRewards','المكافآت'],
+        ['showDoctor','Green Moon Doctor'],
+        ['showContact','التواصل'],
+        ['showFooter','الفوتر']
+      ].map(([k,l])=>`<label class="field" style="display:flex;align-items:center;gap:10px"><input id="b_${k}" type="checkbox" ${sections[k]!==false?'checked':''}><span>${l}</span></label>`).join('')}
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🎬 شاشة الدخول Motion — 7 ثواني</h3><p>اللوجو والصورة والنصوص والحركة كلها قابلة للتعديل من هنا.</p></div></div>
+    <div class="grid2">
+      <label class="field" style="display:flex;align-items:center;gap:9px"><input id="sp_enabled" type="checkbox" ${v.splash?.enabled!==false?'checked':''}><span>تشغيل شاشة الدخول</span></label>
+      <div class="field"><label>المدة بالثواني</label><input id="sp_duration" type="number" min="3" max="12" value="${Number(v.splash?.duration||7)}"></div>
+      <div class="field"><label>العنوان</label><input id="sp_title" value="${esc(v.splash?.title||header.storeName||'Green Moon')}"></div>
+      <div class="field"><label>السطر التعريفي</label><input id="sp_sub" value="${esc(v.splash?.subtitle||'Plants and Flowers')}"></div>
+      <div class="field"><label>اسم المالك</label><input id="sp_owner" value="${esc(v.splash?.owner||header.owner||'Mohamed Elgarhy')}"></div>
+      <div class="field"><label>الجملة السفلية</label><input id="sp_tag" value="${esc(v.splash?.tagline||'THE NATURE • THE GREEN MOON EXPERIENCE')}"></div>
+    </div>
+    <div class="field" style="margin-top:12px"><label>لوجو شاشة الدخول — صورة فقط</label>${uploadBox('sp_logo',v.splash?.logo||v.media?.splashLogo||header.logo||'/assets/green-moon-logo-transparent.png','لوجو شاشة الدخول')}</div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🖼️ الصور الأساسية</h3><p>لا توجد صورة ثابتة لا يمكن تغييرها: ارفع البديل من هنا.</p></div></div>
+    <div class="grid2">
+      <div><label>صورة Green Moon Doctor</label>${uploadBox('md_doctor',v.media?.doctor||'/assets/green-moon-doctor.png','صورة الدكتور')}</div>
+      <div><label>الصورة الاحتياطية عند عدم وجود صورة</label>${uploadBox('md_fallback',v.media?.defaultFallback||'/assets/logo.jpg','صورة احتياطية')}</div>
+      <div><label>صورة Hero الاحتياطية</label>${uploadBox('md_hero',v.media?.heroFallback||'/assets/logo.jpg','صورة Hero احتياطية')}</div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>✍️ النصوص العامة</h3><p>غيّر العناوين الرئيسية الظاهرة في الموقع بدون لمس الكود.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>عنوان التصنيفات</label><input id="ct_categories" value="${esc(v.content?.categoriesHeading||'تسوق حسب الفئة')}"></div>
+      <div class="field"><label>عنوان المنتجات</label><input id="ct_products" value="${esc(v.content?.productsHeading||'وصل حديثًا')}"></div>
+      <div class="field"><label>عنوان العروض</label><input id="ct_deals" value="${esc(v.content?.dealsHeading||'العروض الحالية')}"></div>
+      <div class="field"><label>عنوان المقالات</label><input id="ct_articles" value="${esc(v.content?.articlesHeading||'مقالات Green Moon')}"></div>
+      <div class="field"><label>اسم الفوتر</label><input id="ft_brand" value="${esc(v.footer?.brand||header.storeName||'Green Moon')}"></div>
+      <div class="field"><label>سطر الفوتر</label><input id="ft_sub" value="${esc(v.footer?.sub||'PLANTS AND FLOWERS')}"></div>
+      <div class="field"><label>اسم صاحب العلامة</label><input id="ft_owner" value="${esc(v.footer?.owner||header.owner||'Mohamed Elgarhy')}"></div>
+      <div class="field"><label>حقوق النشر</label><input id="ft_copy" value="${esc(v.footer?.copy||'Green Moon Plants and Flowers © 2026')}"></div>
+    </div>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🔧 أدوات سريعة</h3><p>هذه لا تحذف البيانات؛ فقط تغيّر حالة الواجهة.</p></div></div>
+    <div class="grid3">
+      <button class="btn soft" onclick="go('products')">🌿 المنتجات</button>
+      <button class="btn soft" onclick="go('categories')">🗂️ التصنيفات</button>
+      <button class="btn soft" onclick="go('hero')">🖼️ الشرائح</button>
+      <button class="btn soft" onclick="go('deals')">🎯 الصفقات</button>
+      <button class="btn soft" onclick="go('articles')">📰 المقالات</button>
+      <button class="btn soft" onclick="go('rewards')">🎁 المكافآت</button>
+    </div>
+   </div>
+ </div>`;
+}
+async function saveBuilder(){
+ const s={...D.settings};
+ s.gm_site={
+   header:{
+     storeName:$('b_store').value,owner:$('b_owner').value,tagline:$('b_tag').value,
+     logo:$('b_logo').value,searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
+   },
+   hero:{
+     title:$('b_ht').value,subtitle:$('b_hs').value,cta:$('b_hc').value,
+     image:$('b_hi_value').value,link:$('b_hl').value,mobileHeight:Number($('b_hh').value)||390
+   },
+   splash:{
+     enabled:!!$('sp_enabled').checked,duration:Math.min(12,Math.max(3,Number($('sp_duration').value)||7)),
+     title:$('sp_title').value,subtitle:$('sp_sub').value,owner:$('sp_owner').value,tagline:$('sp_tag').value,
+     logo:$('sp_logo_value').value
+   },
+   media:{
+     logo:$('b_logo_value').value,
+     splashLogo:$('sp_logo_value').value,
+     doctor:$('md_doctor_value').value,
+     defaultFallback:$('md_fallback_value').value,
+     heroFallback:$('md_hero_value').value
+   },
+   content:{
+     categoriesHeading:$('ct_categories').value,productsHeading:$('ct_products').value,
+     dealsHeading:$('ct_deals').value,articlesHeading:$('ct_articles').value
+   },
+   footer:{
+     brand:$('ft_brand').value,sub:$('ft_sub').value,owner:$('ft_owner').value,copy:$('ft_copy').value
+   },
+   colors:{
+     primary:$('b_c1').value,dark:$('b_c2').value,gold:$('b_c3').value,
+     background:$('b_c4').value,text:$('b_c5').value,radius:Number($('b_radius').value)||22
+   },
+   nav:{
+     home:$('b_n1').value,categories:$('b_n2').value,deals:$('b_n3').value,
+     articles:$('b_n4').value,contact:$('b_n5').value
+   },
+   sections:{
+     showCategories:$('b_showCategories').checked,showHero:$('b_showHero').checked,
+     showDeals:$('b_showDeals').checked,showProducts:$('b_showProducts').checked,
+     showArticles:$('b_showArticles').checked,showReviews:$('b_showReviews').checked,showRewards:$('b_showRewards').checked,
+     showDoctor:$('b_showDoctor').checked,showContact:$('b_showContact').checked,
+     showFooter:$('b_showFooter').checked
+   }
+ };
+ await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});
+ D.settings=s; toast('تم حفظ التحكم الكامل في واجهة الموقع');
+}
+
+
+function reviews(){const a=Array.isArray(D.reviews)?D.reviews:[];return `<div class="panel"><div class="head"><div><h2>💬 ماذا قالوا عنا</h2><p>أضف صورة العميل/التجربة مع كابشن، ويمكنك ترتيبها وإظهار أو إخفاء أي مراجعة.</p></div><button class="btn primary" onclick="reviewForm()">+ إضافة ريفيو</button></div><div class="cards">${a.length?a.map((x,i)=>`<div class="card"><div class="cardmedia"><img src="${esc(x.image||'/assets/logo.jpg')}"></div><div class="cardbody"><h3>${esc(x.name||'عميل Green Moon')}</h3><p>${esc(x.caption||'')}</p><p>⭐ ${Number(x.rating||5)}/5 — ${x.active===false?'مخفي':'ظاهر'}</p><div class="cardactions"><button class="btn soft" onclick="reviewForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="reviewDelete('${esc(x.id)}')">حذف</button></div></div></div>`).join(''):`<div class="empty">لا توجد ريفيوهات حتى الآن.</div>`}</div></div>`}
+function reviewForm(id){const x=(D.reviews||[]).find(z=>String(z.id)===String(id))||{id:Date.now().toString(),name:'',caption:'',image:'',rating:5,active:true};openModal(id?'تعديل الريفيو':'إضافة ريفيو',`<div class="grid2"><div class="field"><label>اسم العميل (اختياري)</label><input id="rv_name" value="${esc(x.name||'')}" placeholder="مثلاً: أ/ محمد"></div><div class="field"><label>التقييم</label><select id="rv_rating">${[5,4,3,2,1].map(n=>`<option value="${n}" ${Number(x.rating||5)===n?'selected':''}>${'★'.repeat(n)} (${n}/5)</option>`).join('')}</select></div></div><div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('rv',x.image||'','صورة الريفيو')}</div><div class="field" style="margin-top:12px"><label>الكابشن / رأي العميل</label><textarea id="rv_caption" placeholder="اكتب رأي العميل هنا...">${esc(x.caption||'')}</textarea></div><label class="field" style="display:flex;align-items:center;gap:8px;margin-top:10px"><input id="rv_active" type="checkbox" ${x.active!==false?'checked':''}> إظهار الريفيو على الموقع</label><div class="modalfoot"><button class="btn primary" onclick="saveReview('${esc(x.id)}')">حفظ الريفيو</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`)}
+async function saveReview(id){const item={id:id||Date.now().toString(),name:$('rv_name').value.trim(),caption:$('rv_caption').value.trim(),image:$('rv_value').value||'',rating:Math.min(5,Math.max(1,Number($('rv_rating').value)||5)),active:!!$('rv_active').checked};if(!item.caption){toast('اكتب كابشن الريفيو');return}const a=[...(D.reviews||[])];const i=a.findIndex(x=>String(x.id)===String(id));if(i>=0)a[i]=item;else a.push(item);D.reviews=a;D.settings={...D.settings,gm_reviews:a};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});closeModal();render();toast('تم حفظ الريفيو بنجاح')}
+async function reviewDelete(id){if(!confirm('حذف الريفيو؟'))return;D.reviews=(D.reviews||[]).filter(x=>String(x.id)!==String(id));D.settings={...D.settings,gm_reviews:D.reviews};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});render();toast('تم حذف الريفيو')}
+
+function vouchers(){
+ const rows=D.products.filter(p=>p.voucherConfig?.enabled||p.giftConfig?.enabled);
+ return `<div class="panel"><div class="head"><div><h2>🎟️ القسائم الشرائية</h2><p>تحكم مركزي سريع في القسائم الموجودة على المنتجات.</p></div><button class="btn primary" onclick="go('products')">إدارة المنتجات</button></div><div class="tablewrap"><table class="table"><tr><th>المنتج</th><th>قيمة القسيمة</th><th>المنتجات المشاركة</th><th>الحالة</th><th>إجراء</th></tr>${rows.length?rows.map(p=>{const v=p.voucherConfig||p.giftConfig||{};return `<tr><td><b>${esc(p.name)}</b></td><td>${Number(v.value??v.voucherValue??0)} ج</td><td>${(v.products||[]).map(id=>D.products.find(q=>String(q.id)===String(id))?.name).filter(Boolean).map(esc).join('، ')||'—'}</td><td><span class="status">مفعلة</span></td><td><button class="btn soft" onclick="productForm('${esc(p.id)}')">تعديل</button></td></tr>`}).join(''):`<tr><td colspan="5" class="empty">لا توجد قسائم مفعلة حاليًا. فعّلها من تعديل أي منتج.</td></tr>`}</table></div></div>`;
+}
+function ticker(){
+ const t=D.ticker||{},items=Array.isArray(t.items)?t.items:[];
+ return `<div class="panel"><div class="head"><div><h2>📰 شريط الأخبار</h2><p>الشريط الموجود أسفل الموقع. أضف رسائل، عروض، أو تنبيهات وغيّر ترتيبها.</p></div><button class="btn primary" onclick="saveTicker()">حفظ الشريط</button></div><div class="grid2"><label class="field" style="display:flex;align-items:center;gap:9px"><input id="tk_enabled" type="checkbox" ${t.enabled!==false?'checked':''}><span>إظهار الشريط للعميل</span></label><div class="field"><label>سرعة الحركة بالثواني</label><input id="tk_speed" type="number" min="20" max="180" value="${Number(t.speed||70)}"></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px"><h3>الرسائل</h3><button class="btn soft" onclick="addTickerRow()">+ إضافة رسالة</button></div><div id="tickerRows" style="display:grid;gap:10px;margin-top:10px">${items.map(tickerRow).join('')||tickerRow({text:'🌿 أهلاً بكم في Green Moon — نباتات تضيف حياة وجمال لكل مكان',active:true})}</div></div>`;
+}
+function tickerRow(x={}){return `<div class="ticker-row" style="padding:12px;border:1px solid #e2e8e3;border-radius:14px;background:#fff"><div class="grid2"><div class="field"><label>النص</label><input class="tk_text" value="${esc(x.text||'')}"></div><div class="field"><label>الرابط الاختياري</label><input class="tk_link" value="${esc(x.link||'')}"></div></div><div style="display:flex;justify-content:space-between;margin-top:8px"><label><input class="tk_active" type="checkbox" ${x.active!==false?'checked':''}> إظهار</label><button type="button" class="btn danger" onclick="this.closest('.ticker-row').remove()">حذف</button></div></div>`}
+function addTickerRow(){document.getElementById('tickerRows')?.insertAdjacentHTML('beforeend',tickerRow({text:'',active:true}))}
+async function saveTicker(){const items=[...document.querySelectorAll('.ticker-row')].map(r=>({text:r.querySelector('.tk_text')?.value.trim()||'',link:r.querySelector('.tk_link')?.value.trim()||'',active:!!r.querySelector('.tk_active')?.checked})).filter(x=>x.text);D.ticker={enabled:!!$('tk_enabled').checked,speed:Math.min(180,Math.max(20,Number($('tk_speed').value)||70)),items};const s={...D.settings,gm_ticker:D.ticker};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});D.settings=s;toast('تم حفظ شريط الأخبار')}
+
+function settings(){
+ const s=D.settings||{},sc=s.gm_social||{};
+ const wa=sc.whatsapp||s.whatsapp||'', phone=sc.phone||'';
+ return `<div class="panel"><div class="head"><div><h2>⚙️ إعدادات المتجر</h2><p>بيانات المتجر والشحن ووسائل التواصل.</p></div><button class="btn primary" onclick="saveSettings()">حفظ</button></div><div class="grid2"><div class="field"><label>اسم المتجر</label><input id="sn" value="${esc(s.storeName||'Green Moon Plants and Flowers')}"></div><div class="field"><label>عنوان الموقع</label><input id="st" value="${esc(s.title||'Green Moon 🌿')}"></div><div class="field"><label>الوصف</label><input id="ss" value="${esc(s.subtitle||'')}" ></div><div class="field"><label>واتساب</label><input id="sw" value="${esc(wa)}" placeholder="2010xxxxxxxx"></div><div class="field"><label>الشحن العام</label><input id="sh" type="number" value="${D.shipping}"></div></div></div>
+ <div class="panel" style="margin-top:14px"><div class="head"><div><h3>📱 وسائل التواصل الاجتماعي</h3><p>الأيقونات تظهر صغيرة أسفل الموقع. اكتب الروابط أو الأرقام، والعميل يضغط عليها لفتح التطبيق/الصفحة مباشرة.</p></div></div><div class="grid2"><div class="field"><label>Facebook</label><input id="sf_fb" value="${esc(sc.facebook||'')}" placeholder="https://facebook.com/..."></div><div class="field"><label>Instagram</label><input id="sf_ig" value="${esc(sc.instagram||'')}" placeholder="https://instagram.com/..."></div><div class="field"><label>TikTok</label><input id="sf_tt" value="${esc(sc.tiktok||'')}" placeholder="https://tiktok.com/@..."></div><div class="field"><label>Twitter / X</label><input id="sf_x" value="${esc(sc.twitter||sc.x||'')}" placeholder="https://x.com/..."></div><div class="field"><label>رقم واتساب</label><input id="sf_wa" value="${esc(wa)}" placeholder="2010xxxxxxxx"></div><div class="field"><label>رقم الاتصال</label><input id="sf_phone" value="${esc(phone)}" placeholder="2010xxxxxxxx"></div></div><div class="grid3" style="margin-top:12px">${[['facebook','Facebook'],['instagram','Instagram'],['tiktok','TikTok'],['twitter','Twitter / X'],['whatsapp','WhatsApp'],['phone','اتصال']].map(([k,l])=>`<label class="field" style="display:flex;align-items:center;gap:8px"><input id="sf_on_${k}" type="checkbox" ${sc[k+'Enabled']!==false?'checked':''}><span>إظهار ${l}</span></label>`).join('')}</div></div>`}
+async function saveSettings(){
+ const old=D.settings||{}, oldSc=old.gm_social||{};
+ const social={
+  facebook:$('sf_fb')?.value.trim()||'',instagram:$('sf_ig')?.value.trim()||'',tiktok:$('sf_tt')?.value.trim()||'',twitter:$('sf_x')?.value.trim()||'',
+  whatsapp:$('sf_wa')?.value.trim()||$('sw')?.value.trim()||'',phone:$('sf_phone')?.value.trim()||'',
+  facebookEnabled:!!$('sf_on_facebook')?.checked,instagramEnabled:!!$('sf_on_instagram')?.checked,tiktokEnabled:!!$('sf_on_tiktok')?.checked,
+  twitterEnabled:!!$('sf_on_twitter')?.checked,whatsappEnabled:!!$('sf_on_whatsapp')?.checked,phoneEnabled:!!$('sf_on_phone')?.checked
+ };
+ D.settings={...old,storeName:$('sn').value,title:$('st').value,subtitle:$('ss').value,whatsapp:social.whatsapp,gm_social:social};
+ await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});await api('/api/admin/shipping',{method:'PUT',body:JSON.stringify({price:+$('sh').value||0})});await load();toast('تم حفظ الإعدادات ووسائل التواصل');
+}
+
+function openModal(title,body){$('modalBody').innerHTML=`<div class="modalhead"><h2>${title}</h2></div>${body}`;$('modal').classList.remove('hidden')}
+function closeModal(){$('modal').classList.add('hidden')}
+$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+if(token()){applyAdminBrand();login();}else{applyAdminBrand();}
+</script>
+</body></html>
