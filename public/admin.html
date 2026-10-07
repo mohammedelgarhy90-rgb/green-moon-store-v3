@@ -48,7 +48,7 @@
   <button class="nav" data-tab="hero"><span class="ico">🖼️</span> Hero والعروض الرئيسية</button>
   <button class="nav" data-tab="deals"><span class="ico">🎯</span> الصفقات</button>
   <button class="nav" data-tab="articles"><span class="ico">📰</span> المقالات</button>
-  <button class="nav" data-tab="reviews"><span class="ico">💬</span> ماذا قالوا عنا</button>
+  <button class="nav" data-tab="reviews"><span class="ico">💬</span> ماذا قالوا عنا</button><button class="nav" data-tab="about"><span class="ico">🏢</span> عن الشركة</button>
   <button class="nav" data-tab="rewards"><span class="ico">🎁</span> المكافآت</button>
   <button class="nav" data-tab="vouchers"><span class="ico">🎟️</span> القسائم الشرائية</button>
   <button class="nav" data-tab="promos"><span class="ico">🏷️</span> البروموكودات</button>
@@ -97,7 +97,7 @@ async function load(){
  render();
 }
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function render(){const f={home,products,categories,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,media,homebuilder};$('content').innerHTML=f[tab]()}
+function render(){const f={home,products,categories,hero,deals,articles,reviews,about,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,media,homebuilder};$('content').innerHTML=f[tab]()}
 function home(){
  return `<div class="stats">
  <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
@@ -268,6 +268,11 @@ async function saveContent(){const s={...D.settings,gm_categories:D.categories,g
 async function collectionDelete(type,id){if(!confirm('حذف العنصر؟'))return;D[type]=(D[type]||[]).filter(x=>String(x.id)!==String(id));await saveContent();render();toast('تم الحذف')}
 let dragData=null;function dragStart(e,type){dragData={type,id:e.currentTarget.dataset.id}}async function dropItem(e,type){if(!dragData||dragData.type!==type)return;const target=e.currentTarget.dataset.id,a=D[type]||[],from=a.findIndex(x=>String(x.id)===String(dragData.id)),to=a.findIndex(x=>String(x.id)===String(target));if(from<0||to<0||from===to)return;const [it]=a.splice(from,1);a.splice(to,0,it);await saveContent();render();dragData=null;toast('تم تغيير الترتيب')}
 
+function about(){const a=D.settings?.gm_site?.about||{};const pts=Array.isArray(a.points)?a.points:[];return `<div class="panel"><div class="head"><div><h2>🏢 عن Green Moon</h2><p>القسم الاحترافي الظاهر للعميل عن الشركة. كل خانة هنا مرتبطة مباشرة بقسم "عن Green Moon" في الموقع.</p></div><button class="btn primary" onclick="saveAbout()">حفظ قسم الشركة</button></div><div class="gm-admin-help"><b>📍 أين يظهر؟</b><p>سيظهر أسفل المقالات وقبل Green Moon Doctor. الصورة والنصوص والبطاقات كلها تظهر تلقائيًا للعميل بعد الحفظ.</p></div><div class="field"><label>الصورة الرئيسية للشركة</label>${uploadBox('ab_img',a.image||D.settings?.gm_site?.media?.defaultFallback||'/assets/logo.jpg','صورة قسم عن الشركة')}</div><div class="grid2" style="margin-top:12px"><div class="field"><label>الجملة الصغيرة</label><input id="ab_kicker" value="${esc(a.kicker||'GREEN MOON • ABOUT US')}" placeholder="مثلاً: GREEN MOON • ABOUT US"></div><div class="field"><label>عنوان القسم</label><input id="ab_title" value="${esc(a.title||'عن Green Moon')}" placeholder="عن Green Moon"></div><div class="field" style="grid-column:1/-1"><label>نبذة الشركة</label><textarea id="ab_intro" style="min-height:100px">${esc(a.intro||'')}</textarea></div><div class="field"><label>نص الزر</label><input id="ab_cta" value="${esc(a.cta||'اكتشف Green Moon')}" placeholder="اكتشف Green Moon"></div><div class="field"><label>رابط الزر</label><input id="ab_link" value="${esc(a.link||'#products')}" placeholder="#products"></div></div><div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div class="head"><div><h3>⭐ البنود الاحترافية</h3><p>مثل الرؤية والرسالة والجودة وخدمة العملاء. تقدر تضيف أو تعدل أو تحذف أي بند.</p></div><button class="btn soft" onclick="addAboutPoint()">+ إضافة بند</button></div><div id="aboutPointsRows" style="display:grid;gap:10px">${pts.map(aboutPointRow).join('')||aboutPointRow({title:'رؤيتنا',text:'نخلي الطبيعة جزءًا أجمل من كل مساحة.'})+aboutPointRow({title:'رسالتنا',text:'منتجات نباتية مختارة وخدمة موثوقة وتجربة شراء مريحة.'})+aboutPointRow({title:'الجودة',text:'اختيارات مدروسة ونهتم بالتفاصيل قبل وصول المنتج إليك.'})+aboutPointRow({title:'خدمة العملاء',text:'مساعدة حقيقية لاختيار الأنسب ومتابعة الطلب حتى التسليم.'})}</div></div><div class="modalfoot"><button class="btn primary" onclick="saveAbout()">حفظ ونشر على الموقع</button></div></div>`}
+function aboutPointRow(x={}){return `<div class="about-point-admin" style="padding:12px;border:1px solid #e2e8e3;border-radius:14px;background:#fff"><div class="grid2"><div class="field"><label>عنوان البند</label><input class="abp_title" value="${esc(x.title||'')}" placeholder="رؤيتنا"></div><div class="field"><label>الشرح</label><input class="abp_text" value="${esc(x.text||'')}" placeholder="اكتب شرحًا مختصرًا واحترافيًا"></div></div><button type="button" class="btn danger" onclick="this.closest('.about-point-admin').remove()">حذف البند</button></div>`}
+function addAboutPoint(){document.getElementById('aboutPointsRows')?.insertAdjacentHTML('beforeend',aboutPointRow({title:'',text:''}))}
+async function saveAbout(){const old={...(D.settings?.gm_site||{})},points=[...document.querySelectorAll('.about-point-admin')].map(r=>({title:r.querySelector('.abp_title')?.value.trim()||'',text:r.querySelector('.abp_text')?.value.trim()||''})).filter(x=>x.title);old.about={image:$('ab_img_value')?.value||'',kicker:$('ab_kicker').value.trim(),title:$('ab_title').value.trim(),intro:$('ab_intro').value.trim(),cta:$('ab_cta').value.trim(),link:$('ab_link').value.trim(),points};D.settings={...D.settings,gm_site:old};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});toast('تم حفظ قسم عن الشركة ونشره على الموقع ✓');await load()}
+
 function rewards(){
  const r=D.rewards||{};
  const items=Array.isArray(r.popupItems)&&r.popupItems.length?r.popupItems:[{icon:'🚚',title:'توصيل مجاني',text:'اطلب بقيمة 500 جنيه أو أكثر واستمتع بتوصيل مجاني على طلبك.',active:true},{icon:'🎁',title:'هدية مع طلبك',text:'عند وصول طلبك إلى 750 جنيه، استمتع بهدية مميزة من Green Moon.',active:true},{icon:'⭐',title:'مكافأة إضافية',text:'اطلب بقيمة 1000 جنيه أو أكثر واحصل على مكافأة إضافية مع طلبك.',active:true}];
@@ -427,8 +432,8 @@ function builder(){
     <div class="head"><div><h3>🧭 الهيدر</h3><p>الشعار، الاسم، السطر التعريفي، أزرار الهيدر.</p></div></div>
     <div class="grid2">
       <div class="field"><label>اسم المتجر في الهيدر</label><input id="b_store" value="${esc(header.storeName||s.storeName||'Green Moon Plants and Flowers')}"></div>
-      <div class="field"><label>اسم المالك/السطر الثاني</label><input id="b_owner" value="${esc(header.owner||'Mohamed Elgarhy')}"></div>
-      <div class="field"><label>الجملة التعريفية</label><input id="b_tag" value="${esc(header.tagline||'نباتات أكتر.. حياة أجمل 🌿')}"></div>
+      <div class="field"><label>اسم صاحب العلامة</label><input id="b_owner" value="${esc(header.owner||'Mohamed Elgarhy')}"><div class="gm-field-help">📍 يظهر مباشرة تحت Plants and Flowers باللون الأبيض.</div></div>
+      <div class="field"><label>السطر الذهبي تحت الاسم</label><input id="b_tag" value="${esc(header.tagline||'Plants and Flowers')}"><div class="gm-field-help">📍 يظهر مباشرة تحت Green Moon باللون الذهبي.</div></div>
       <div class="field"><label>شعار Green Moon — ارفع صورة فقط</label>${uploadBox('b_logo',header.logo||s.logo||'/assets/logo.jpg','اللوجو الرئيسي')}</div>
       <div class="field"><label>Placeholder البحث</label><input id="b_search" value="${esc(header.searchPlaceholder||'ابحث عن نباتات، قصاري، مستلزمات...')}"></div>
       <div class="field"><label>نص زر التواصل</label><input id="b_contact" value="${esc(header.contactText||'💬 تواصل معنا')}"></div>
@@ -447,6 +452,7 @@ function builder(){
     </div>
    </div>
 
+   <div class="panel" style="margin-top:14px"><div class="head"><div><h3>🏢 قسم عن الشركة</h3><p>تحكم سريع في القسم، والتفاصيل الكاملة موجودة في تبويب "عن الشركة".</p></div><button class="btn soft" onclick="go('about')">فتح إعدادات عن الشركة</button></div><div class="grid2"><label class="field" style="display:flex;align-items:center;gap:10px"><input id="b_showAbout" type="checkbox" ${sections.showAbout!==false?'checked':''}><span>إظهار قسم عن الشركة</span></label><div class="field"><label>عنوان مختصر</label><input id="b_about_title" value="${esc(v.about?.title||'عن Green Moon')}"></div></div></div>
    <div class="panel" style="margin-top:14px">
     <div class="head"><div><h3>🎨 الألوان والهوية</h3><p>غيّر ألوان الموقع بالكامل من مكان واحد.</p></div></div>
     <div class="grid2">
@@ -489,7 +495,7 @@ function builder(){
    </div>
 
    <div class="panel" style="margin-top:14px">
-    <div class="head"><div><h3>🎬 شاشة الدخول Motion — 7 ثواني</h3><p>اللوجو والصورة والنصوص والحركة كلها قابلة للتعديل من هنا.</p></div></div>
+    <div class="head"><div><h3>🎬 شاشة الدخول Motion — 5 ثواني</h3><p>اللوجو والصورة والنصوص والحركة كلها قابلة للتعديل من هنا.</p></div></div>
     <div class="grid2">
       <label class="field" style="display:flex;align-items:center;gap:9px"><input id="sp_enabled" type="checkbox" ${v.splash?.enabled!==false?'checked':''}><span>تشغيل شاشة الدخول</span></label>
       <div class="field"><label>المدة بالثواني</label><input id="sp_duration" type="number" min="5" max="5" value="5"></div>
@@ -541,7 +547,7 @@ async function saveBuilder(){
  const s={...D.settings};
  s.gm_site={
    header:{
-     storeName:$('b_store').value,owner:$('b_owner').value,tagline:$('b_tag').value,taglineSmall:$('b_tag').value,
+     brandName:$('b_store').value,storeName:$('b_store').value,owner:$('b_owner').value,tagline:$('b_tag').value,taglineSmall:$('b_tag').value,
      logo:$('b_logo_value').value,searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
    },
    hero:{
@@ -567,6 +573,7 @@ async function saveBuilder(){
    footer:{
      brand:$('ft_brand').value,sub:$('ft_sub').value,owner:$('ft_owner').value,copy:$('ft_copy').value
    },
+   about:{...(s.gm_site?.about||{}),title:$('b_about_title')?.value||s.gm_site?.about?.title||'عن Green Moon'},
    colors:{
      primary:$('b_c1').value,dark:$('b_c2').value,gold:$('b_c3').value,
      background:$('b_c4').value,text:$('b_c5').value,radius:Number($('b_radius').value)||22
@@ -578,7 +585,7 @@ async function saveBuilder(){
    sections:{
      showCategories:$('b_showCategories').checked,showHero:$('b_showHero').checked,
      showDeals:$('b_showDeals').checked,showProducts:$('b_showProducts').checked,
-     showArticles:$('b_showArticles').checked,showReviews:$('b_showReviews').checked,showRewards:$('b_showRewards').checked,
+     showArticles:$('b_showArticles').checked,showReviews:$('b_showReviews').checked,showAbout:$('b_showAbout')?.checked!==false,showRewards:$('b_showRewards').checked,
      showDoctor:$('b_showDoctor').checked,showContact:$('b_showContact').checked,
      showFooter:$('b_showFooter').checked
    }
@@ -631,7 +638,7 @@ if(token()){applyAdminBrand();login();}else{applyAdminBrand();}
 </script>
 <script id="gm-login-logo-runtime">(async function(){try{const r=await fetch('/api/logo',{cache:'no-store'});const d=await r.json();if(d.logo){const im=document.querySelector('#login .loginmark img');if(im)im.src=d.logo;}}catch(e){}})();</script>
 <script id="gm-admin-field-hints">(function(){
- const map=[['اسم المتجر','يظهر في الهيدر وأجزاء الهوية'],['اسم المالك','يظهر تحت اسم المتجر'],['الجملة التعريفية','تظهر في الهيدر'],['عنوان Hero','يظهر في منطقة Hero'],['الوصف','يظهر في منطقة Hero'],['نص الزر','يظهر كزر الدعوة للإجراء'],['صورة Hero','تظهر كصورة Hero الرئيسية'],['عنوان العروض','يظهر فوق قسم الصفقات'],['عنوان المقالات','يظهر فوق قسم المقالات'],['التصنيفات','يظهر عنوان قسم التصنيفات'],['المنتجات','يظهر عنوان قسم المنتجات'],['العروض','يظهر عنوان قسم العروض'],['اللوجو','يظهر في الهوية وشاشة الدخول حسب الخانة'],['لوجو شاشة الدخول','يظهر عند فتح لوحة التحكم'],['صورة Green Moon Doctor','تظهر في قسم الطبيب'],['الصورة الاحتياطية','تستخدم عند غياب صورة'],['صورة Hero الاحتياطية','تستخدم عند غياب Hero'],['تفاصيل المنتج','تظهر في تفاصيل المنتج للعميل'],['شحن المنتج','يُستخدم في حساب الشحن للمنتج'],['قيمة القسيمة','تحدد رصيد الشراء المتاح'],['اختيارات الهدايا','تظهر للعميل كخيارات هدية']];
+ const map=[['اسم المتجر','يظهر في الهيدر وأجزاء الهوية'],['اسم المالك','يظهر تحت اسم المتجر'],['الجملة التعريفية','تظهر في الهيدر'],['عنوان Hero','يظهر في منطقة Hero'],['الوصف','يظهر في منطقة Hero'],['نص الزر','يظهر كزر الدعوة للإجراء'],['صورة Hero','تظهر كصورة Hero الرئيسية'],['عنوان العروض','يظهر فوق قسم الصفقات'],['عنوان المقالات','يظهر فوق قسم المقالات'],['التصنيفات','يظهر عنوان قسم التصنيفات'],['المنتجات','يظهر عنوان قسم المنتجات'],['العروض','يظهر عنوان قسم العروض'],['اللوجو','يظهر في الهوية وشاشة الدخول حسب الخانة'],['لوجو شاشة الدخول','يظهر عند فتح لوحة التحكم'],['صورة Green Moon Doctor','تظهر في قسم الطبيب'],['الصورة الاحتياطية','تستخدم عند غياب صورة'],['صورة Hero الاحتياطية','تستخدم عند غياب Hero'],['تفاصيل المنتج','تظهر في تفاصيل المنتج للعميل'],['شحن المنتج','يُستخدم في حساب الشحن للمنتج'],['قيمة القسيمة','تحدد رصيد الشراء المتاح'],['اختيارات الهدايا','تظهر للعميل كخيارات هدية'],['الصورة الرئيسية للشركة','تظهر داخل قسم عن Green Moon في واجهة العميل'],['نبذة الشركة','تظهر كالمقدمة الرئيسية لقسم عن الشركة'],['عنوان القسم','يظهر كعنوان قسم عن الشركة'],['السطر الذهبي تحت الاسم','يظهر تحت Green Moon مباشرة في الهيدر'],['اسم صاحب العلامة','يظهر تحت Plants and Flowers مباشرة']];
  function add(){document.querySelectorAll('.field label').forEach(l=>{if(l.dataset.gmHint)return;const txt=l.textContent.trim();const hit=map.find(x=>txt.includes(x[0]));if(!hit)return;const d=document.createElement('div');d.className='gm-field-help';d.textContent='📍 '+hit[1];l.insertAdjacentElement('afterend',d);l.dataset.gmHint='1'});}
  new MutationObserver(add).observe(document.body,{childList:true,subtree:true});add();
 })();</script>
