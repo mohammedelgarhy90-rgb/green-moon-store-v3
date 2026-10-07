@@ -1046,6 +1046,13 @@ function resolveRelatedOffer(product, offerId) {
         const products =
           await getProducts(env);
 
+        const submittedGiftsEarly = Array.isArray(body.gifts) ? body.gifts : [];
+        const voucherLinesEarly = Array.isArray(body.voucherItems) ? body.voucherItems : [];
+        const rewardKeys = new Set([
+          ...submittedGiftsEarly.map(x => 'gift|' + String(x.triggerProductId) + '|' + String(x.productId)),
+          ...voucherLinesEarly.map(x => 'voucher|' + String(x.triggerProductId) + '|' + String(x.productId))
+        ]);
+
         const items =
           body.items
             .map(item => {
@@ -1074,10 +1081,12 @@ const relatedOffer =
     item.gmOfferId || ''
   );
 
+const isReward = (item.isGift || item.isVoucher) && rewardKeys.has(String(item.isGift ? 'gift' : 'voucher') + '|' + String(item.triggerProductId || '') + '|' + String(item.productId));
+
 const finalPrice =
-  relatedOffer
-    ? relatedOffer.price
-    : (Number(product.price) || 0);
+  isReward
+    ? 0
+    : (relatedOffer ? relatedOffer.price : (Number(product.price) || 0));
 
 return {
   productId: product.id,
@@ -1085,7 +1094,7 @@ return {
   price: finalPrice,
   quantity,
   shippingPrice:
-    Number(product.shippingPrice) || 0,
+    isReward ? 0 : (Number(product.shippingPrice) || 0),
   relatedOfferId:
     relatedOffer?.offerId || '',
   relatedOfferPrice:
@@ -1111,9 +1120,9 @@ return {
         // Server-authoritative gifts and voucher purchases. Client prices for these lines are never trusted.
         const triggerMap = new Map();
         for (const it of items) triggerMap.set(String(it.productId), (triggerMap.get(String(it.productId)) || 0) + Number(it.quantity || 1));
-        const submittedGifts = Array.isArray(body.gifts) ? body.gifts : [];
+        const submittedGifts = submittedGiftsEarly;
         const giftLines = [];
-        const voucherLines = Array.isArray(body.voucherItems) ? body.voucherItems : [];
+        const voucherLines = voucherLinesEarly;
         for (const g of submittedGifts) {
           const trigger = products.find(p => String(p.id) === String(g.triggerProductId));
           const gift = products.find(p => String(p.id) === String(g.productId));
@@ -1124,13 +1133,14 @@ return {
           if (used + q > allowed) return json({error:'تجاوزت عدد الهدايا المسموح بها.'},400);
           giftLines.push({triggerProductId:trigger.id,productId:gift.id,name:gift.name,price:0,quantity:q,normalPrice:Number(gift.price)||0,lineTotal:0});
         }
-        for (const v of voucherLines) {
+        for (let vi = 0; vi < voucherLines.length; vi++) {
+          const v = voucherLines[vi];
           const trigger = products.find(p => String(p.id) === String(v.triggerProductId));
           const item = products.find(p => String(p.id) === String(v.productId));
           const q = Math.max(1, Number(v.quantity) || 1);
-          if (!trigger || !item || !trigger.voucherConfig?.enabled || !trigger.voucherConfig.products.map(String).includes(String(item.id))) return json({error:'منتج القسيمة غير متاح.'},400);
+          if (!trigger || !item || !trigger.voucherConfig?.enabled || !Array.isArray(trigger.voucherConfig.products) || !trigger.voucherConfig.products.map(String).includes(String(item.id))) return json({error:'منتج القسيمة غير متاح.'},400);
           const credit = (triggerMap.get(String(trigger.id)) || 0) * Math.max(0, Number(trigger.voucherConfig.value) || 0);
-          const used = voucherLines.filter(x=>String(x.triggerProductId)===String(trigger.id)).reduce((a,x)=>a + ((Number(itemPrice(products,x.productId))||0) * (Number(x.quantity)||1)),0);
+          const used = voucherLines.slice(0, vi).filter(x=>String(x.triggerProductId)===String(trigger.id)).reduce((a,x)=>a + ((Number(itemPrice(products,x.productId))||0) * (Number(x.quantity)||1)),0);
           const lineValue = (Number(item.price)||0) * q;
           if (used + lineValue > credit) return json({error:'قيمة منتجات القسيمة تتجاوز الرصيد المتاح.'},400);
         }
