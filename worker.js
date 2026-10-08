@@ -4,8 +4,14 @@ const SETTINGS_KEY = 'settings';
 const ORDERS_KEY = 'orders';
 const SHIPPING_KEY = 'shipping';
 const DEALS_KEY = 'deals';
-const MEDIA_INDEX_KEY = 'media_index';
 const MEDIA_PREFIX = 'media:';
+const MAX_MEDIA_BYTES = 12 * 1024 * 1024;
+const ACCOUNT_PREFIX = 'acct:';
+const SESSION_PREFIX = 'custsess:';
+const COURIER_SESSION_PREFIX = 'couriersess:';
+const PUSH_PREFIX = 'push:';
+const VAPID_KEY = 'vapid_keys';
+const ORDER_TOKEN_BYTES = 32;
 
 const SEED_PRODUCTS = [
   {
@@ -121,21 +127,21 @@ function normalizeProduct(product) {
     shippingPrice:
       Number(product.shippingPrice) || 0,
 
+    giftConfig:
+      product.giftConfig && typeof product.giftConfig === 'object'
+        ? { enabled: product.giftConfig.enabled === true, products: Array.isArray(product.giftConfig.products) ? product.giftConfig.products : [] }
+        : { enabled:false, products:[] },
+
+    voucherConfig:
+      product.voucherConfig && typeof product.voucherConfig === 'object'
+        ? { ...product.voucherConfig, products: Array.isArray(product.voucherConfig.products) ? product.voucherConfig.products : [] }
+        : { enabled:false, value:0, products:[] },
+
     care:
       product.care &&
       typeof product.care === 'object'
         ? product.care
         : {},
-
-    giftConfig:
-      product.giftConfig && typeof product.giftConfig === 'object'
-        ? { enabled: !!product.giftConfig.enabled, maxGiftsPerTrigger: Math.min(5, Math.max(1, Number(product.giftConfig.maxGiftsPerTrigger) || 1)), products: Array.isArray(product.giftConfig.products) ? product.giftConfig.products.map(String) : [] }
-        : { enabled:false, maxGiftsPerTrigger:1, products:[] },
-
-    voucherConfig:
-      product.voucherConfig && typeof product.voucherConfig === 'object'
-        ? { enabled: !!product.voucherConfig.enabled, value: Math.max(0, Number(product.voucherConfig.value || product.voucherConfig.voucherValue) || 0), products: Array.isArray(product.voucherConfig.products) ? product.voucherConfig.products.map(String) : [] }
-        : { enabled:false, value:0, products:[] },
 
     image:
       product.image ||
@@ -162,9 +168,24 @@ async function getProducts(env) {
   let products = await kvJson(env, PRODUCTS_KEY, null);
 
   if (Array.isArray(products) && products.length) {
-    products = products.map(normalizeProduct);
-    // Keep a last-known-good snapshot so a bad/empty KV write cannot blank the shop.
-    try { await env.GREEN_MOON_KV.put(PRODUCTS_BACKUP_KEY, JSON.stringify(products)); } catch (_) {}
+    let repaired = false;
+    products = products.map((product, index) => {
+      const normalized = normalizeProduct(product);
+      if (normalized.id === undefined || normalized.id === null || String(normalized.id).trim() === '') {
+        repaired = true;
+        normalized.id = 'GM-P-' + (Date.now() + index).toString(36).toUpperCase();
+      }
+      return normalized;
+    });
+    // Repair legacy products that had no usable id so every product can always be edited/deleted.
+    if (repaired) {
+      try { await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(products)); } catch (_) {}
+    }
+    // Keep a last-known-good snapshot without writing on every public request.
+    const backup = await kvJson(env, PRODUCTS_BACKUP_KEY, null);
+    if (!Array.isArray(backup) || !backup.length || repaired) {
+      try { await env.GREEN_MOON_KV.put(PRODUCTS_BACKUP_KEY, JSON.stringify(products)); } catch (_) {}
+    }
     return products;
   }
 
@@ -197,8 +218,6 @@ async function getShipping(env) {
   return Number(value?.price) || 0;
 }
 
-function itemPrice(products,id){ const p=products.find(x=>String(x.id)===String(id)); return Number(p?.price)||0; }
-
 async function getOrders(env) {
   return (
     await env.GREEN_MOON_KV.get(
@@ -206,20 +225,6 @@ async function getOrders(env) {
       'json'
     )
   ) || [];
-}
-
-function makeTrackingToken() {
-  return crypto.randomUUID() + '-' + Date.now().toString(36);
-}
-
-function withTimeline(order, status, by = 'Green Moon') {
-  const nextStatus = String(status || order.status || 'جديد');
-  const timeline = Array.isArray(order.timeline) ? [...order.timeline] : [];
-  const last = timeline[timeline.length - 1];
-  if (!last || String(last.status) !== nextStatus) {
-    timeline.push({ status: nextStatus, at: new Date().toISOString(), by: String(by || 'Green Moon') });
-  }
-  return timeline;
 }
 
 function findPromo(settings, code) {
@@ -276,9 +281,138 @@ async function getDeals(env) {
   return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
 }
 
+
+function b64u(bytes) {
+  let s = '';
+  const a = bytes instanceof ArrayBuffer ? new Uint8Array(bytes) : bytes;
+  for (const b of a) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function unb64u(s) {
+  s = String(s || '').replace(/-/g,'+').replace(/_/g,'/');
+  while (s.length % 4) s += '=';
+  const bin = atob(s); const out = new Uint8Array(bin.length);
+  for (let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
+  return out;
+}
+function randomToken(n=32) { const a = new Uint8Array(n); crypto.getRandomValues(a); return b64u(a); }
+function normalizePhone(v) { return String(v||'').replace(/[^0-9+]/g,'').replace(/^00/,'+'); }
+const PBKDF2_ITERATIONS = 100000;
+async function pbkdf2(password, saltB64) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({name:'PBKDF2',salt:unb64u(saltB64),iterations:PBKDF2_ITERATIONS,hash:'SHA-256'}, key, 256);
+  return b64u(bits);
+}
+async function makePassword(password) { const salt=b64u(crypto.getRandomValues(new Uint8Array(16))); return {salt,hash:await pbkdf2(password,salt)}; }
+async function claimGuestOrders(env,guestKey,accountId){if(!guestKey||!accountId)return;const orders=await getOrders(env);let changed=false;for(const o of orders){if(o.guestKey===guestKey&&!o.accountId){o.accountId=accountId;changed=true}}if(changed)await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(orders.slice(0,500)))}
+async function customerSession(request, env) {
+  const auth=String(request.headers.get('authorization')||'');
+  const token=auth.startsWith('Bearer ')?auth.slice(7).trim():'';
+  if(!token)return null;
+  const sess=await kvJson(env,SESSION_PREFIX+token,null);
+  if(!sess||!sess.accountId||Number(sess.expiresAt||0)<Date.now()) return null;
+  return sess;
+}
+async function accountById(env,id){ return id ? kvJson(env,ACCOUNT_PREFIX+id,null) : null; }
+async function safeAccount(a){ if(!a)return null; const {passwordHash,passwordSalt,...safe}=a; return safe; }
+async function customerNotificationPrefs(env, accountId) {
+  const a=await accountById(env,accountId);
+  return a?.notifications || {promotions:true,newProducts:true,orderUpdates:true};
+}
+function initialTimeline(status='جديد') { return [{status,at:new Date().toISOString(),by:'Green Moon'}]; }
+function statusText(status){return String(status||'').trim()}
+function publicOrder(o) {
+  if(!o)return null;
+  return {id:o.id,createdAt:o.createdAt,status:o.status,name:o.name||'',items:o.items||[],gifts:Array.isArray(o.gifts)?o.gifts:[],productsTotal:o.productsTotal||0,shipping:o.shipping||0,promoCode:o.promoCode||'',promoDiscount:o.promoDiscount||0,total:o.total||0,timeline:Array.isArray(o.timeline)?o.timeline:initialTimeline(o.status),trackingUrl:'/track.html?token='+encodeURIComponent(o.trackingToken||'')};
+}
+async function getVapid(env) {
+  let keys=await kvJson(env,VAPID_KEY,null);
+  if(keys?.privateJwk && keys?.publicKey) return keys;
+  const kp=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);
+  const privateJwk=await crypto.subtle.exportKey('jwk',kp.privateKey);
+  const publicKey=await crypto.subtle.exportKey('raw',kp.publicKey);
+  keys={privateJwk,publicKey:b64u(publicKey)};
+  await env.GREEN_MOON_KV.put(VAPID_KEY,JSON.stringify(keys));
+  return keys;
+}
+async function hmac(keyBytes, dataBytes){
+  const k=await crypto.subtle.importKey('raw',keyBytes,{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC',k,dataBytes));
+}
+async function hkdfExtract(salt, ikm){return hmac(salt,ikm)}
+async function hkdfExpand(prk, info, len){
+  let out=new Uint8Array(0), prev=new Uint8Array(0), c=1; const inf=typeof info==='string'?new TextEncoder().encode(info):info;
+  while(out.length<len){const data=new Uint8Array(prev.length+inf.length+1);data.set(prev);data.set(inf,prev.length);data[data.length-1]=c++;prev=await hmac(prk,data);const n=new Uint8Array(out.length+prev.length);n.set(out);n.set(prev,out.length);out=n;}
+  return out.slice(0,len);
+}
+async function signVapid(env,audience) {
+  const keys=await getVapid(env); const now=Math.floor(Date.now()/1000);
+  const enc=o=>b64u(new TextEncoder().encode(JSON.stringify(o)));
+  const head=enc({typ:'JWT',alg:'ES256'}), pay=enc({aud:audience,exp:now+12*60*60,sub:'mailto:notifications@greenmoon.local'});
+  const input=new TextEncoder().encode(head+'.'+pay);
+  const key=await crypto.subtle.importKey('jwk',keys.privateJwk,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);
+  const sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,input);
+  return head+'.'+pay+'.'+b64u(sig);
+}
+async function encryptPush(subscription, payload) {
+  const ua=unb64u(subscription.keys.p256dh), auth=unb64u(subscription.keys.auth);
+  const eph=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveBits']);
+  const client=await crypto.subtle.importKey('raw',ua,{name:'ECDH',namedCurve:'P-256'},false,[]);
+  const shared=new Uint8Array(await crypto.subtle.deriveBits({name:'ECDH',public:client},eph.privateKey,256));
+  const prkKey=await hkdfExtract(auth,shared);
+  const serverPub=new Uint8Array(await crypto.subtle.exportKey('raw',eph.publicKey));
+  const info0=new Uint8Array(new TextEncoder().encode('WebPush: info\0').length+ua.length+serverPub.length);
+  const prefix=new TextEncoder().encode('WebPush: info\0');info0.set(prefix);info0.set(ua,prefix.length);info0.set(serverPub,prefix.length+ua.length);
+  const ikm=await hkdfExpand(prkKey, info0,32);
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const prk=await hkdfExtract(salt,ikm);
+  const cek=await hkdfExpand(prk,'Content-Encoding: aes128gcm\0',16);
+  const nonce=await hkdfExpand(prk,'Content-Encoding: nonce\0',12);
+  const plain=new Uint8Array(new TextEncoder().encode(JSON.stringify(payload)).length+1); plain.set(new TextEncoder().encode(JSON.stringify(payload))); plain[plain.length-1]=2;
+  const key=await crypto.subtle.importKey('raw',cek,{name:'AES-GCM'},false,['encrypt']);
+  const cipher=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:nonce},key,plain));
+  const body=new Uint8Array(16+4+1+serverPub.length+cipher.length); body.set(salt,0); new DataView(body.buffer).setUint32(16,4096); body[20]=serverPub.length; body.set(serverPub,21); body.set(cipher,21+serverPub.length);
+  return {body};
+}
+async function sendPush(env, sub, payload) {
+  try {
+    const endpoint=String(sub.endpoint||''); if(!endpoint||!sub.keys?.p256dh||!sub.keys?.auth)return false;
+    const u=new URL(endpoint); const keys=await getVapid(env); const jwt=await signVapid(env,u.origin);
+    const enc=await encryptPush(sub,payload);
+    const r=await fetch(endpoint,{method:'POST',headers:{'Authorization':`vapid t=${jwt}, k=${keys.publicKey}`,'Content-Type':'application/octet-stream','Content-Encoding':'aes128gcm','TTL':'86400'},body:enc.body});
+    if(r.status===404||r.status===410) return 'gone';
+    return r.ok;
+  } catch(e){ return false; }
+}
+async function broadcastPush(env,payload,filterFn=null){
+  const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
+  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub)continue;if(filterFn&&!filterFn(sub))continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
+}
+async function notifyOrder(env,order,title,body){
+  const payload={title,body,url:'/track.html?token='+encodeURIComponent(order.trackingToken||''),tag:'order-'+order.id};
+  const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
+  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||sub.orderUpdates===false)continue;if((order.accountId&&sub.accountId===order.accountId)||(order.guestKey&&sub.guestKey===order.guestKey)){const r=await sendPush(env,sub,payload);if(r==='gone')await env.GREEN_MOON_KV.delete(k.name);}}
+}
+
+
+function decodeBase64(base64) {
+  const bin = atob(base64);
+  const out = new Uint8Array(bin.length);
+  const chunk = 0x8000;
+  for (let i = 0; i < bin.length; i += chunk) {
+    const part = bin.slice(i, i + chunk);
+    for (let j = 0; j < part.length; j++) out[i + j] = part.charCodeAt(j);
+  }
+  return out;
+}
+
+function mediaBytesFromBase64(base64) {
+  return Math.floor((String(base64 || '').length * 3) / 4);
+}
+
 export default {
 
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
 
     const url =
       new URL(request.url);
@@ -298,6 +432,35 @@ export default {
       });
     }
 
+
+    /* =========================
+       CUSTOMER AUTH
+    ========================= */
+    if (url.pathname === '/api/auth/register' && request.method === 'POST') {
+      try {
+        const b=await request.json(); const name=String(b.name||'').trim().slice(0,100); const phone=normalizePhone(b.phone); const password=String(b.password||''); const guestKey=String(b.guestKey||'').slice(0,120);
+        if(!name||phone.length<8||password.length<6)return json({error:'اكتب الاسم ورقم صحيح وكلمة مرور 6 أحرف على الأقل.'},400);
+        const existing=await env.GREEN_MOON_KV.get('acctphone:'+phone); if(existing)return json({error:'الرقم مسجل بالفعل. سجل دخول بدل إنشاء حساب جديد.'},409);
+        const {salt,hash}=await makePassword(password); const id='C-'+randomToken(18); const account={id,name,phone,passwordHash:hash,passwordSalt:salt,createdAt:new Date().toISOString(),notifications:{promotions:true,newProducts:true,orderUpdates:true}};
+        await env.GREEN_MOON_KV.put(ACCOUNT_PREFIX+id,JSON.stringify(account)); await env.GREEN_MOON_KV.put('acctphone:'+phone,id); await claimGuestOrders(env,guestKey,id);
+        const token=randomToken(32); await env.GREEN_MOON_KV.put(SESSION_PREFIX+token,JSON.stringify({accountId:id,expiresAt:Date.now()+30*86400000}),{expirationTtl:30*86400});
+        return json({success:true,token,account:await safeAccount(account)});
+      }catch(e){return json({error:String(e?.message||e)},500)}
+    }
+    if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+      try { const b=await request.json(); const phone=normalizePhone(b.phone); const guestKey=String(b.guestKey||'').slice(0,120); const id=await env.GREEN_MOON_KV.get('acctphone:'+phone); if(!id)return json({error:'الرقم أو كلمة المرور غير صحيحة.'},401); const a=await accountById(env,id); const h=await pbkdf2(String(b.password||''),a?.passwordSalt||''); if(!a||h!==a.passwordHash)return json({error:'الرقم أو كلمة المرور غير صحيحة.'},401); await claimGuestOrders(env,guestKey,id); const token=randomToken(32); await env.GREEN_MOON_KV.put(SESSION_PREFIX+token,JSON.stringify({accountId:id,expiresAt:Date.now()+30*86400000}),{expirationTtl:30*86400}); return json({success:true,token,account:await safeAccount(a)});}catch(e){return json({error:String(e?.message||e)},500)}
+    }
+    if (url.pathname === '/api/auth/me' && request.method === 'GET') { const sess=await customerSession(request,env); if(!sess)return json({authenticated:false}); const a=await accountById(env,sess.accountId); return json({authenticated:!!a,account:await safeAccount(a)}); }
+    if (url.pathname === '/api/auth/logout' && request.method === 'POST') { const auth=String(request.headers.get('authorization')||''); const t=auth.startsWith('Bearer ')?auth.slice(7).trim():''; if(t)await env.GREEN_MOON_KV.delete(SESSION_PREFIX+t); return json({success:true}); }
+    if (url.pathname === '/api/account/orders' && request.method === 'GET') { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const orders=(await getOrders(env)).filter(o=>o.accountId===sess.accountId).map(publicOrder); return json(orders); }
+    if (url.pathname === '/api/account/preferences' && (request.method==='GET'||request.method==='PUT')) { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const a=await accountById(env,sess.accountId); if(request.method==='GET')return json(a?.notifications||{promotions:true,newProducts:true,orderUpdates:true}); const b=await request.json(); a.notifications={promotions:b.promotions!==false,newProducts:b.newProducts!==false,orderUpdates:b.orderUpdates!==false}; await env.GREEN_MOON_KV.put(ACCOUNT_PREFIX+a.id,JSON.stringify(a)); return json({success:true,notifications:a.notifications}); }
+    if (url.pathname === '/api/push/config' && request.method === 'GET') { const k=await getVapid(env); return json({publicKey:k.publicKey}); }
+    if (url.pathname === '/api/push/subscribe' && request.method === 'POST') { try { const b=await request.json(); if(!b.subscription?.endpoint)return json({error:'اشتراك الإشعارات غير صالح'},400); const sess=await customerSession(request,env); const guestKey=String(b.guestKey||'').slice(0,120); const sub={...b.subscription,accountId:sess?.accountId||'',guestKey,orderUpdates:b.orderUpdates!==false,promotions:b.promotions!==false,newProducts:b.newProducts!==false,news:b.news!==false,deals:b.deals!==false,updatedAt:new Date().toISOString()}; const key=PUSH_PREFIX+btoa(sub.endpoint).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
+    if (url.pathname.startsWith('/api/track/') && request.method === 'GET') { const token=decodeURIComponent(url.pathname.slice('/api/track/'.length)); const orders=await getOrders(env); const o=orders.find(x=>x.trackingToken===token); if(!o)return json({error:'رابط التتبع غير صالح أو منتهي.'},404); return json({order:publicOrder(o)}); }
+    if (url.pathname === '/api/courier/login' && request.method === 'POST') { const b=await request.json(); const pass=String(b.password||''); const expected=String(env.COURIER_PASSWORD||env.ADMIN_PASSWORD||''); if(!expected||pass!==expected)return json({error:'كود شركة الشحن غير صحيح.'},401); const t=randomToken(24); await env.GREEN_MOON_KV.put(COURIER_SESSION_PREFIX+t,JSON.stringify({expiresAt:Date.now()+12*60*60*1000}),{expirationTtl:43200}); return json({success:true,token:t}); }
+    async function courierOk(){ const h=String(request.headers.get('authorization')||''); const t=h.startsWith('Bearer ')?h.slice(7).trim():''; const s=t?await kvJson(env,COURIER_SESSION_PREFIX+t,null):null; return !!s&&Number(s.expiresAt||0)>Date.now(); }
+    if (url.pathname === '/api/courier/orders' && (request.method==='GET'||request.method==='PUT')) { if(!await courierOk())return json({error:'غير مصرح'},401); const orders=await getOrders(env); if(request.method==='GET')return json(orders.map(o=>({id:o.id,name:o.name,phone:o.phone,address:[o.governorate,o.area,o.street,o.building&&'عمارة '+o.building,o.floor&&'دور '+o.floor,o.apartment&&'شقة '+o.apartment].filter(Boolean).join(' — '),total:o.total,status:o.status,createdAt:o.createdAt,items:o.items||[],trackingToken:o.trackingToken}))); const b=await request.json(); const i=orders.findIndex(o=>String(o.id)===String(b.id)); if(i<0)return json({error:'الطلب غير موجود'},404); const old=orders[i].status, st=String(b.status||old); orders[i].status=st; orders[i].timeline=Array.isArray(orders[i].timeline)?orders[i].timeline:initialTimeline(old); if(st!==old)orders[i].timeline.push({status:st,at:new Date().toISOString(),by:'شركة الشحن'}); await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(orders.slice(0,500))); ctx.waitUntil(notifyOrder(env,orders[i],'🚚 تحديث طلبك من Green Moon',`تم تحديث طلب ${orders[i].id}: ${st}`)); return json({success:true,order:publicOrder(orders[i])}); }
+
     /* =========================
        PUBLIC PRODUCTS
     ========================= */
@@ -310,14 +473,9 @@ export default {
       const products =
         await getProducts(env);
 
-      return json(
-        products.map(
-          ({
-            wholesalePrice,
-            ...product
-          }) => product
-        )
-      );
+      const out = json(products.map(({wholesalePrice, ...product}) => product));
+      out.headers.set('cache-control','public, max-age=20, stale-while-revalidate=60');
+      return out;
     }
 
     /* =========================
@@ -374,8 +532,9 @@ export default {
           services: []
         };
       }
-      try { await env.GREEN_MOON_KV.put(SETTINGS_BACKUP_KEY, JSON.stringify(settings)); } catch (_) {}
-      return json(settings);
+      const out = json(settings);
+      out.headers.set('cache-control','no-store, max-age=0');
+      return out;
     }
 
     /* =========================
@@ -998,22 +1157,6 @@ function resolveRelatedOffer(product, offerId) {
     }
 
     /* =========================
-       PUBLIC ORDER TRACKING
-    ========================= */
-    if (url.pathname.startsWith('/api/track/') && request.method === 'GET') {
-      try {
-        const token = decodeURIComponent(url.pathname.slice('/api/track/'.length)).trim();
-        if (!token) return json({ error: 'رابط التتبع غير صالح.' }, 400);
-        const orders = await getOrders(env);
-        const order = orders.find(o => String(o.trackingToken || '') === token || String(o.id || '') === token);
-        if (!order) return json({ error: 'لم يتم العثور على الطلب بهذا الرابط.' }, 404);
-        return json({ order });
-      } catch (error) {
-        return json({ error: String(error?.message || error || 'تعذر تحميل الطلب.') }, 500);
-      }
-    }
-
-    /* =========================
        CREATE ORDER
     ========================= */
 
@@ -1046,12 +1189,22 @@ function resolveRelatedOffer(product, offerId) {
         const products =
           await getProducts(env);
 
-        const submittedGiftsEarly = Array.isArray(body.gifts) ? body.gifts : [];
-        const voucherLinesEarly = Array.isArray(body.voucherItems) ? body.voucherItems : [];
-        const rewardKeys = new Set([
-          ...submittedGiftsEarly.map(x => 'gift|' + String(x.triggerProductId) + '|' + String(x.productId)),
-          ...voucherLinesEarly.map(x => 'voucher|' + String(x.triggerProductId) + '|' + String(x.productId))
-        ]);
+        const requestedGifts = Array.isArray(body.gifts) ? body.gifts : [];
+        const gifts = [];
+        const seenGiftKeys = new Set();
+        for (const g of requestedGifts) {
+          const mainId = String(g.mainProductId || '');
+          const giftId = String(g.productId || '');
+          const main = products.find(p => String(p.id) === mainId);
+          const gift = products.find(p => String(p.id) === giftId);
+          const allowed = main?.giftConfig?.enabled === true && Array.isArray(main.giftConfig.products) && main.giftConfig.products.map(String).includes(giftId);
+          const key = mainId + '::' + giftId;
+          if (main && gift && allowed && !seenGiftKeys.has(key)) {
+            seenGiftKeys.add(key);
+            const mainQty = Math.max(1, Number(g.mainQuantity) || 1);
+            gifts.push({productId: gift.id, mainProductId: main.id, name: gift.name, price: 0, quantity: mainQty, lineTotal: 0, isGift: true});
+          }
+        }
 
         const items =
           body.items
@@ -1081,12 +1234,10 @@ const relatedOffer =
     item.gmOfferId || ''
   );
 
-const isReward = (item.isGift || item.isVoucher) && rewardKeys.has(String(item.isGift ? 'gift' : 'voucher') + '|' + String(item.triggerProductId || '') + '|' + String(item.productId));
-
 const finalPrice =
-  isReward
-    ? 0
-    : (relatedOffer ? relatedOffer.price : (Number(product.price) || 0));
+  relatedOffer
+    ? relatedOffer.price
+    : (Number(product.price) || 0);
 
 return {
   productId: product.id,
@@ -1094,7 +1245,7 @@ return {
   price: finalPrice,
   quantity,
   shippingPrice:
-    isReward ? 0 : (Number(product.shippingPrice) || 0),
+    Number(product.shippingPrice) || 0,
   relatedOfferId:
     relatedOffer?.offerId || '',
   relatedOfferPrice:
@@ -1117,38 +1268,12 @@ return {
           );
         }
 
-        // Server-authoritative gifts and voucher purchases. Client prices for these lines are never trusted.
-        const triggerMap = new Map();
-        for (const it of items) triggerMap.set(String(it.productId), (triggerMap.get(String(it.productId)) || 0) + Number(it.quantity || 1));
-        const submittedGifts = submittedGiftsEarly;
-        const giftLines = [];
-        const voucherLines = voucherLinesEarly;
-        for (const g of submittedGifts) {
-          const trigger = products.find(p => String(p.id) === String(g.triggerProductId));
-          const gift = products.find(p => String(p.id) === String(g.productId));
-          const q = Math.max(1, Number(g.quantity) || 1);
-          if (!trigger || !gift || !trigger.giftConfig?.enabled || !trigger.giftConfig.products.map(String).includes(String(gift.id))) return json({error:'الهدية غير متاحة لهذا المنتج.'},400);
-          const allowed = Math.max(1, Number(trigger.giftConfig.maxGiftsPerTrigger) || 1) * (triggerMap.get(String(trigger.id)) || 0);
-          const used = giftLines.filter(x=>String(x.triggerProductId)===String(trigger.id)).reduce((a,x)=>a+x.quantity,0);
-          if (used + q > allowed) return json({error:'تجاوزت عدد الهدايا المسموح بها.'},400);
-          giftLines.push({triggerProductId:trigger.id,productId:gift.id,name:gift.name,price:0,quantity:q,normalPrice:Number(gift.price)||0,lineTotal:0});
-        }
-        for (let vi = 0; vi < voucherLines.length; vi++) {
-          const v = voucherLines[vi];
-          const trigger = products.find(p => String(p.id) === String(v.triggerProductId));
-          const item = products.find(p => String(p.id) === String(v.productId));
-          const q = Math.max(1, Number(v.quantity) || 1);
-          if (!trigger || !item || !trigger.voucherConfig?.enabled || !Array.isArray(trigger.voucherConfig.products) || !trigger.voucherConfig.products.map(String).includes(String(item.id))) return json({error:'منتج القسيمة غير متاح.'},400);
-          const credit = (triggerMap.get(String(trigger.id)) || 0) * Math.max(0, Number(trigger.voucherConfig.value) || 0);
-          const used = voucherLines.slice(0, vi).filter(x=>String(x.triggerProductId)===String(trigger.id)).reduce((a,x)=>a + ((Number(itemPrice(products,x.productId))||0) * (Number(x.quantity)||1)),0);
-          const lineValue = (Number(item.price)||0) * q;
-          if (used + lineValue > credit) return json({error:'قيمة منتجات القسيمة تتجاوز الرصيد المتاح.'},400);
-        }
         const productsTotal =
-          items.reduce((sum, item) => sum + item.lineTotal, 0);
-
-        const giftTotal = giftLines.reduce((sum,x)=>sum+x.lineTotal,0);
-        const voucherTotal = voucherLines.reduce((sum,x)=>sum + ((Number(products.find(p=>String(p.id)===String(x.productId))?.price)||0) * (Number(x.quantity)||1)),0);
+          items.reduce(
+            (sum, item) =>
+              sum + item.lineTotal,
+            0
+          );
 
         const generalShipping =
           await getShipping(env);
@@ -1217,6 +1342,9 @@ return {
         }
         const total = Math.max(0, productsTotal - promoDiscount) + shipping;
 
+        const customerSess = await customerSession(request, env);
+        const guestKey = String(body.guestKey || '').slice(0,120);
+        const trackingToken = randomToken(ORDER_TOKEN_BYTES);
         const order = {
 
           id:
@@ -1225,17 +1353,19 @@ return {
               .toString(36)
               .toUpperCase(),
 
-          trackingToken:
-            makeTrackingToken(),
-
           createdAt:
             new Date().toISOString(),
+
+          timeline: initialTimeline('جديد'),
 
           status:
             'جديد',
 
-          timeline:
-            [{ status: 'جديد', at: new Date().toISOString(), by: 'Green Moon' }],
+          trackingToken,
+
+          accountId: customerSess?.accountId || '',
+
+          guestKey,
 
           name:
             String(
@@ -1297,9 +1427,8 @@ return {
           promoShippingDiscount,
 
           items,
-          gifts: giftLines,
-          voucherItems: voucherLines.map(v=>({triggerProductId:v.triggerProductId,productId:v.productId,quantity:Number(v.quantity)||1,price:0})),
-          voucherSpent: voucherTotal,
+
+          gifts,
 
           total
         };
@@ -1312,6 +1441,7 @@ return {
             orders.slice(0, 500)
           )
         );
+        ctx.waitUntil(notifyOrder(env,order,'🌿 تم استلام طلبك','تم استلام طلبك من Green Moon وجاري التجهيز.'));
 
         return json({
           success:
@@ -1338,68 +1468,15 @@ return {
       }
     }
 
-
     /* =========================
-       ADMIN MEDIA
-       Stores uploaded media in KV for this deployment.
-       For very large media, bind an R2 bucket later; the UI is already
-       compatible with returned /media/<id> URLs.
+       ADMIN NOTIFICATIONS
     ========================= */
-    if (url.pathname === '/api/admin/media') {
-      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
-
-      if (request.method === 'GET') {
-        const list = await env.GREEN_MOON_KV.get(MEDIA_INDEX_KEY, 'json') || [];
-        return json({ media: Array.isArray(list) ? list : [] });
+    if (url.pathname === '/api/admin/notifications') {
+      if(!adminOk(request,env))return json({error:'غير مصرح'},401);
+      if(request.method==='POST'){
+        try{const b=await request.json();const title=String(b.title||'🔔 Green Moon').slice(0,120);const body=String(b.body||'').slice(0,500);const urlPath=String(b.url||'/').slice(0,500);const filter=b.audience==='newProducts'?(s=>s.newProducts!==false):b.audience==='promotions'?(s=>s.promotions!==false):b.audience==='news'?(s=>s.news!==false):b.audience==='deals'?(s=>s.deals!==false):(s=>true);ctx.waitUntil(broadcastPush(env,{title,body,url:urlPath,tag:'gm-'+Date.now()},filter));return json({success:true,message:'تم تجهيز الإشعار للإرسال.'});}catch(e){return json({error:String(e?.message||e)},500)}
       }
-
-      if (request.method === 'POST') {
-        try {
-          const body = await request.json();
-          const data = String(body.data || '');
-          const type = String(body.type || 'application/octet-stream');
-          const name = String(body.name || 'media').slice(0, 180);
-          if (!data.startsWith('data:')) return json({ error: 'الملف غير صالح' }, 400);
-          if (!(type.startsWith('image/') || type.startsWith('video/'))) return json({ error: 'يسمح برفع الصور والفيديو فقط.' }, 400);
-          if (data.length > 24_500_000) return json({ error: 'حجم الملف أكبر من الحد المسموح في التخزين الحالي (حوالي 18MB).' }, 413);
-          const id = Date.now().toString(36) + '-' + crypto.randomUUID().slice(0,8);
-          const item = { id, name, type, size: Math.round((data.length * 3) / 4), url: '/media/' + id, createdAt: new Date().toISOString() };
-          await env.GREEN_MOON_KV.put(MEDIA_PREFIX + id, data);
-          const list = await env.GREEN_MOON_KV.get(MEDIA_INDEX_KEY, 'json') || [];
-          const next = [item, ...(Array.isArray(list) ? list : [])].slice(0, 300);
-          await env.GREEN_MOON_KV.put(MEDIA_INDEX_KEY, JSON.stringify(next));
-          return json({ success: true, media: item, url: item.url });
-        } catch (e) { return json({ error: String(e?.message || e) }, 500); }
-      }
-
-      if (request.method === 'DELETE') {
-        try {
-          const body = await request.json();
-          const id = String(body.id || '');
-          if (!id) return json({ error: 'معرّف الملف مطلوب' }, 400);
-          await env.GREEN_MOON_KV.delete(MEDIA_PREFIX + id);
-          const list = await env.GREEN_MOON_KV.get(MEDIA_INDEX_KEY, 'json') || [];
-          const next = (Array.isArray(list) ? list : []).filter(x => String(x.id) !== id);
-          await env.GREEN_MOON_KV.put(MEDIA_INDEX_KEY, JSON.stringify(next));
-          return json({ success: true, media: next });
-        } catch (e) { return json({ error: String(e?.message || e) }, 500); }
-      }
-      return json({ error: 'Method Not Allowed' }, 405);
-    }
-
-    if (url.pathname.startsWith('/media/')) {
-      const id = decodeURIComponent(url.pathname.slice('/media/'.length));
-      if (!id) return new Response('Not Found', { status: 404 });
-      const data = await env.GREEN_MOON_KV.get(MEDIA_PREFIX + id);
-      if (!data || !data.startsWith('data:')) return new Response('Not Found', { status: 404 });
-      const m = data.match(/^data:([^;,]+)(?:;base64)?,(.*)$/s);
-      if (!m) return new Response('Invalid media', { status: 500 });
-      const type = m[1] || 'application/octet-stream';
-      const b64 = m[2] || '';
-      const bin = atob(b64);
-      const bytes = new Uint8Array(bin.length);
-      for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-      return new Response(bytes, { status: 200, headers: { 'content-type': type, 'cache-control': 'public, max-age=31536000, immutable', 'x-content-type-options': 'nosniff' } });
+      return json({error:'Method Not Allowed'},405);
     }
 
     /* =========================
@@ -1467,6 +1544,7 @@ return {
             products.push(
               product
             );
+            ctx.waitUntil(broadcastPush(env,{title:'🌱 منتج جديد في Green Moon',body:`وصل منتج جديد: ${product.name}`,url:'/index.html#products',tag:'new-product-'+product.id},sub=>sub.newProducts!==false));
 
           } else {
 
@@ -1497,12 +1575,8 @@ return {
               });
           }
 
-          await env.GREEN_MOON_KV.put(
-            PRODUCTS_KEY,
-            JSON.stringify(
-              products
-            )
-          );
+          await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(products));
+          try { await env.GREEN_MOON_KV.put(PRODUCTS_BACKUP_KEY, JSON.stringify(products)); } catch (_) {}
 
           return json({
             success:
@@ -1545,12 +1619,8 @@ return {
                 String(body.id)
             );
 
-          await env.GREEN_MOON_KV.put(
-            PRODUCTS_KEY,
-            JSON.stringify(
-              filtered
-            )
-          );
+          await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(filtered));
+          try { await env.GREEN_MOON_KV.put(PRODUCTS_BACKUP_KEY, JSON.stringify(filtered)); } catch (_) {}
 
           return json({
             success:
@@ -1594,6 +1664,7 @@ return {
             deal.id = 'DEAL-' + Date.now().toString(36).toUpperCase();
           }
           deals.push(deal);
+          ctx.waitUntil(broadcastPush(env,{title:'🔥 عرض جديد من Green Moon',body:deal.name,url:'/index.html#deals',tag:'new-deal-'+deal.id},sub=>sub.promotions!==false));
         } else if (request.method === 'PUT') {
           const body = await request.json();
           const index = deals.findIndex(d => String(d.id) === String(body.id));
@@ -1710,18 +1781,6 @@ return {
             'json'
           ) || {}
         );
-      }
-
-      if (request.method === 'PATCH') {
-        const patch = await request.json();
-        const current = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
-        const merged = {
-          ...current,
-          ...patch,
-          ...(patch.gm_theme ? { gm_theme: { ...(current.gm_theme || {}), ...patch.gm_theme } } : {})
-        };
-        await env.GREEN_MOON_KV.put(SETTINGS_KEY, JSON.stringify(merged));
-        return json({ success: true, settings: merged });
       }
 
       if (
@@ -1884,14 +1943,15 @@ return {
             );
           }
 
-          const previous = orders[index];
+          const before=orders[index];
+          const nextStatus=String(body.status||before.status||'');
           orders[index] = {
-            ...previous,
-            ...body
+            ...before,
+            ...body,
+            status: nextStatus,
+            timeline: Array.isArray(before.timeline)?before.timeline.slice():initialTimeline(before.status)
           };
-          if (body.status && String(body.status) !== String(previous.status || '')) {
-            orders[index].timeline = withTimeline(orders[index], body.status, 'Green Moon');
-          }
+          if(nextStatus!==before.status) orders[index].timeline.push({status:nextStatus,at:new Date().toISOString(),by:'Green Moon'});
 
           await env.GREEN_MOON_KV.put(
             ORDERS_KEY,
@@ -1899,6 +1959,7 @@ return {
               orders
             )
           );
+          if(nextStatus!==before.status) ctx.waitUntil(notifyOrder(env,orders[index],'📦 تحديث طلبك من Green Moon',`تم تحديث طلب ${orders[index].id}: ${nextStatus}`));
 
           return json({
             success:
@@ -1955,12 +2016,8 @@ return {
           normalizeProduct
         );
 
-      await env.GREEN_MOON_KV.put(
-        PRODUCTS_KEY,
-        JSON.stringify(
-          products
-        )
-      );
+      await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(products));
+      try { await env.GREEN_MOON_KV.put(PRODUCTS_BACKUP_KEY, JSON.stringify(products)); } catch (_) {}
 
       return json({
         success:
@@ -1968,6 +2025,91 @@ return {
 
         products
       });
+    }
+
+    /* =========================
+       ADMIN HTML ROUTE
+    ========================= */
+
+    if (url.pathname === '/admin.html' && request.method === 'GET') {
+      if (env.ASSETS) {
+        const adminUrl = new URL(request.url);
+        adminUrl.pathname = '/admin.html';
+        const response = await env.ASSETS.fetch(new Request(adminUrl.toString(), request));
+        if (response && response.ok) {
+          const out = new Response(response.body, response);
+          out.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+          out.headers.set('X-Content-Type-Options', 'nosniff');
+          return out;
+        }
+        return response;
+      }
+      return new Response('admin.html غير موجود في ملفات الموقع', {
+        status: 404,
+        headers: { 'content-type': 'text/plain;charset=UTF-8' }
+      });
+    }
+
+    /* =========================
+       ADMIN MEDIA UPLOADS
+       Supports images + videos anywhere the admin media picker is used.
+    ========================= */
+    if (url.pathname === '/api/admin/media' && request.method === 'POST') {
+      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
+      try {
+        const body = await request.json();
+        const data = String(body.data || '');
+        const mime = String(body.mime || '').toLowerCase().trim();
+        const name = String(body.name || 'media').slice(0, 160);
+        if (!data.startsWith('data:') || !/^data:[^;]+;base64,/i.test(data)) {
+          return json({ error: 'ملف الوسائط غير صالح.' }, 400);
+        }
+        const match = data.match(/^data:([^;]+);base64,(.*)$/s);
+        const detectedMime = String(match?.[1] || mime).toLowerCase();
+        const base64 = String(match?.[2] || '');
+        const finalMime = mime || detectedMime;
+        if (!(finalMime.startsWith('image/') || finalMime.startsWith('video/'))) {
+          return json({ error: 'مسموح فقط بالصور والفيديوهات.' }, 415);
+        }
+        const bytes = mediaBytesFromBase64(base64);
+        if (!bytes || bytes > MAX_MEDIA_BYTES) {
+          return json({ error: 'حجم الملف كبير. الحد الأقصى 12 ميجابايت.' }, 413);
+        }
+        const id = 'GM-MEDIA-' + Date.now().toString(36).toUpperCase() + '-' + crypto.randomUUID().slice(0, 8);
+        await env.GREEN_MOON_KV.put(MEDIA_PREFIX + id, JSON.stringify({
+          mime: finalMime,
+          name,
+          data: base64,
+          createdAt: new Date().toISOString()
+        }));
+        return json({ success: true, id, url: `/media/${encodeURIComponent(id)}`, mime: finalMime, type: finalMime.startsWith('video/') ? 'video' : 'image' });
+      } catch (e) {
+        return json({ error: String(e?.message || e || 'تعذر رفع الملف') }, 500);
+      }
+    }
+
+    /* =========================
+       PUBLIC MEDIA DELIVERY
+    ========================= */
+    if (url.pathname.startsWith('/media/') && request.method === 'GET') {
+      try {
+        const id = decodeURIComponent(url.pathname.slice('/media/'.length));
+        if (!id) return new Response('Not Found', { status: 404 });
+        const item = await env.GREEN_MOON_KV.get(MEDIA_PREFIX + id, 'json');
+        if (!item?.data || !item?.mime) return new Response('Media Not Found', { status: 404 });
+        const bytes = decodeBase64(item.data);
+        return new Response(bytes, {
+          status: 200,
+          headers: {
+            'content-type': item.mime,
+            'cache-control': 'public, max-age=31536000, immutable',
+            'x-content-type-options': 'nosniff',
+            'content-disposition': 'inline'
+          }
+        });
+      } catch (e) {
+        return new Response('Media Error', { status: 500 });
+      }
     }
 
     /* =========================
