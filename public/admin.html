@@ -8,11 +8,9 @@
 <style>
 :root{--green:#06251a;--green2:#0b5b3d;--green3:#137451;--gold:#d9bc6a;--cream:#f8f7f1;--bg:#f2f4f1;--card:#fff;--ink:#15221c;--muted:#728078;--line:#e5e9e5;--danger:#b42318;--shadow:0 16px 45px #09251b12}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}
-.hidden{display:none!important}.app{min-height:100vh}.top{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,#041b12,#0a4a32);color:#fff;border-bottom:1px solid #ffffff12}.topin{max-width:1500px;margin:auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px}.brandmark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#fff,#d9bc6a);display:grid;place-items:center;color:#06301f;font-size:22px;box-shadow:0 8px 22px #0003}.brand b{display:block;font-size:17px}.brand small{opacity:.68}.topactions{display:flex;gap:8px}.iconbtn{width:42px;height:42px;border-radius:12px;border:1px solid #ffffff18;background:#ffffff0f;color:#fff}.wrap{max-width:1500px;margin:auto;padding:18px}.layout{display:grid;grid-template-columns:245px 1fr;gap:18px}.side{position:sticky;top:78px;height:max-content;background:#fff;border:1px solid var(--line);border-radius:22px;padding:10px;box-shadow:var(--shadow)}.nav{width:100%;border:0;background:transparent;color:#53615a;text-align:right;padding:12px 13px;border-radius:13px;font-weight:800;margin:2px 0;display:flex;align-items:center;gap:10px}.nav:hover,.nav.active{background:#eaf3ee;color:var(--green2)}.nav .ico{width:28px;text-align:center}.sectiontitle{font-size:11px;color:#9aa39e;font-weight:900;padding:14px 13px 5px}.content{min-width:0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}.stat .k{font-size:29px;font-weight:900}.stat .l{color:var(--muted);font-size:13px}.panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:14px;box-shadow:var(--shadow)}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.head h2{margin:0;font-size:19px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:850}.primary{background:var(--green);color:#fff}.gold{background:#f7efda;color:#6d551d}.soft{background:#eaf3ee;color:var(--green2)}.danger{background:#fff0ee;color:var(--danger)}.ghost{background:#f3f5f3;color:#44534c}.btn:disabled{opacity:.5;cursor:not-allowed}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;font-size:12px;font-weight:850;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff}.field textarea{min-height:105px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#83a999;box-shadow:0 0 0 3px #0b5b3d12}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:800px}.table th,.table td{padding:11px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}.table th{font-size:12px;color:#6c7972;background:#fafbfa}.thumb{width:56px;height:56px;border-radius:13px;object-fit:cover;background:#edf1ed}.status{display:inline-flex;padding:5px 9px;border-radius:99px;background:#eaf3ee;color:#0b5b3d;font-size:11px;font-weight:900}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}.cardmedia{height:170px;background:#edf1ed;position:relative}.cardmedia img{width:100%;height:100%;object-fit:cover}.cardbody{padding:13px}.cardbody h3{margin:0 0 5px;font-size:16px}.cardbody p{margin:0 0 10px;color:var(--muted);font-size:12px;line-height:1.6}.cardactions{display:flex;gap:7px;flex-wrap:wrap}.drag{cursor:grab;border:1px dashed #b9c5be}.upload{border:1.5px dashed #aab8b0;border-radius:16px;padding:12px;background:#fafcfa}.uploadrow{display:flex;align-items:center;gap:12px}.preview{width:96px;height:76px;border-radius:13px;object-fit:cover;background:#edf1ed}.upload input{display:none}.dropbtn{display:inline-flex}.hint{font-size:11px;color:var(--muted);margin-top:6px}.check{display:flex;align-items:center;gap:8px}.check input{width:auto}.modal{position:fixed;inset:0;background:#03140db8;z-index:100;display:grid;place-items:center;padding:15px}.modalbox{width:min(900px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:24px;padding:20px;position:relative;box-shadow:0 30px 100px #0005}.x{position:absolute;left:13px;top:13px;width:40px;height:40px;border-radius:50%;border:0;background:#eef2ee;font-size:25px}.modalhead{padding-left:45px;margin-bottom:16px}.modalhead h2{margin:0}.modalfoot{display:flex;justify-content:flex-start;gap:8px;margin-top:16px}.toast{position:fixed;left:18px;bottom:18px;z-index:200;background:#102b20;color:#fff;padding:12px 16px;border-radius:13px;box-shadow:0 12px 35px #0004}.login{min-height:100vh;display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 80% 10%,#d9bc6a22,transparent 25%),linear-gradient(145deg,#031a11,#0a4b33)}.loginbox{width:min(440px,100%);background:#fff;border-radius:28px;padding:30px;box-shadow:0 35px 100px #0005}.loginmark{width:65px;height:65px;border-radius:20px;background:linear-gradient(145deg,#fff,#d9bc6a);display:grid;place-items:center;font-size:34px;margin-bottom:15px}.loginbox h1{margin:0}.muted{color:var(--muted)}.empty{text-align:center;padding:35px;color:var(--muted)}.ticker-row input{direction:rtl}.mobilebar{display:none}
+.hidden{display:none!important}.app{min-height:100vh}.top{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,#041b12,#0a4a32);color:#fff;border-bottom:1px solid #ffffff12}.topin{max-width:1500px;margin:auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px}.brandmark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#fff,#d9bc6a);display:grid;place-items:center;color:#06301f;font-size:22px;box-shadow:0 8px 22px #0003}.brand b{display:block;font-size:17px}.brand small{opacity:.68}.topactions{display:flex;gap:8px}.iconbtn{width:42px;height:42px;border-radius:12px;border:1px solid #ffffff18;background:#ffffff0f;color:#fff}.wrap{max-width:1500px;margin:auto;padding:18px}.layout{display:grid;grid-template-columns:245px 1fr;gap:18px}.side{position:sticky;top:78px;height:max-content;background:#fff;border:1px solid var(--line);border-radius:22px;padding:10px;box-shadow:var(--shadow)}.nav{width:100%;border:0;background:transparent;color:#53615a;text-align:right;padding:12px 13px;border-radius:13px;font-weight:800;margin:2px 0;display:flex;align-items:center;gap:10px}.nav:hover,.nav.active{background:#eaf3ee;color:var(--green2)}.nav .ico{width:28px;text-align:center}.sectiontitle{font-size:11px;color:#9aa39e;font-weight:900;padding:14px 13px 5px}.content{min-width:0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}.stat .k{font-size:29px;font-weight:900}.stat .l{color:var(--muted);font-size:13px}.panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:14px;box-shadow:var(--shadow)}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.head h2{margin:0;font-size:19px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:850}.primary{background:var(--green);color:#fff}.gold{background:#f7efda;color:#6d551d}.soft{background:#eaf3ee;color:var(--green2)}.danger{background:#fff0ee;color:var(--danger)}.ghost{background:#f3f5f3;color:#44534c}.btn:disabled{opacity:.5;cursor:not-allowed}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;font-size:12px;font-weight:850;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff}.field textarea{min-height:105px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#83a999;box-shadow:0 0 0 3px #0b5b3d12}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:800px}.table th,.table td{padding:11px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}.table th{font-size:12px;color:#6c7972;background:#fafbfa}.thumb{width:56px;height:56px;border-radius:13px;object-fit:cover;background:#edf1ed}.status{display:inline-flex;padding:5px 9px;border-radius:99px;background:#eaf3ee;color:#0b5b3d;font-size:11px;font-weight:900}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}.cardmedia{height:170px;background:#edf1ed;position:relative}.cardmedia img,.cardmedia video,.media-card-preview{width:100%;height:100%;object-fit:cover}.home-prod-thumb{width:42px;height:42px;border-radius:9px;object-fit:cover;background:#edf1ed}.cardbody{padding:13px}.cardbody h3{margin:0 0 5px;font-size:16px}.cardbody p{margin:0 0 10px;color:var(--muted);font-size:12px;line-height:1.6}.cardactions{display:flex;gap:7px;flex-wrap:wrap}.drag{cursor:grab;border:1px dashed #b9c5be}.upload{border:1.5px dashed #aab8b0;border-radius:16px;padding:12px;background:#fafcfa}.uploadrow{display:flex;align-items:center;gap:12px}.preview{width:96px;height:76px;border-radius:13px;object-fit:cover;background:#edf1ed;display:block}.media-preview-wrap{width:96px;height:76px;border-radius:13px;overflow:hidden;background:#edf1ed;flex:0 0 auto}.media-preview-wrap .preview{width:100%;height:100%}.upload input{display:none}.dropbtn{display:inline-flex}.hint{font-size:11px;color:var(--muted);margin-top:6px}.check{display:flex;align-items:center;gap:8px}.check input{width:auto}.modal{position:fixed;inset:0;background:#03140db8;z-index:100;display:grid;place-items:center;padding:15px}.modalbox{width:min(900px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:24px;padding:20px;position:relative;box-shadow:0 30px 100px #0005}.x{position:absolute;left:13px;top:13px;width:40px;height:40px;border-radius:50%;border:0;background:#eef2ee;font-size:25px}.modalhead{padding-left:45px;margin-bottom:16px}.modalhead h2{margin:0}.modalfoot{display:flex;justify-content:flex-start;gap:8px;margin-top:16px}.toast{position:fixed;left:18px;bottom:18px;z-index:200;background:#102b20;color:#fff;padding:12px 16px;border-radius:13px;box-shadow:0 12px 35px #0004}.login{min-height:100vh;display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 80% 10%,#d9bc6a22,transparent 25%),linear-gradient(145deg,#031a11,#0a4b33)}.loginbox{width:min(440px,100%);background:#fff;border-radius:28px;padding:30px;box-shadow:0 35px 100px #0005}.loginmark{width:65px;height:65px;border-radius:20px;background:linear-gradient(145deg,#fff,#d9bc6a);display:grid;place-items:center;font-size:34px;margin-bottom:15px}.loginbox h1{margin:0}.muted{color:var(--muted)}.empty{text-align:center;padding:35px;color:var(--muted)}.ticker-row input{direction:rtl}.mobilebar{display:none}
 @media(max-width:980px){.layout{grid-template-columns:1fr}.side{position:static;display:flex;overflow:auto;gap:4px}.sectiontitle{display:none}.nav{width:auto;white-space:nowrap}.stats{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.wrap{padding:10px}.topin{padding:10px}.brand small{display:none}.grid2,.grid3{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.panel{padding:13px;border-radius:18px}.side{border-radius:17px}.stats{gap:8px}.stat{padding:13px}.stat .k{font-size:24px}.mobilebar{display:block;height:8px}.modal{padding:8px}.modalbox{border-radius:19px;padding:15px}}
-
-.gm-admin-help{padding:12px;border:1px solid #dfe8e2;border-radius:15px;background:#f8fbf9;margin:10px 0}.gm-admin-help b{display:block;color:#0b5b3d;margin-bottom:4px}.gm-admin-help p{margin:0;font-size:11px;color:#68756e;line-height:1.7}.gm-field-help{font-size:10px;color:#6d7b74;margin:0 0 7px;padding:6px 8px;background:#f7faf8;border-radius:8px}.gm-media-preview{width:96px;height:76px;border-radius:13px;object-fit:contain;background:#edf1ed;display:block}.gm-media-video{width:96px;height:76px;border-radius:13px;object-fit:contain;background:#111;display:block}.gm-upload-status{font-size:11px;color:#0b5b3d;font-weight:800;margin-top:7px}.gm-upload-progress{height:6px;border-radius:99px;background:#e8eee9;overflow:hidden;margin-top:6px}.gm-upload-progress i{display:block;height:100%;width:0;background:#0b5b3d;transition:width .15s}.gm-site-map{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.gm-site-map span{padding:8px 5px;border-radius:8px;background:#eaf3ee;text-align:center;font-size:9px;color:#0b5b3d;font-weight:900}.gm-site-map .wide{grid-column:1/-1}@media(max-width:620px){.gm-site-map{grid-template-columns:repeat(2,1fr)}}
 </style>
 <style id="gm-admin-product-sticker">
 .gm-sticker-preview{position:relative;width:180px;height:180px;border-radius:18px;overflow:hidden;background:#f3eee3;border:1px solid #ddd2b9;display:flex;align-items:center;justify-content:center}
@@ -24,7 +22,7 @@
 <body>
 <div id="login" class="login">
   <div class="loginbox">
-    <div class="loginmark"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:20px"></div>
+    <div class="loginmark">🌿</div>
     <h1>Green Moon</h1>
     <p class="muted">لوحة التحكم الاحترافية</p>
     <div class="field" style="margin-top:18px"><label>كلمة مرور الإدارة</label><input id="pass" type="password" placeholder="••••••••"></div>
@@ -35,7 +33,7 @@
 
 <div id="app" class="hidden">
 <header class="top"><div class="topin">
-  <div class="brand"><div class="brandmark" style="background:#fff;padding:4px"><img src="/assets/logo.jpg" alt="Green Moon" style="width:100%;height:100%;object-fit:contain;border-radius:9px"></div><div><b>Green Moon Admin</b><small>إدارة المتجر بالكامل</small></div></div>
+  <div class="brand"><div class="brandmark">🌿</div><div><b>Green Moon Admin</b><small>إدارة المتجر بالكامل</small></div></div>
   <div class="topactions"><button class="iconbtn" title="تحديث" onclick="load()">↻</button><button class="iconbtn" title="خروج" onclick="logout()">↪</button></div>
 </div></header>
 <main class="wrap"><div class="layout">
@@ -48,7 +46,7 @@
   <button class="nav" data-tab="hero"><span class="ico">🖼️</span> Hero والعروض الرئيسية</button>
   <button class="nav" data-tab="deals"><span class="ico">🎯</span> الصفقات</button>
   <button class="nav" data-tab="articles"><span class="ico">📰</span> المقالات</button>
-  <button class="nav" data-tab="reviews"><span class="ico">💬</span> ماذا قالوا عنا</button><button class="nav" data-tab="about"><span class="ico">🏢</span> عن الشركة</button>
+  <button class="nav" data-tab="reviews"><span class="ico">💬</span> ماذا قالوا عنا</button>
   <button class="nav" data-tab="rewards"><span class="ico">🎁</span> المكافآت</button>
   <button class="nav" data-tab="vouchers"><span class="ico">🎟️</span> القسائم الشرائية</button>
   <button class="nav" data-tab="promos"><span class="ico">🏷️</span> البروموكودات</button>
@@ -57,7 +55,7 @@
   <button class="nav" data-tab="orders"><span class="ico">📦</span> الطلبات</button>
   <button class="nav" data-tab="notifications"><span class="ico">🔔</span> الإشعارات</button>
   <button class="nav" data-tab="settings"><span class="ico">⚙️</span> الإعدادات</button>
-  <button class="nav" data-tab="builder"><span class="ico">🎨</span> تحكم كامل في الواجهة</button><button class="nav" data-tab="media"><span class="ico">🗂️</span> الصور والنصوص</button><button class="nav" data-tab="homebuilder"><span class="ico">🏠</span> منشئ الصفحة الرئيسية</button>
+  <button class="nav" data-tab="builder"><span class="ico">🎨</span> تحكم كامل في الواجهة</button><button class="nav" data-tab="homebuilder"><span class="ico">🏠</span> منشئ الصفحة الرئيسية</button>
 </aside>
 <section id="content" class="content"></section>
 </div></main></div>
@@ -83,21 +81,19 @@ async function login(){
  try{await load();$('login').classList.add('hidden');$('app').classList.remove('hidden')}
  catch(e){sessionStorage.removeItem(KEY);$('loginMsg').textContent=e.message}
 }
-async function applyAdminBrand(){
- try{const s=await fetch('/api/settings').then(r=>r.json());const logo=s?.gm_site?.media?.logo||s?.gm_site?.header?.logo||s?.logo||'/assets/logo.jpg';document.querySelectorAll('.brandmark img,.loginmark img').forEach(i=>i.src=logo);}
- catch(_){}
-}
 async function load(){
  D.products=await api('/api/admin/products');
  D.orders=await api('/api/admin/orders');
  D.settings=await api('/api/admin/settings');
  D.shipping=(await api('/api/admin/shipping')).price||0;
  const s=D.settings||{};
+ const liveLogo=s.gm_site?.header?.logo||s.logo||'/assets/logo.jpg';
+ ['adminLoginLogo','adminTopLogo'].forEach(id=>{const e=$(id);if(e)e.src=liveLogo});
  D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=s.gm_deals||s.deals||[]; D.articles=s.gm_articles||[]; D.reviews=s.gm_reviews||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
  render();
 }
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function render(){const f={home,products,categories,hero,deals,articles,reviews,about,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,media,homebuilder};$('content').innerHTML=f[tab]()}
+function render(){const f={home,products,categories,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,homebuilder};$('content').innerHTML=f[tab]()}
 function home(){
  return `<div class="stats">
  <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
@@ -114,7 +110,7 @@ function products(){
  return `<div class="panel"><div class="head"><div><h2>🌿 المنتجات</h2><p>كل المنتجات الموجودة حاليًا في الموقع تظهر هنا. تقدر تبحث، تعدّل، أو تحذف أي منتج.</p></div><button class="btn primary" onclick="productForm()">+ إضافة منتج</button></div>
  <div class="grid2" style="margin-bottom:12px"><div class="field"><label>بحث عن منتج</label><input id="productSearch" placeholder="اكتب اسم المنتج..." oninput="filterProductTable()"></div><div class="field"><label>التصنيف</label><select id="productFilter" onchange="filterProductTable()"><option value="">كل التصنيفات</option>${D.categories.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('')}</select></div></div>
  <div class="tablewrap"><table class="table"><tr><th>الصورة</th><th>المنتج</th><th>قبل الخصم</th><th>بعد الخصم</th><th>الجملة</th><th>التصنيف</th><th>إجراءات</th></tr>
- ${D.products.length?D.products.map(p=>`<tr class="product-row" data-name="${esc(String(p.name||'').toLowerCase())}" data-category="${esc(p.category||'')}"><td><img class="thumb" src="${esc(p.image||'/assets/logo.jpg')}"></td><td><b>${esc(p.name)}</b><br><small class="muted">${esc(p.details||'')}</small></td><td>${+p.oldPrice||0} ج</td><td><b>${+p.price||0} ج</b></td><td>${+p.wholesalePrice||0} ج</td><td>${esc(p.category||'—')}</td><td><button class="btn soft" onclick="productForm('${esc(p.id)}')">تعديل</button> <button class="btn danger" onclick="delProduct('${esc(p.id)}')">حذف</button></td></tr>`).join(''):`<tr><td colspan="7" class="empty">لا توجد منتجات.</td></tr>`}
+ ${D.products.length?D.products.map(p=>`<tr class="product-row" data-name="${esc(String(p.name||'').toLowerCase())}" data-category="${esc(p.category||'')}"><td>${mediaAdminTag(p.image,p.imageType,'thumb')}</td><td><b>${esc(p.name)}</b><br><small class="muted">${esc(p.details||'')}</small></td><td>${+p.oldPrice||0} ج</td><td><b>${+p.price||0} ج</b></td><td>${+p.wholesalePrice||0} ج</td><td>${esc(p.category||'—')}</td><td><button class="btn soft" onclick="productForm('${esc(p.id)}')">تعديل</button> <button class="btn danger" onclick="delProduct('${esc(p.id)}')">حذف</button></td></tr>`).join(''):`<tr><td colspan="7" class="empty">لا توجد منتجات.</td></tr>`}
  </table></div></div>`;
 }
 function filterProductTable(){const q=String($('productSearch')?.value||'').trim().toLowerCase(),c=String($('productFilter')?.value||'');document.querySelectorAll('.product-row').forEach(r=>{const ok=(!q||r.dataset.name.includes(q))&&(!c||r.dataset.category===c);r.style.display=ok?'':'none'})}
@@ -131,15 +127,16 @@ function productForm(id){
  <div class="field"><label>سعر الجملة</label><input id="pw" type="number" value="${+p.wholesalePrice||0}"></div>
  <div class="field"><label>شحن المنتج</label><input id="ps" type="number" value="${+p.shippingPrice||0}"></div>
  </div>
- <div class="field" style="margin-top:12px"><label>صورة المنتج</label>${uploadBox('pi',p.image||'', 'أي مقاس — يتم التصغير تلقائيًا')}</div>
+ <div class="field" style="margin-top:12px"><label>صورة المنتج</label>${uploadBox('pi',p.image||'', 'صورة أو فيديو — حتى 12MB', p.imageType)}</div>
  <div class="grid2" style="margin-top:12px">
    <div class="field"><label>نص الاستيكر</label><input id="st_text" value="${esc(st.text||'')}" placeholder="جديد / عرض / خصم 20%"></div>
    <div class="field"><label>لون الاستيكر</label><input id="st_color" type="color" value="${/^#[0-9a-fA-F]{6}$/.test(st.color||'')?st.color:'#e5222e'}"></div>
    <div class="field"><label>مكان الاستيكر</label><select id="st_pos"><option value="tr" ${st.position==='tr'?'selected':''}>أعلى يمين</option><option value="tl" ${st.position==='tl'?'selected':''}>أعلى يسار</option><option value="tc" ${st.position==='tc'?'selected':''}>أعلى منتصف</option><option value="br" ${st.position==='br'?'selected':''}>أسفل يمين</option><option value="bl" ${st.position==='bl'?'selected':''}>أسفل يسار</option><option value="bc" ${st.position==='bc'?'selected':''}>أسفل منتصف</option></select></div>
    <label class="field" style="display:flex;align-items:center;gap:9px"><input id="st_active" type="checkbox" ${st.active!==false&&st.text?'checked':''}><span>إظهار الاستيكر</span></label>
  </div>
- <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><b>🎁 هدايا المنتج</b><div class="hint">حدد المنتجات التي يستطيع العميل اختيارها كهدية. الهدية تدخل السلة بسعر 0 جنيه.</div><div class="grid2" style="margin-top:10px"><label class="field" style="display:flex;align-items:center;gap:9px"><input id="gift_enabled" type="checkbox" ${p.giftConfig?.enabled?'checked':''}><span>تفعيل الهدايا</span></label><div class="field"><label>عدد الهدايا المسموح بها لكل قطعة</label><input id="gift_qty" type="number" min="1" max="5" value="${Math.max(1,Number(p.giftConfig?.maxGiftsPerTrigger||1))}"></div></div><div class="field" style="margin-top:10px"><label>اختيارات الهدايا</label><div style="display:grid;gap:7px;max-height:210px;overflow:auto;border:1px solid #e2e8e3;padding:10px;border-radius:12px;background:#fff">${D.products.filter(q=>String(q.id)!==String(p.id)).map(q=>{const ids=Array.isArray(p.giftConfig?.products)?p.giftConfig.products:[];return `<label class="check"><input type="checkbox" class="gift_product" value="${esc(q.id)}" ${ids.map(String).includes(String(q.id))?'checked':''}> ${esc(q.name)} — ${Number(q.price||0)} ج</label>`}).join('')}</div></div></div><div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><b>🎟️ القسيمة الشرائية</b><div class="hint">القسيمة ليست خصمًا. تتحول إلى رصيد يشتري به العميل منتجات محددة من الموقع.</div><div class="grid2" style="margin-top:10px"><label class="field" style="display:flex;align-items:center;gap:9px"><input id="vc_enabled" type="checkbox" ${p.voucherConfig?.enabled?'checked':''}><span>تفعيل القسيمة</span></label><div class="field"><label>قيمة القسيمة</label><input id="vc_value" type="number" min="1" value="${Number(p.voucherConfig?.value??0)}"></div></div><div class="field" style="margin-top:10px"><label>المنتجات التي يمكن شراؤها بالقسيمة</label><div style="display:grid;gap:7px;max-height:210px;overflow:auto;border:1px solid #e2e8e3;padding:10px;border-radius:12px;background:#fff">${D.products.filter(q=>String(q.id)!==String(p.id)).map(q=>{const ids=Array.isArray(p.voucherConfig?.products)?p.voucherConfig.products:[];return `<label class="check"><input type="checkbox" class="vc_product" value="${esc(q.id)}" ${ids.map(String).includes(String(q.id))?'checked':''}> ${esc(q.name)} — ${Number(q.price||0)} ج</label>`}).join('')}</div></div></div>
- <div class="field" style="margin-top:12px"><label>تفاصيل المنتج</label><textarea id="pd">${esc(p.details||'')}</textarea></div>
+ <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>🎟️ القسيمة الشرائية لهذا المنتج</b><div class="hint">العميل يستخدم القسيمة في نفس الطلب ويختار منتجات من المنتجات المشاركة بقيمة القسيمة.</div></div></div><div class="grid2" style="margin-top:10px"><label class="field" style="display:flex;align-items:center;gap:9px"><input id="vc_enabled" type="checkbox" ${(p.voucherConfig?.enabled||p.giftConfig?.enabled)?'checked':''}><span>تفعيل القسيمة</span></label><div class="field"><label>قيمة القسيمة</label><input id="vc_value" type="number" min="1" value="${Number(p.voucherConfig?.value??p.voucherConfig?.voucherValue??p.giftConfig?.value??0)}"></div></div><div class="field" style="margin-top:10px"><label>المنتجات المشاركة</label><div style="display:grid;gap:7px;max-height:210px;overflow:auto;border:1px solid #e2e8e3;padding:10px;border-radius:12px;background:#fff">${D.products.filter(q=>String(q.id)!==String(p.id)).map(q=>{const ids=Array.isArray(p.voucherConfig?.products)?p.voucherConfig.products:(Array.isArray(p.giftConfig?.products)?p.giftConfig.products:[]);return `<label class="check"><input type="checkbox" class="vc_product" value="${esc(q.id)}" ${ids.map(String).includes(String(q.id))?'checked':''}> ${esc(q.name)} — ${Number(q.price||0)} ج</label>`}).join('')}</div></div></div>
+ <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fffaf0"><div><b>🎁 هدايا مع المنتج</b><div class="hint">الهدايا تظهر على كارت المنتج والسلة بسعر 0 جنيه، ويتم تسجيلها كهدية في الطلب.</div></div><div class="grid2" style="margin-top:10px"><label class="field" style="display:flex;align-items:center;gap:9px"><input id="gc_enabled" type="checkbox" ${p.giftConfig?.enabled?'checked':''}><span>تفعيل الهدايا</span></label><div class="field"><label>عدد الهدايا لكل قطعة</label><input id="gc_qty" type="number" min="1" max="3" value="${Math.max(1,Number(p.giftConfig?.quantity)||1)}"></div></div><div class="field" style="margin-top:10px"><label>اختار منتجات الهدايا</label><div style="display:grid;gap:7px;max-height:210px;overflow:auto;border:1px solid #e2e8e3;padding:10px;border-radius:12px;background:#fff">${D.products.filter(q=>String(q.id)!==String(p.id)).map(q=>{const ids=Array.isArray(p.giftConfig?.products)?p.giftConfig.products:[];return `<label class="check"><input type="checkbox" class="gc_product" value="${esc(q.id)}" ${ids.map(String).includes(String(q.id))?'checked':''}> 🎁 ${esc(q.name)} — <b>هدية</b></label>`}).join('')}</div></div></div>
+<div class="field" style="margin-top:12px"><label>تفاصيل المنتج</label><textarea id="pd">${esc(p.details||'')}</textarea></div>
  <div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>🌿 اقتراحات مناسبة مع المنتج</b><div class="hint">تظهر داخل تفاصيل المنتج للعميل بسعر العرض الذي تحدده.</div></div><button type="button" class="btn soft" onclick="addRelatedOfferRow()">+ إضافة اقتراح</button></div><div id="relatedOffersRows" style="display:grid;gap:9px;margin-top:10px">${relatedRows}</div></div>
  <div class="modalfoot"><button class="btn primary" onclick="saveProduct('${id||''}')">حفظ المنتج<button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
 }
@@ -148,33 +145,42 @@ function relatedOfferRow(r={},i=Date.now()){
 }
 function addRelatedOfferRow(){const box=$('relatedOffersRows');if(box)box.insertAdjacentHTML('beforeend',relatedOfferRow({active:true}));}
 function collectRelatedOffers(){return [...document.querySelectorAll('.related-offer-row')].map(row=>({productId:row.querySelector('.ro-product')?.value||'',offerPrice:+(row.querySelector('.ro-price')?.value||0),oldPrice:+(row.querySelector('.ro-old')?.value||0),text:row.querySelector('.ro-text')?.value||'',active:!!row.querySelector('.ro-active')?.checked})).filter(x=>x.productId&&x.offerPrice>0)}
-function uploadBox(id,val,hint){
- const safe=esc(val||'');
- const isVid=/^data:video\//i.test(val||'')||/\.(mp4|webm|ogg)(\?|$)/i.test(val||'');
- const preview=isVid?`<video id="${id}_preview" class="gm-media-video" src="${safe}" controls muted playsinline></video>`:`<img id="${id}_preview" class="gm-media-preview" src="${safe||'/assets/logo.jpg'}" alt="معاينة">`;
- return `<div class="upload"><div class="uploadrow">${preview}<div style="flex:1"><label class="btn soft dropbtn" for="${id}_file">📁 اختيار صورة أو فيديو</label><input id="${id}_file" type="file" accept="image/*,video/*" onchange="handleMedia(this,'${id}_preview','${id}_value','${id}_status','${id}_progress')"><input id="${id}_value" type="hidden" value="${safe}"><div class="hint">${hint}. أي أبعاد ونسبة عرض/ارتفاع — الصورة لا تُقص ولا تتمدد، والفيديو يحتفظ بنسبة أبعاده.</div><div id="${id}_status" class="gm-upload-status"></div><div id="${id}_progress" class="gm-upload-progress"><i></i></div></div></div></div>`;
+function guessMediaType(val,type=''){
+ const v=String(val||'').toLowerCase();
+ if(type==='video'||/^data:video\//.test(v)||/\.(mp4|webm|mov|m4v|ogv)(?:[?#].*)?$/.test(v)) return 'video';
+ return 'image';
 }
-async function handleMedia(input,previewId,valueId,statusId,progressId){
- const f=input.files?.[0];if(!f)return;
- if(!(f.type.startsWith('image/')||f.type.startsWith('video/'))){toast('اختار صورة أو فيديو فقط');return}
- if(f.size>18*1024*1024){toast('الملف أكبر من 18MB في التخزين الحالي');return}
- const st=$(statusId),bar=$(progressId)?.querySelector('i'); if(st)st.textContent='① تجهيز الملف…'; if(bar)bar.style.width='5%';
+function renderUploadPreview(id,val,type){
+ const box=$(id+'_preview'); if(!box)return;
+ const t=guessMediaType(val,type);
+ box.innerHTML=t==='video'
+   ? `<video class="preview" src="${esc(val)}" muted loop autoplay playsinline controls></video>`
+   : `<img class="preview" src="${esc(val||'/assets/logo.jpg')}" alt="">`;
+}
+function uploadBox(id,val,hint,type=''){
+ const t=guessMediaType(val,type);
+ return `<div class="upload"><div class="uploadrow"><div id="${id}_preview" class="media-preview-wrap">${t==='video'?`<video class="preview" src="${esc(val)}" muted loop autoplay playsinline controls></video>`:`<img class="preview" src="${esc(val||'/assets/logo.jpg')}" alt="">`}</div><div><label class="btn soft dropbtn" for="${id}_file">📷 اختيار صورة / فيديو</label><input id="${id}_file" type="file" accept="image/*,video/*" onchange="handleImage(this,'${id}_preview','${id}_value','${id}_type')"><input id="${id}_value" type="hidden" value="${esc(val||'')}"><input id="${id}_type" type="hidden" value="${esc(t)}"><div class="hint">${hint}. الصور تتحول WebP، والفيديو يُرفع كما هو. الحد الأقصى للفيديو 12MB.</div></div></div></div>`;
+}
+async function handleImage(input,previewId,valueId,typeId){
+ const f=input.files?.[0]; if(!f)return;
+ if(!f.type.startsWith('image/')&&!f.type.startsWith('video/')){toast('اختار صورة أو فيديو فقط');return}
+ if(f.size>12*1024*1024){toast('الفيديو كبير جدًا — الحد الأقصى 12MB');return}
  try{
-   let data;
-   if(f.type.startsWith('image/')) data=await resizeImage(f,2400,2400,.88);
-   else data=await fileToDataURL(f);
-   if(st)st.textContent='② جاري رفع الملف…';
-   const result=await uploadMediaXHR(data,f.type,f.name,bar);
-   const url=result.url||result.media?.url;
-   if(!url)throw Error('لم يرجع السيرفر رابط الملف');
-   $(valueId).value=url;
-   const box=document.getElementById(previewId); if(box){if(f.type.startsWith('video/')){const v=document.createElement('video');v.id=previewId;v.className='gm-media-video';v.src=url;v.controls=true;v.muted=true;v.playsInline=true;box.replaceWith(v)}else{const im=document.createElement('img');im.id=previewId;im.className='gm-media-preview';im.src=url;im.alt='معاينة';box.replaceWith(im)}}
-   if(st)st.textContent='③ تم الرفع والحفظ بنجاح ✓'; if(bar)bar.style.width='100%'; toast('تم رفع الملف بنجاح ✓');
- }catch(e){if(st)st.textContent='❌ فشل الرفع: '+(e.message||'حاول مرة أخرى');if(bar)bar.style.width='0';toast('تعذر رفع الملف — حاول مرة أخرى')}
+   toast(f.type.startsWith('video/')?'جاري رفع الفيديو...':'جاري تجهيز الصورة...');
+   const data=f.type.startsWith('image/')?await resizeImage(f,1400,1400,.84):await readDataUrl(f);
+   const r=await fetch('/api/admin/media',{method:'POST',headers:H(),body:JSON.stringify({data,mime:f.type.startsWith('image/')?'image/webp':f.type,name:f.name})});
+   let d={};try{d=await r.json()}catch{}
+   if(!r.ok)throw Error(d.error||'تعذر رفع الوسائط');
+   $(valueId).value=d.url;
+   if($(typeId))$(typeId).value=d.type||((d.mime||'').startsWith('video/')?'video':'image');
+   renderUploadPreview(previewId.replace('_preview',''),d.url,d.type);
+   toast('تم رفع الملف بنجاح ✓');
+ }catch(e){toast(e.message||'تعذر رفع الملف')}
 }
-function fileToDataURL(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
-function uploadMediaXHR(data,type,name,bar){return new Promise((resolve,reject)=>{const x=new XMLHttpRequest();x.open('POST','/api/admin/media');x.setRequestHeader('Content-Type','application/json');x.setRequestHeader('Authorization','Bearer '+token());x.upload.onprogress=e=>{if(e.lengthComputable&&bar)bar.style.width=Math.max(5,Math.round(e.loaded/e.total*100))+'%'};x.onload=()=>{let d={};try{d=JSON.parse(x.responseText)}catch(e){}if(x.status>=200&&x.status<300)resolve(d);else reject(Error(d.error||'فشل رفع الملف ['+x.status+']'))};x.onerror=()=>reject(Error('تعذر الاتصال بالسيرفر'));x.send(JSON.stringify({data,type,name}))})}
-function resizeImage(file,maxW,maxH,quality){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{let w=im.width,h=im.height,s=Math.min(1,maxW/w,maxH/h);w=Math.max(1,Math.round(w*s));h=Math.max(1,Math.round(h*s));const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.drawImage(im,0,0,w,h);resolve(c.toDataURL('image/webp',quality))};im.onerror=reject;im.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
+function readDataUrl(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
+function resizeImage(file,maxW,maxH,quality){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{let w=im.width,h=im.height,s=Math.min(1,maxW/w,maxH/h);w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);resolve(c.toDataURL('image/webp',quality))};im.onerror=reject;im.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
+function mediaAdminTag(src,type,cls=''){return guessMediaType(src,type)==='video'?`<video class="${cls}" src="${esc(src)}" muted loop autoplay playsinline controls></video>`:`<img class="${cls}" src="${esc(src||'/assets/logo.jpg')}" alt="">`}
+
 async function saveProduct(id){
  const b={
    name:$('pn').value,
@@ -187,8 +193,8 @@ async function saveProduct(id){
    details:$('pd').value,
    sticker:{text:$('st_text').value,color:$('st_color').value,position:$('st_pos').value,active:$('st_active').checked},
    relatedOffers:collectRelatedOffers(),
-   giftConfig:{enabled:!!$('gift_enabled')?.checked,maxGiftsPerTrigger:Math.min(5,Math.max(1,Number($('gift_qty')?.value)||1)),products:[...document.querySelectorAll('.gift_product:checked')].map(e=>e.value)},
    voucherConfig:{enabled:!!$('vc_enabled')?.checked,value:Math.max(0,Number($('vc_value')?.value)||0),products:[...document.querySelectorAll('.vc_product:checked')].map(e=>e.value)},
+    giftConfig:{enabled:!!$('gc_enabled')?.checked,quantity:Math.min(3,Math.max(1,Number($('gc_qty')?.value)||1)),products:[...document.querySelectorAll('.gc_product:checked')].map(e=>e.value)},
  };
  if(id)b.id=id;
  await api('/api/admin/products',{method:id?'PUT':'POST',body:JSON.stringify(b)});
@@ -202,7 +208,7 @@ function articles(){return collection('articles','📰 المقالات والأ
 function collection(type,title,sub,kind){
  const a=D[type]||[];
  return `<div class="panel"><div class="head"><div><h2>${title}</h2><p>${sub}</p></div><button class="btn primary" onclick="collectionForm('${type}')">+ إضافة</button></div>
- <div class="cards">${a.length?a.map((x,i)=>`<div class="card drag" draggable="true" data-id="${esc(x.id)}" ondragstart="dragStart(event,'${type}')" ondragover="event.preventDefault()" ondrop="dropItem(event,'${type}')"><div class="cardmedia"><img src="${esc(x.image||'/assets/logo.jpg')}"></div><div class="cardbody"><h3>${esc(x.title||x.name||'بدون عنوان')}</h3><p>${esc(x.text||x.description||'')}</p>${type==='deals'&&x.endAt?`<p><b>ينتهي:</b> ${esc(x.endAt)}</p>`:''}<div class="cardactions"><button class="btn soft" onclick="collectionForm('${type}','${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="collectionDelete('${type}','${esc(x.id)}')">حذف</button><span class="btn ghost">☰ ${i+1}</span></div></div></div>`).join(''):`<div class="empty">لا يوجد محتوى. اضغط إضافة للبدء.</div>`}</div></div>`;
+ <div class="cards">${a.length?a.map((x,i)=>`<div class="card drag" draggable="true" data-id="${esc(x.id)}" ondragstart="dragStart(event,'${type}')" ondragover="event.preventDefault()" ondrop="dropItem(event,'${type}')"><div class="cardmedia">${mediaAdminTag(x.image,x.imageType,'media-card-preview')}</div><div class="cardbody"><h3>${esc(x.title||x.name||'بدون عنوان')}</h3><p>${esc(x.text||x.description||'')}</p>${type==='deals'&&x.endAt?`<p><b>ينتهي:</b> ${esc(x.endAt)}</p>`:''}<div class="cardactions"><button class="btn soft" onclick="collectionForm('${type}','${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="collectionDelete('${type}','${esc(x.id)}')">حذف</button><span class="btn ghost">☰ ${i+1}</span></div></div></div>`).join(''):`<div class="empty">لا يوجد محتوى. اضغط إضافة للبدء.</div>`}</div></div>`;
 }
 function collectionForm(type,id){
  const a=D[type]||[],x=id?a.find(z=>String(z.id)===String(id)):{id:Date.now(),title:'',name:'',text:'',description:'',image:'',link:'',cta:'اطلب الآن',startAt:'',endAt:'',active:true};
@@ -227,13 +233,13 @@ ${D.products.map(p=>{const it=(x.items||[]).find(z=>String(z.productId)===String
  <div class="field"><label>العنوان</label><input id="ct" value="${esc(x.title||x.name||'')}"></div>
  <div class="field"><label>زر الإجراء</label><input id="cc" value="${esc(x.cta||'')}"></div>
  </div>
- <div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('ci',x.image||'',type==='hero'?'1920 × 800 بكسل':'1200 × 800 بكسل')}</div>
+ <div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('ci',x.image||'',type==='hero'?'صورة أو فيديو للـ Hero':'صورة أو فيديو', x.imageType)}</div>
  <div class="field" style="margin-top:12px"><label>الوصف</label><textarea id="cx">${esc(x.text||x.description||'')}</textarea></div>
  ${extra}
  <div class="modalfoot"><button class="btn primary" onclick="saveCollection('${type}','${id||''}')">حفظ</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
 }
 async function saveCollection(type,id){
- const x={id:id||Date.now(),title:$('ct').value,image:$('ci_value').value,text:$('cx').value,cta:$('cc').value,link:$('cl')?.value||'',startAt:$('cs')?.value||'',endAt:$('ce')?.value||'',type:$('ctype')?.value||''};
+ const x={id:id||Date.now(),title:$('ct').value,image:$('ci_value').value,imageType:$('ci_type').value||'image',text:$('cx').value,cta:$('cc').value,link:$('cl')?.value||'',startAt:$('cs')?.value||'',endAt:$('ce')?.value||'',type:$('ctype')?.value||''};
  if(type==='categories'){
    x.name=x.title;
    x.productIds=[...document.querySelectorAll('.catprod:checked')].map(e=>e.value);
@@ -268,11 +274,6 @@ async function saveContent(){const s={...D.settings,gm_categories:D.categories,g
 async function collectionDelete(type,id){if(!confirm('حذف العنصر؟'))return;D[type]=(D[type]||[]).filter(x=>String(x.id)!==String(id));await saveContent();render();toast('تم الحذف')}
 let dragData=null;function dragStart(e,type){dragData={type,id:e.currentTarget.dataset.id}}async function dropItem(e,type){if(!dragData||dragData.type!==type)return;const target=e.currentTarget.dataset.id,a=D[type]||[],from=a.findIndex(x=>String(x.id)===String(dragData.id)),to=a.findIndex(x=>String(x.id)===String(target));if(from<0||to<0||from===to)return;const [it]=a.splice(from,1);a.splice(to,0,it);await saveContent();render();dragData=null;toast('تم تغيير الترتيب')}
 
-function about(){const a=D.settings?.gm_site?.about||{};const pts=Array.isArray(a.points)?a.points:[];return `<div class="panel"><div class="head"><div><h2>🏢 عن Green Moon</h2><p>القسم الاحترافي الظاهر للعميل عن الشركة. كل خانة هنا مرتبطة مباشرة بقسم "عن Green Moon" في الموقع.</p></div><button class="btn primary" onclick="saveAbout()">حفظ قسم الشركة</button></div><div class="gm-admin-help"><b>📍 أين يظهر؟</b><p>سيظهر أسفل المقالات وقبل Green Moon Doctor. الصورة والنصوص والبطاقات كلها تظهر تلقائيًا للعميل بعد الحفظ.</p></div><div class="field"><label>الصورة الرئيسية للشركة</label>${uploadBox('ab_img',a.image||D.settings?.gm_site?.media?.defaultFallback||'/assets/logo.jpg','صورة قسم عن الشركة')}</div><div class="grid2" style="margin-top:12px"><div class="field"><label>الجملة الصغيرة</label><input id="ab_kicker" value="${esc(a.kicker||'GREEN MOON • ABOUT US')}" placeholder="مثلاً: GREEN MOON • ABOUT US"></div><div class="field"><label>عنوان القسم</label><input id="ab_title" value="${esc(a.title||'عن Green Moon')}" placeholder="عن Green Moon"></div><div class="field" style="grid-column:1/-1"><label>نبذة الشركة</label><textarea id="ab_intro" style="min-height:100px">${esc(a.intro||'')}</textarea></div><div class="field"><label>نص الزر</label><input id="ab_cta" value="${esc(a.cta||'اكتشف Green Moon')}" placeholder="اكتشف Green Moon"></div><div class="field"><label>رابط الزر</label><input id="ab_link" value="${esc(a.link||'#products')}" placeholder="#products"></div></div><div class="panel" style="margin-top:14px;padding:14px;border:1px solid #dfe8e2;border-radius:16px;background:#fbfdfb"><div class="head"><div><h3>⭐ البنود الاحترافية</h3><p>مثل الرؤية والرسالة والجودة وخدمة العملاء. تقدر تضيف أو تعدل أو تحذف أي بند.</p></div><button class="btn soft" onclick="addAboutPoint()">+ إضافة بند</button></div><div id="aboutPointsRows" style="display:grid;gap:10px">${pts.map(aboutPointRow).join('')||aboutPointRow({title:'رؤيتنا',text:'نخلي الطبيعة جزءًا أجمل من كل مساحة.'})+aboutPointRow({title:'رسالتنا',text:'منتجات نباتية مختارة وخدمة موثوقة وتجربة شراء مريحة.'})+aboutPointRow({title:'الجودة',text:'اختيارات مدروسة ونهتم بالتفاصيل قبل وصول المنتج إليك.'})+aboutPointRow({title:'خدمة العملاء',text:'مساعدة حقيقية لاختيار الأنسب ومتابعة الطلب حتى التسليم.'})}</div></div><div class="modalfoot"><button class="btn primary" onclick="saveAbout()">حفظ ونشر على الموقع</button></div></div>`}
-function aboutPointRow(x={}){return `<div class="about-point-admin" style="padding:12px;border:1px solid #e2e8e3;border-radius:14px;background:#fff"><div class="grid2"><div class="field"><label>عنوان البند</label><input class="abp_title" value="${esc(x.title||'')}" placeholder="رؤيتنا"></div><div class="field"><label>الشرح</label><input class="abp_text" value="${esc(x.text||'')}" placeholder="اكتب شرحًا مختصرًا واحترافيًا"></div></div><button type="button" class="btn danger" onclick="this.closest('.about-point-admin').remove()">حذف البند</button></div>`}
-function addAboutPoint(){document.getElementById('aboutPointsRows')?.insertAdjacentHTML('beforeend',aboutPointRow({title:'',text:''}))}
-async function saveAbout(){const old={...(D.settings?.gm_site||{})},points=[...document.querySelectorAll('.about-point-admin')].map(r=>({title:r.querySelector('.abp_title')?.value.trim()||'',text:r.querySelector('.abp_text')?.value.trim()||''})).filter(x=>x.title);old.about={image:$('ab_img_value')?.value||'',kicker:$('ab_kicker').value.trim(),title:$('ab_title').value.trim(),intro:$('ab_intro').value.trim(),cta:$('ab_cta').value.trim(),link:$('ab_link').value.trim(),points};D.settings={...D.settings,gm_site:old};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});toast('تم حفظ قسم عن الشركة ونشره على الموقع ✓');await load()}
-
 function rewards(){
  const r=D.rewards||{};
  const items=Array.isArray(r.popupItems)&&r.popupItems.length?r.popupItems:[{icon:'🚚',title:'توصيل مجاني',text:'اطلب بقيمة 500 جنيه أو أكثر واستمتع بتوصيل مجاني على طلبك.',active:true},{icon:'🎁',title:'هدية مع طلبك',text:'عند وصول طلبك إلى 750 جنيه، استمتع بهدية مميزة من Green Moon.',active:true},{icon:'⭐',title:'مكافأة إضافية',text:'اطلب بقيمة 1000 جنيه أو أكثر واحصل على مكافأة إضافية مع طلبك.',active:true}];
@@ -305,14 +306,14 @@ async function savePromo(id){
 }
 async function deletePromo(id){if(!confirm('حذف البروموكود؟'))return;D.settings={...D.settings,promoCodes:(D.settings.promoCodes||[]).filter(x=>String(x.id)!==String(id))};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});render();toast('تم حذف البروموكود')}
 
-function notifications(){return `<div class="panel"><div class="head"><div><h2>🔔 إشعارات العملاء</h2><p>ابعت إشعار فوري للعملاء المشتركين على الموبايل.</p></div></div><div class="grid2"><div class="field"><label>عنوان الإشعار</label><input id="nt_title" placeholder="🌿 عرض جديد من Green Moon"></div><div class="field"><label>الجمهور</label><select id="nt_audience"><option value="all">كل المشتركين</option><option value="promotions">المهتمين بالعروض</option><option value="newProducts">المهتمين بالمنتجات الجديدة</option></select></div></div><div class="field" style="margin-top:12px"><label>نص الإشعار</label><textarea id="nt_body" placeholder="خصم جديد لفترة محدودة..."></textarea></div><div class="grid2" style="margin-top:12px"><div class="field"><label>الرابط عند الضغط</label><input id="nt_url" value="/index.html"></div><div style="display:flex;align-items:end"><button class="btn primary" style="width:100%" onclick="sendNotification()">🚀 إرسال الإشعار</button></div></div><div class="hint" style="margin-top:12px">الإشعارات الخاصة بالطلبات والمنتجات الجديدة والعروض الجديدة يتم إرسالها تلقائيًا حسب إعدادات العميل.</div></div>`}
+function notifications(){return `<div class="panel"><div class="head"><div><h2>🔔 إشعارات العملاء</h2><p>ابعت إشعار فوري للعملاء المشتركين على الموبايل.</p></div></div><div class="grid2"><div class="field"><label>عنوان الإشعار</label><input id="nt_title" placeholder="🌿 عرض جديد من Green Moon"></div><div class="field"><label>الجمهور</label><select id="nt_audience"><option value="all">كل المشتركين</option><option value="promotions">المهتمين بالعروض</option><option value="newProducts">المهتمين بالمنتجات الجديدة</option><option value="news">المهتمين بالأخبار</option><option value="deals">المهتمين بالصفقات</option></select></div></div><div class="field" style="margin-top:12px"><label>نص الإشعار</label><textarea id="nt_body" placeholder="خصم جديد لفترة محدودة..."></textarea></div><div class="grid2" style="margin-top:12px"><div class="field"><label>الرابط عند الضغط</label><input id="nt_url" value="/index.html"></div><div style="display:flex;align-items:end"><button class="btn primary" style="width:100%" onclick="sendNotification()">🚀 إرسال الإشعار</button></div></div><div class="hint" style="margin-top:12px">تقدر تبعت عروض وخصومات وصفقات وأخبار ومنتجات جديدة. تحديثات الطلبات تروح تلقائيًا لصاحب الطلب فقط.</div></div>`}
 async function sendNotification(){const title=$('nt_title').value.trim(),body=$('nt_body').value.trim(),audience=$('nt_audience').value,url=$('nt_url').value.trim()||'/';if(!title||!body){toast('اكتب عنوان ونص الإشعار');return}await api('/api/admin/notifications',{method:'POST',body:JSON.stringify({title,body,audience,url})});toast('تم تجهيز الإشعار للإرسال 🔔')}
 function orders(){return `<div class="panel"><div class="head"><div><h2>📦 الطلبات</h2><p>اضغط على رقم الطلب أو اسم العميل لعرض كل التفاصيل والتحكم في الطلب.</p></div><button class="btn soft" onclick="load()">↻ تحديث</button></div><div class="tablewrap"><table class="table"><tr><th>رقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th>تفاصيل</th></tr>${D.orders.map(o=>`<tr><td><button class="btn ghost" onclick="details('${esc(o.id)}')">${esc(o.id)}</button></td><td><button class="btn ghost" onclick="details('${esc(o.id)}')"><b>${esc(o.name||'—')}</b></button></td><td>${esc(o.phone||'—')}</td><td>${+o.total||0} ج</td><td><select onchange="orderStatus('${esc(o.id)}',this.value)"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم الشحن'?'selected':''}>تم الشحن</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></td><td><button class="btn soft" onclick="details('${esc(o.id)}')">عرض التفاصيل</button></td></tr>`).join('')}</table></div></div>`}
 async function orderStatus(id,status){await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status})});await load();toast('تم تحديث حالة الطلب')}
 function money(n){return (Number(n)||0)+' ج'}
 function orderItemsHtml(o){const items=Array.isArray(o.items)?o.items:[];if(!items.length)return '<div class="empty">لا توجد تفاصيل منتجات محفوظة لهذا الطلب.</div>';return `<div class="tablewrap"><table class="table" style="min-width:650px"><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr>${items.map(it=>{const p=D.products.find(x=>String(x.id)===String(it.productId));const q=Number(it.quantity||1);const price=Number(it.price??p?.price??0);return `<tr><td><b>${esc(it.name||p?.name||it.productId||'منتج')}</b></td><td>${q}</td><td>${money(price)}</td><td>${money(price*q)}</td></tr>`}).join('')}</table></div>`}
-function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب والمندوب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم التجهيز'?'selected':''}>تم التجهيز</option><option ${o.status==='استلمته شركة الشحن'?'selected':''}>استلمته شركة الشحن</option><option ${o.status==='في الطريق'?'selected':''}>في الطريق</option><option ${o.status==='المندوب قريب'?'selected':''}>المندوب قريب</option><option ${o.status==='تم التسليم'?'selected':''}>تم التسليم</option><option ${o.status==='تعذر التسليم'?'selected':''}>تعذر التسليم</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><div class="grid2" style="margin-top:10px"><div class="field"><label>👤 اسم المندوب</label><input id="detailCourierName" value="${esc(o.courierName||'')}" placeholder="اسم المندوب"></div><div class="field"><label>📞 رقم المندوب</label><input id="detailCourierPhone" value="${esc(o.courierPhone||'')}" placeholder="01xxxxxxxxx"></div></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة وبيانات المندوب</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="modalfoot"><a class="btn soft" href="tel:${esc(o.phone||'')}" style="text-decoration:none">📞 اتصال</a><a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
-async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await api('/api/admin/orders',{method:'PUT',body:JSON.stringify({id,status,courierName:$('detailCourierName')?.value||'',courierPhone:$('detailCourierPhone')?.value||''})});await load();closeModal();details(id);toast('تم حفظ حالة الطلب وبيانات المندوب')}
+function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم الشحن'?'selected':''}>تم الشحن</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="modalfoot"><a class="btn soft" href="tel:${esc(o.phone||'')}" style="text-decoration:none">📞 اتصال</a><a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
+async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await orderStatus(id,status);closeModal();details(id)}
 function printOrder(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const items=Array.isArray(o.items)?o.items:[];const w=window.open('','_blank');if(!w){toast('اسمح بفتح نافذة الطباعة');return}w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>طلب ${esc(o.id)}</title><style>body{font-family:Tahoma,Arial;padding:25px;color:#15221c}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:right}h1,h2{color:#0b5b3d}</style></head><body><h1>Green Moon 🌿</h1><h2>طلب #${esc(o.id)}</h2><p><b>العميل:</b> ${esc(o.name||'')}<br><b>الهاتف:</b> ${esc(o.phone||'')}<br><b>العنوان:</b> ${esc([o.governorate,o.area,o.street,o.building,o.floor,o.apartment].filter(Boolean).join(' — '))}</p><table><tr><th>المنتج</th><th>الكمية</th><th>السعر</th></tr>${items.map(it=>`<tr><td>${esc(it.name||it.productId||'منتج')}</td><td>${Number(it.quantity||1)}</td><td>${money(it.price||0)}</td></tr>`).join('')}</table><h2>الإجمالي: ${money(o.total)}</h2><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
 
 function homebuilder(){
@@ -333,7 +334,7 @@ function homebuilder(){
       <div class="field"><label>زر المساحة</label><input id="h_space_cta" value="${esc(h.spaceCta||'تسوق الآن')}"></div>
       <div class="field"><label>رابط المساحة</label><input id="h_space_link" value="${esc(h.spaceLink||'#gmNewProducts')}"></div>
     </div>
-    <div class="field" style="margin-top:12px"><label>صورة قسم المساحة</label>${uploadBox('hsimg',h.spaceImage||'', 'الصورة الخلفية')}</div>
+    <div class="field" style="margin-top:12px"><label>صورة قسم المساحة</label>${uploadBox('hsimg',h.spaceImage||'', 'صورة أو فيديو للخلفية', h.spaceImageType)}</div>
    </div>
    <div class="panel">
     <div class="head"><div><h3>🚚 شريط الخدمات</h3><p>أضف حتى 4 خدمات، عدّلها أو احذفها ورتبها.</p></div><button class="btn soft" onclick="homeServiceForm()">+ إضافة خدمة</button></div>
@@ -341,11 +342,11 @@ function homebuilder(){
    </div>
    <div class="panel">
     <div class="head"><div><h3>🖼️ البانرات</h3><p>بانرات مثل مهرجان البامبو أو الفازات والإكسسوارات.</p></div><button class="btn soft" onclick="homeBannerForm()">+ إضافة Banner</button></div>
-    <div class="cards">${banners.map((x,i)=>`<div class="card drag" draggable="true" data-id="${esc(x.id)}" ondragstart="homeDragStart(event,'banners')" ondragover="event.preventDefault()" ondrop="homeDrop(event,'banners')"><div class="cardmedia"><img src="${esc(x.image||'/assets/logo.jpg')}"></div><div class="cardbody"><h3>${esc(x.title||'بدون عنوان')}</h3><p>${esc(x.text||'')}</p><div class="cardactions"><button class="btn soft" onclick="homeBannerForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="homeDelete('banners','${esc(x.id)}')">حذف</button><span class="btn ghost">☰ ${i+1}</span></div></div></div>`).join('')||'<div class="empty">لا توجد بانرات.</div>'}</div>
+    <div class="cards">${banners.map((x,i)=>`<div class="card drag" draggable="true" data-id="${esc(x.id)}" ondragstart="homeDragStart(event,'banners')" ondragover="event.preventDefault()" ondrop="homeDrop(event,'banners')"><div class="cardmedia">${mediaAdminTag(x.image,x.imageType,'media-card-preview')}</div><div class="cardbody"><h3>${esc(x.title||'بدون عنوان')}</h3><p>${esc(x.text||'')}</p><div class="cardactions"><button class="btn soft" onclick="homeBannerForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="homeDelete('banners','${esc(x.id)}')">حذف</button><span class="btn ghost">☰ ${i+1}</span></div></div></div>`).join('')||'<div class="empty">لا توجد بانرات.</div>'}</div>
    </div>
    <div class="panel">
     <div class="head"><div><h3>🌿 منتجات "وصل حديثًا"</h3><p>حدد المنتجات التي تظهر في الصف الأفقي، واسحب لترتيبها.</p></div></div>
-    <div style="display:grid;gap:8px;max-height:360px;overflow:auto">${D.products.map(p=>`<label class="check" style="padding:9px;border:1px solid #e5e9e5;border-radius:12px"><input type="checkbox" class="homeprod" value="${esc(p.id)}" ${selected.includes(String(p.id))?'checked':''}> <img src="${esc(p.image||'/assets/logo.jpg')}" style="width:42px;height:42px;border-radius:9px;object-fit:cover"> <span>${esc(p.name||'منتج')}</span></label>`).join('')}</div>
+    <div style="display:grid;gap:8px;max-height:360px;overflow:auto">${D.products.map(p=>`<label class="check" style="padding:9px;border:1px solid #e5e9e5;border-radius:12px"><input type="checkbox" class="homeprod" value="${esc(p.id)}" ${selected.includes(String(p.id))?'checked':''}> ${mediaAdminTag(p.image,p.imageType,'home-prod-thumb')} <span>${esc(p.name||'منتج')}</span></label>`).join('')}</div>
    </div>
    <div class="panel">
     <div class="head"><div><h3>📱 الشريط السفلي</h3></div></div>
@@ -373,10 +374,10 @@ async function saveHomeService(id){
 }
 function homeBannerForm(id){
  const a=D.home.banners||[],x=id?a.find(z=>String(z.id)===String(id)):{id:Date.now(),title:'',text:'',cta:'اكتشف العروض',link:'#deals',image:'',active:true};
- openModal(id?'تعديل البانر':'إضافة Banner',`<div class="grid2"><div class="field"><label>العنوان</label><input id="bn_t" value="${esc(x.title||'')}"></div><div class="field"><label>نص الزر</label><input id="bn_c" value="${esc(x.cta||'اكتشف العروض')}"></div><div class="field"><label>الرابط</label><input id="bn_l" value="${esc(x.link||'#deals')}"></div></div><div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('bn_i',x.image||'', 'صورة Banner')}</div><div class="field" style="margin-top:12px"><label>الوصف</label><textarea id="bn_x">${esc(x.text||'')}</textarea></div><div class="modalfoot"><button class="btn primary" onclick="saveHomeBanner('${id||''}')">حفظ</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
+ openModal(id?'تعديل البانر':'إضافة Banner',`<div class="grid2"><div class="field"><label>العنوان</label><input id="bn_t" value="${esc(x.title||'')}"></div><div class="field"><label>نص الزر</label><input id="bn_c" value="${esc(x.cta||'اكتشف العروض')}"></div><div class="field"><label>الرابط</label><input id="bn_l" value="${esc(x.link||'#deals')}"></div></div><div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('bn_i',x.image||'', 'صورة أو فيديو للـ Banner', x.imageType)}</div><div class="field" style="margin-top:12px"><label>الوصف</label><textarea id="bn_x">${esc(x.text||'')}</textarea></div><div class="modalfoot"><button class="btn primary" onclick="saveHomeBanner('${id||''}')">حفظ</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`);
 }
 async function saveHomeBanner(id){
- const a=Array.isArray(D.home.banners)?D.home.banners:[],x={id:id||String(Date.now()),title:$('bn_t').value,text:$('bn_x').value,cta:$('bn_c').value,link:$('bn_l').value,image:$('bn_i_value').value,active:true},i=a.findIndex(z=>String(z.id)===String(x.id));
+ const a=Array.isArray(D.home.banners)?D.home.banners:[],x={id:id||String(Date.now()),title:$('bn_t').value,text:$('bn_x').value,cta:$('bn_c').value,link:$('bn_l').value,image:$('bn_i_value').value,imageType:$('bn_i_type').value||'image',active:true},i=a.findIndex(z=>String(z.id)===String(x.id));
  if(i>=0)a[i]=x;else a.push(x);D.home.banners=a;await saveHomeOnly();closeModal();render();toast('تم حفظ الـBanner');
 }
 async function homeDelete(type,id){if(!confirm('حذف العنصر؟'))return;D.home[type]=(D.home[type]||[]).filter(x=>String(x.id)!==String(id));await saveHomeOnly();render();toast('تم الحذف')}
@@ -390,7 +391,7 @@ async function saveHomeOnly(){
 async function saveHomeBuilder(){
  const h={...D.home,
    headings:{categories:$('hh_cat').value,products:$('hh_prod').value,deals:$('hh_deals').value,space:$('hh_space').value},
-   spaceText:$('h_space_text').value,spaceCta:$('h_space_cta').value,spaceLink:$('h_space_link').value,spaceImage:$('hsimg_value').value,
+   spaceText:$('h_space_text').value,spaceCta:$('h_space_cta').value,spaceLink:$('h_space_link').value,spaceImage:$('hsimg_value').value,spaceImageType:$('hsimg_type').value||'image',
    newProductIds:[...document.querySelectorAll('.homeprod:checked')].map(x=>x.value),
    bottomNav:{home:$('hn1').value,categories:$('hn2').value,deals:$('hn3').value,articles:$('hn4').value,contact:$('hn5').value},
    sections:{hero:$('hs_hero').checked,services:$('hs_services').checked,categories:$('hs_categories').checked,banners:$('hs_banners').checked,products:$('hs_products').checked,space:$('hs_space').checked}
@@ -398,43 +399,19 @@ async function saveHomeBuilder(){
  D.home=h;await saveHomeOnly();toast('تم حفظ الصفحة الرئيسية بالكامل');
 }
 
-function media(){
- const v=(D.settings&&D.settings.gm_site)||{},m=v.media||{},c=v.content||{};
- return `<div class="panel"><div class="gm-admin-help"><b>🖼️ الصورة/الفيديو ده بيظهر فين؟</b><p>اختار الملف من جهازك. الصورة بأي أبعاد تُحفظ بدون قص أو تشويه، والفيديو يُحفظ بنفس النسبة. بعد الحفظ، الرابط الناتج يُخزن في إعدادات المتجر ويُستخدم مباشرة عند العميل.</p></div><div class="head"><div><h2>🗂️ الصور والنصوص — تحكم مركزي</h2><p>كل الصور هنا تُرفع من الجهاز كملف صورة، ولا تحتاج كتابة روابط. المنتجات/التصنيفات/العروض/المقالات لها إدارة مستقلة بنفس نظام الرفع.</p></div><button class="btn primary" onclick="saveMediaCenter()">حفظ</button></div>
- <div class="grid2">
-   <div><label>اللوجو الرئيسي</label>${uploadBox('mc_logo',m.logo||v.header?.logo||'/assets/logo.jpg','PNG / JPG / WEBP')}</div>
-   <div><label>لوجو شاشة الدخول</label>${uploadBox('mc_splash',m.splashLogo||'/assets/green-moon-logo-transparent.png','PNG / JPG / WEBP')}</div>
-   <div><label>صورة Green Moon Doctor</label>${uploadBox('mc_doctor',m.doctor||'/assets/green-moon-doctor.png','PNG / JPG / WEBP')}</div>
-   <div><label>الصورة الاحتياطية</label>${uploadBox('mc_fallback',m.defaultFallback||'/assets/logo.jpg','PNG / JPG / WEBP')}</div>
-   <div><label>صورة Hero الاحتياطية</label>${uploadBox('mc_hero',m.heroFallback||'/assets/logo.jpg','تظهر فقط لو مفيش Hero مرفوع')}</div>
- </div>
- <div class="panel" style="margin-top:14px"><div class="head"><div><h3>✍️ نصوص أساسية</h3></div></div><div class="grid2">
-  <div class="field"><label>التصنيفات</label><input id="mc_cat" value="${esc(c.categoriesHeading||'تسوق حسب الفئة')}"></div>
-  <div class="field"><label>المنتجات</label><input id="mc_prod" value="${esc(c.productsHeading||'وصل حديثًا')}"></div>
-  <div class="field"><label>العروض</label><input id="mc_deal" value="${esc(c.dealsHeading||'العروض الحالية')}"></div>
-  <div class="field"><label>المقالات</label><input id="mc_art" value="${esc(c.articlesHeading||'مقالات Green Moon')}"></div>
- </div></div></div>`;
-}
-async function saveMediaCenter(){
- const v={...(D.settings.gm_site||{})},m={...(v.media||{})},c={...(v.content||{})};
- m.logo=$('mc_logo_value').value;m.splashLogo=$('mc_splash_value').value;m.doctor=$('mc_doctor_value').value;m.defaultFallback=$('mc_fallback_value').value;m.heroFallback=$('mc_hero_value').value;
- c.categoriesHeading=$('mc_cat').value;c.productsHeading=$('mc_prod').value;c.dealsHeading=$('mc_deal').value;c.articlesHeading=$('mc_art').value;
- v.media=m;v.content=c;D.settings={...D.settings,gm_site:v};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});toast('تم حفظ الصور والنصوص ✓');await load();
-}
-
 function builder(){
  const s=D.settings||{}, v=s.gm_site||{};
  const header=v.header||{}, heroV=v.hero||{}, colors=v.colors||{}, nav=v.nav||{}, footer=v.footer||{}, sections=v.sections||{};
  return `<div class="panel">
-   <div class="gm-admin-help"><b>📍 خريطة مكان التعديل داخل الموقع</b><img src="/admin-help-map.svg" alt="خريطة توضيحية لأماكن أقسام الموقع" style="width:100%;max-height:180px;object-fit:contain;border:1px solid #e1e9e4;border-radius:12px;background:#fff;margin:8px 0"><div class="gm-site-map"><span>الهيدر</span><span>Hero</span><span>الأقسام</span><span>الصفقات</span><span>الهدايا</span><span>المنتجات</span><span>المقالات</span><span>الفوتر</span></div><p>أي خانة هنا مرتبطة بالجزء الموضح في الخريطة. بعد الضغط على «حفظ كل التعديلات» يتم إرسال البيانات للسيرفر ثم إعادة تحميلها من المصدر حتى تظهر للعميل.</p></div><div class="head"><div><h2>🎨 التحكم الكامل في واجهة الموقع</h2><p>من هنا تتحكم في الشكل والمحتوى والترتيب بدون تعديل الكود. كل القيم تُحفظ في إعدادات المتجر.</p></div><button class="btn primary" onclick="saveBuilder()">حفظ كل التعديلات</button></div>
+   <div class="head"><div><h2>🎨 التحكم الكامل في واجهة الموقع</h2><p>من هنا تتحكم في الشكل والمحتوى والترتيب بدون تعديل الكود. كل القيم تُحفظ في إعدادات المتجر.</p></div><button class="btn primary" onclick="saveBuilder()">حفظ كل التعديلات</button></div>
 
    <div class="panel" style="margin-top:14px">
     <div class="head"><div><h3>🧭 الهيدر</h3><p>الشعار، الاسم، السطر التعريفي، أزرار الهيدر.</p></div></div>
     <div class="grid2">
-      <div class="field"><label>اسم المتجر في الهيدر</label><input id="b_store" value="${esc(header.storeName||s.storeName||'Green Moon Plants and Flowers')}"></div>
-      <div class="field"><label>اسم صاحب العلامة</label><input id="b_owner" value="${esc(header.owner||'Mohamed Elgarhy')}"><div class="gm-field-help">📍 يظهر مباشرة تحت Plants and Flowers باللون الأبيض.</div></div>
-      <div class="field"><label>السطر الذهبي تحت الاسم</label><input id="b_tag" value="${esc(header.tagline||'Plants and Flowers')}"><div class="gm-field-help">📍 يظهر مباشرة تحت Green Moon باللون الذهبي.</div></div>
-      <div class="field"><label>شعار Green Moon — ارفع صورة فقط</label>${uploadBox('b_logo',header.logo||s.logo||'/assets/logo.jpg','اللوجو الرئيسي')}</div>
+      <div class="field"><label>اسم المتجر في الهيدر</label><input id="b_store" value="${esc(header.storeName||'Green Moon')}"></div>
+      <div class="field"><label>اسم المالك/السطر الثاني</label><input id="b_owner" value="${esc(header.owner||'Mohamed Elgarhy')}"></div>
+      <div class="field"><label>الجملة التعريفية</label><input id="b_tag" value="${esc(header.tagline||'Plants and Flowers')}"></div>
+      <div class="field"><label>شعار الموقع — رفع ملف من الجهاز</label>${uploadBox('b_logo',header.logo||s.logo||'/assets/logo.jpg','صورة أو فيديو للوجو', header.logoType)}</div>
       <div class="field"><label>Placeholder البحث</label><input id="b_search" value="${esc(header.searchPlaceholder||'ابحث عن نباتات، قصاري، مستلزمات...')}"></div>
       <div class="field"><label>نص زر التواصل</label><input id="b_contact" value="${esc(header.contactText||'💬 تواصل معنا')}"></div>
     </div>
@@ -446,13 +423,12 @@ function builder(){
       <div class="field"><label>عنوان Hero</label><input id="b_ht" value="${esc(heroV.title||'الطبيعة أقرب إليك')}"></div>
       <div class="field"><label>الوصف</label><input id="b_hs" value="${esc(heroV.subtitle||'نباتات تضيف حياة وجمال لكل مكان')}"></div>
       <div class="field"><label>نص الزر</label><input id="b_hc" value="${esc(heroV.cta||'تسوق الآن')}"></div>
-      <div class="field"><label>صورة Hero — ارفع صورة فقط</label>${uploadBox('b_hi',heroV.image||'','صورة Hero')}</div>
+      <div class="field"><label>صورة Hero — رفع ملف من الجهاز</label>${uploadBox('b_hi',heroV.image||'','صورة أو فيديو الـ Hero الرئيسية', heroV.imageType)}</div>
       <div class="field"><label>الرابط</label><input id="b_hl" value="${esc(heroV.link||'#products')}"></div>
       <div class="field"><label>ارتفاع Hero بالموبايل</label><input id="b_hh" type="number" value="${Number(heroV.mobileHeight||390)}"></div>
     </div>
    </div>
 
-   <div class="panel" style="margin-top:14px"><div class="head"><div><h3>🏢 قسم عن الشركة</h3><p>تحكم سريع في القسم، والتفاصيل الكاملة موجودة في تبويب "عن الشركة".</p></div><button class="btn soft" onclick="go('about')">فتح إعدادات عن الشركة</button></div><div class="grid2"><label class="field" style="display:flex;align-items:center;gap:10px"><input id="b_showAbout" type="checkbox" ${sections.showAbout!==false?'checked':''}><span>إظهار قسم عن الشركة</span></label><div class="field"><label>عنوان مختصر</label><input id="b_about_title" value="${esc(v.about?.title||'عن Green Moon')}"></div></div></div>
    <div class="panel" style="margin-top:14px">
     <div class="head"><div><h3>🎨 الألوان والهوية</h3><p>غيّر ألوان الموقع بالكامل من مكان واحد.</p></div></div>
     <div class="grid2">
@@ -495,42 +471,6 @@ function builder(){
    </div>
 
    <div class="panel" style="margin-top:14px">
-    <div class="head"><div><h3>🎬 شاشة الدخول Motion — 5 ثواني</h3><p>اللوجو والصورة والنصوص والحركة كلها قابلة للتعديل من هنا.</p></div></div>
-    <div class="grid2">
-      <label class="field" style="display:flex;align-items:center;gap:9px"><input id="sp_enabled" type="checkbox" ${v.splash?.enabled!==false?'checked':''}><span>تشغيل شاشة الدخول</span></label>
-      <div class="field"><label>المدة بالثواني</label><input id="sp_duration" type="number" min="5" max="5" value="5"></div>
-      <div class="field"><label>العنوان</label><input id="sp_title" value="${esc(v.splash?.title||header.storeName||'Green Moon')}"></div>
-      <div class="field"><label>السطر التعريفي</label><input id="sp_sub" value="${esc(v.splash?.subtitle||'Plants and Flowers')}"></div>
-      <div class="field"><label>اسم المالك</label><input id="sp_owner" value="${esc(v.splash?.owner||header.owner||'Mohamed Elgarhy')}"></div>
-      <div class="field"><label>الجملة السفلية</label><input id="sp_tag" value="${esc(v.splash?.tagline||'THE NATURE • THE GREEN MOON EXPERIENCE')}"></div>
-    </div>
-    <div class="field" style="margin-top:12px"><label>لوجو شاشة الدخول — صورة فقط</label>${uploadBox('sp_logo',v.splash?.logo||v.media?.splashLogo||header.logo||'/assets/green-moon-logo-transparent.png','لوجو شاشة الدخول')}</div>
-   </div>
-
-   <div class="panel" style="margin-top:14px">
-    <div class="head"><div><h3>🖼️ الصور الأساسية</h3><p>لا توجد صورة ثابتة لا يمكن تغييرها: ارفع البديل من هنا.</p></div></div>
-    <div class="grid2">
-      <div><label>صورة Green Moon Doctor</label>${uploadBox('md_doctor',v.media?.doctor||'/assets/green-moon-doctor.png','صورة الدكتور')}</div>
-      <div><label>الصورة الاحتياطية عند عدم وجود صورة</label>${uploadBox('md_fallback',v.media?.defaultFallback||'/assets/logo.jpg','صورة احتياطية')}</div>
-      <div><label>صورة Hero الاحتياطية</label>${uploadBox('md_hero',v.media?.heroFallback||'/assets/logo.jpg','صورة Hero احتياطية')}</div>
-    </div>
-   </div>
-
-   <div class="panel" style="margin-top:14px">
-    <div class="head"><div><h3>✍️ النصوص العامة</h3><p>غيّر العناوين الرئيسية الظاهرة في الموقع بدون لمس الكود.</p></div></div>
-    <div class="grid2">
-      <div class="field"><label>عنوان التصنيفات</label><input id="ct_categories" value="${esc(v.content?.categoriesHeading||'تسوق حسب الفئة')}"></div>
-      <div class="field"><label>عنوان المنتجات</label><input id="ct_products" value="${esc(v.content?.productsHeading||'وصل حديثًا')}"></div>
-      <div class="field"><label>عنوان العروض</label><input id="ct_deals" value="${esc(v.content?.dealsHeading||'العروض الحالية')}"></div>
-      <div class="field"><label>عنوان المقالات</label><input id="ct_articles" value="${esc(v.content?.articlesHeading||'مقالات Green Moon')}"></div>
-      <div class="field"><label>اسم الفوتر</label><input id="ft_brand" value="${esc(v.footer?.brand||header.storeName||'Green Moon')}"></div>
-      <div class="field"><label>سطر الفوتر</label><input id="ft_sub" value="${esc(v.footer?.sub||'PLANTS AND FLOWERS')}"></div>
-      <div class="field"><label>اسم صاحب العلامة</label><input id="ft_owner" value="${esc(v.footer?.owner||header.owner||'Mohamed Elgarhy')}"></div>
-      <div class="field"><label>حقوق النشر</label><input id="ft_copy" value="${esc(v.footer?.copy||'Green Moon Plants and Flowers © 2026')}"></div>
-    </div>
-   </div>
-
-   <div class="panel" style="margin-top:14px">
     <div class="head"><div><h3>🔧 أدوات سريعة</h3><p>هذه لا تحذف البيانات؛ فقط تغيّر حالة الواجهة.</p></div></div>
     <div class="grid3">
       <button class="btn soft" onclick="go('products')">🌿 المنتجات</button>
@@ -547,33 +487,13 @@ async function saveBuilder(){
  const s={...D.settings};
  s.gm_site={
    header:{
-     brandName:$('b_store').value,storeName:$('b_store').value,owner:$('b_owner').value,tagline:$('b_tag').value,taglineSmall:$('b_tag').value,
-     logo:$('b_logo_value').value,searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
+     storeName:$('b_store').value,owner:$('b_owner').value,tagline:$('b_tag').value,
+     logo:$('b_logo_value').value||header.logo||s.logo||'/assets/logo.jpg',logoType:$('b_logo_type').value||header.logoType||'image',searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
    },
    hero:{
      title:$('b_ht').value,subtitle:$('b_hs').value,cta:$('b_hc').value,
-     image:$('b_hi_value').value,link:$('b_hl').value,mobileHeight:Number($('b_hh').value)||390
+     image:$('b_hi_value').value||heroV.image||'',imageType:$('b_hi_type').value||heroV.imageType||'image',link:$('b_hl').value,mobileHeight:Number($('b_hh').value)||390
    },
-   splash:{
-     enabled:!!$('sp_enabled').checked,duration:5,
-     title:$('sp_title').value,subtitle:$('sp_sub').value,owner:$('sp_owner').value,tagline:$('sp_tag').value,
-     logo:$('sp_logo_value').value
-   },
-   media:{
-     logo:$('b_logo_value').value,
-     splashLogo:$('sp_logo_value').value,
-     doctor:$('md_doctor_value').value,
-     defaultFallback:$('md_fallback_value').value,
-     heroFallback:$('md_hero_value').value
-   },
-   content:{
-     categoriesHeading:$('ct_categories').value,productsHeading:$('ct_products').value,
-     dealsHeading:$('ct_deals').value,articlesHeading:$('ct_articles').value
-   },
-   footer:{
-     brand:$('ft_brand').value,sub:$('ft_sub').value,owner:$('ft_owner').value,copy:$('ft_copy').value
-   },
-   about:{...(s.gm_site?.about||{}),title:$('b_about_title')?.value||s.gm_site?.about?.title||'عن Green Moon'},
    colors:{
      primary:$('b_c1').value,dark:$('b_c2').value,gold:$('b_c3').value,
      background:$('b_c4').value,text:$('b_c5').value,radius:Number($('b_radius').value)||22
@@ -585,21 +505,19 @@ async function saveBuilder(){
    sections:{
      showCategories:$('b_showCategories').checked,showHero:$('b_showHero').checked,
      showDeals:$('b_showDeals').checked,showProducts:$('b_showProducts').checked,
-     showArticles:$('b_showArticles').checked,showReviews:$('b_showReviews').checked,showAbout:$('b_showAbout')?.checked!==false,showRewards:$('b_showRewards').checked,
+     showArticles:$('b_showArticles').checked,showReviews:$('b_showReviews').checked,showRewards:$('b_showRewards').checked,
      showDoctor:$('b_showDoctor').checked,showContact:$('b_showContact').checked,
      showFooter:$('b_showFooter').checked
    }
  };
- // Keep the legacy/live hero source synchronized so edits from this screen appear immediately to customers.
- s.gm_hero=[{id:'builder-hero',active:true,image:$('b_hi_value').value,title:$('b_ht').value,highlight:'',text:$('b_hs').value,cta:$('b_hc').value,link:$('b_hl').value}];
  await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});
  D.settings=s; toast('تم حفظ التحكم الكامل في واجهة الموقع');
 }
 
 
-function reviews(){const a=Array.isArray(D.reviews)?D.reviews:[];return `<div class="panel"><div class="head"><div><h2>💬 ماذا قالوا عنا</h2><p>أضف صورة العميل/التجربة مع كابشن، ويمكنك ترتيبها وإظهار أو إخفاء أي مراجعة.</p></div><button class="btn primary" onclick="reviewForm()">+ إضافة ريفيو</button></div><div class="cards">${a.length?a.map((x,i)=>`<div class="card"><div class="cardmedia"><img src="${esc(x.image||'/assets/logo.jpg')}"></div><div class="cardbody"><h3>${esc(x.name||'عميل Green Moon')}</h3><p>${esc(x.caption||'')}</p><p>⭐ ${Number(x.rating||5)}/5 — ${x.active===false?'مخفي':'ظاهر'}</p><div class="cardactions"><button class="btn soft" onclick="reviewForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="reviewDelete('${esc(x.id)}')">حذف</button></div></div></div>`).join(''):`<div class="empty">لا توجد ريفيوهات حتى الآن.</div>`}</div></div>`}
-function reviewForm(id){const x=(D.reviews||[]).find(z=>String(z.id)===String(id))||{id:Date.now().toString(),name:'',caption:'',image:'',rating:5,active:true};openModal(id?'تعديل الريفيو':'إضافة ريفيو',`<div class="grid2"><div class="field"><label>اسم العميل (اختياري)</label><input id="rv_name" value="${esc(x.name||'')}" placeholder="مثلاً: أ/ محمد"></div><div class="field"><label>التقييم</label><select id="rv_rating">${[5,4,3,2,1].map(n=>`<option value="${n}" ${Number(x.rating||5)===n?'selected':''}>${'★'.repeat(n)} (${n}/5)</option>`).join('')}</select></div></div><div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('rv',x.image||'','صورة الريفيو')}</div><div class="field" style="margin-top:12px"><label>الكابشن / رأي العميل</label><textarea id="rv_caption" placeholder="اكتب رأي العميل هنا...">${esc(x.caption||'')}</textarea></div><label class="field" style="display:flex;align-items:center;gap:8px;margin-top:10px"><input id="rv_active" type="checkbox" ${x.active!==false?'checked':''}> إظهار الريفيو على الموقع</label><div class="modalfoot"><button class="btn primary" onclick="saveReview('${esc(x.id)}')">حفظ الريفيو</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`)}
-async function saveReview(id){const item={id:id||Date.now().toString(),name:$('rv_name').value.trim(),caption:$('rv_caption').value.trim(),image:$('rv_value').value||'',rating:Math.min(5,Math.max(1,Number($('rv_rating').value)||5)),active:!!$('rv_active').checked};if(!item.caption){toast('اكتب كابشن الريفيو');return}const a=[...(D.reviews||[])];const i=a.findIndex(x=>String(x.id)===String(id));if(i>=0)a[i]=item;else a.push(item);D.reviews=a;D.settings={...D.settings,gm_reviews:a};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});closeModal();render();toast('تم حفظ الريفيو بنجاح')}
+function reviews(){const a=Array.isArray(D.reviews)?D.reviews:[];return `<div class="panel"><div class="head"><div><h2>💬 ماذا قالوا عنا</h2><p>أضف صورة العميل/التجربة مع كابشن، ويمكنك ترتيبها وإظهار أو إخفاء أي مراجعة.</p></div><button class="btn primary" onclick="reviewForm()">+ إضافة ريفيو</button></div><div class="cards">${a.length?a.map((x,i)=>`<div class="card"><div class="cardmedia">${mediaAdminTag(x.image,x.imageType,'media-card-preview')}</div><div class="cardbody"><h3>${esc(x.name||'عميل Green Moon')}</h3><p>${esc(x.caption||'')}</p><p>⭐ ${Number(x.rating||5)}/5 — ${x.active===false?'مخفي':'ظاهر'}</p><div class="cardactions"><button class="btn soft" onclick="reviewForm('${esc(x.id)}')">تعديل</button><button class="btn danger" onclick="reviewDelete('${esc(x.id)}')">حذف</button></div></div></div>`).join(''):`<div class="empty">لا توجد ريفيوهات حتى الآن.</div>`}</div></div>`}
+function reviewForm(id){const x=(D.reviews||[]).find(z=>String(z.id)===String(id))||{id:Date.now().toString(),name:'',caption:'',image:'',rating:5,active:true};openModal(id?'تعديل الريفيو':'إضافة ريفيو',`<div class="grid2"><div class="field"><label>اسم العميل (اختياري)</label><input id="rv_name" value="${esc(x.name||'')}" placeholder="مثلاً: أ/ محمد"></div><div class="field"><label>التقييم</label><select id="rv_rating">${[5,4,3,2,1].map(n=>`<option value="${n}" ${Number(x.rating||5)===n?'selected':''}>${'★'.repeat(n)} (${n}/5)</option>`).join('')}</select></div></div><div class="field" style="margin-top:12px"><label>الصورة</label>${uploadBox('rv',x.image||'','صورة أو فيديو الريفيو', x.imageType)}</div><div class="field" style="margin-top:12px"><label>الكابشن / رأي العميل</label><textarea id="rv_caption" placeholder="اكتب رأي العميل هنا...">${esc(x.caption||'')}</textarea></div><label class="field" style="display:flex;align-items:center;gap:8px;margin-top:10px"><input id="rv_active" type="checkbox" ${x.active!==false?'checked':''}> إظهار الريفيو على الموقع</label><div class="modalfoot"><button class="btn primary" onclick="saveReview('${esc(x.id)}')">حفظ الريفيو</button><button class="btn ghost" onclick="closeModal()">إلغاء</button></div>`)}
+async function saveReview(id){const item={id:id||Date.now().toString(),name:$('rv_name').value.trim(),caption:$('rv_caption').value.trim(),image:$('rv_value').value||'',imageType:$('rv_type').value||'image',rating:Math.min(5,Math.max(1,Number($('rv_rating').value)||5)),active:!!$('rv_active').checked};if(!item.caption){toast('اكتب كابشن الريفيو');return}const a=[...(D.reviews||[])];const i=a.findIndex(x=>String(x.id)===String(id));if(i>=0)a[i]=item;else a.push(item);D.reviews=a;D.settings={...D.settings,gm_reviews:a};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});closeModal();render();toast('تم حفظ الريفيو بنجاح')}
 async function reviewDelete(id){if(!confirm('حذف الريفيو؟'))return;D.reviews=(D.reviews||[]).filter(x=>String(x.id)!==String(id));D.settings={...D.settings,gm_reviews:D.reviews};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});render();toast('تم حذف الريفيو')}
 
 function vouchers(){
@@ -634,12 +552,6 @@ async function saveSettings(){
 function openModal(title,body){$('modalBody').innerHTML=`<div class="modalhead"><h2>${title}</h2></div>${body}`;$('modal').classList.remove('hidden')}
 function closeModal(){$('modal').classList.add('hidden')}
 $('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-if(token()){applyAdminBrand();login();}else{applyAdminBrand();}
+if(token())login();
 </script>
-<script id="gm-login-logo-runtime">(async function(){try{const r=await fetch('/api/logo',{cache:'no-store'});const d=await r.json();if(d.logo){const im=document.querySelector('#login .loginmark img');if(im)im.src=d.logo;}}catch(e){}})();</script>
-<script id="gm-admin-field-hints">(function(){
- const map=[['اسم المتجر','يظهر في الهيدر وأجزاء الهوية'],['اسم المالك','يظهر تحت اسم المتجر'],['الجملة التعريفية','تظهر في الهيدر'],['عنوان Hero','يظهر في منطقة Hero'],['الوصف','يظهر في منطقة Hero'],['نص الزر','يظهر كزر الدعوة للإجراء'],['صورة Hero','تظهر كصورة Hero الرئيسية'],['عنوان العروض','يظهر فوق قسم الصفقات'],['عنوان المقالات','يظهر فوق قسم المقالات'],['التصنيفات','يظهر عنوان قسم التصنيفات'],['المنتجات','يظهر عنوان قسم المنتجات'],['العروض','يظهر عنوان قسم العروض'],['اللوجو','يظهر في الهوية وشاشة الدخول حسب الخانة'],['لوجو شاشة الدخول','يظهر عند فتح لوحة التحكم'],['صورة Green Moon Doctor','تظهر في قسم الطبيب'],['الصورة الاحتياطية','تستخدم عند غياب صورة'],['صورة Hero الاحتياطية','تستخدم عند غياب Hero'],['تفاصيل المنتج','تظهر في تفاصيل المنتج للعميل'],['شحن المنتج','يُستخدم في حساب الشحن للمنتج'],['قيمة القسيمة','تحدد رصيد الشراء المتاح'],['اختيارات الهدايا','تظهر للعميل كخيارات هدية'],['الصورة الرئيسية للشركة','تظهر داخل قسم عن Green Moon في واجهة العميل'],['نبذة الشركة','تظهر كالمقدمة الرئيسية لقسم عن الشركة'],['عنوان القسم','يظهر كعنوان قسم عن الشركة'],['السطر الذهبي تحت الاسم','يظهر تحت Green Moon مباشرة في الهيدر'],['اسم صاحب العلامة','يظهر تحت Plants and Flowers مباشرة']];
- function add(){document.querySelectorAll('.field label').forEach(l=>{if(l.dataset.gmHint)return;const txt=l.textContent.trim();const hit=map.find(x=>txt.includes(x[0]));if(!hit)return;const d=document.createElement('div');d.className='gm-field-help';d.textContent='📍 '+hit[1];l.insertAdjacentElement('afterend',d);l.dataset.gmHint='1'});}
- new MutationObserver(add).observe(document.body,{childList:true,subtree:true});add();
-})();</script>
 </body></html>
