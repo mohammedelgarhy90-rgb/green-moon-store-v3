@@ -1188,6 +1188,8 @@ function resolveRelatedOffer(product, offerId) {
 
         const products =
           await getProducts(env);
+        const orderSettings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
+        const allowedBundles = Array.isArray(orderSettings.gm_bundles) ? orderSettings.gm_bundles : [];
 
         const requestedGifts = Array.isArray(body.gifts) ? body.gifts : [];
         const gifts = [];
@@ -1209,6 +1211,18 @@ function resolveRelatedOffer(product, offerId) {
         const items =
           body.items
             .map(item => {
+              const bundleId = String(item.bundleId || '');
+              if (bundleId) {
+                const bundle = allowedBundles.find(b => String(b.id) === bundleId && b.active !== false);
+                if (!bundle || !Array.isArray(bundle.items) || bundle.items.length < 2) return null;
+                const bundleParts = bundle.items.map(part => ({ product: products.find(p => String(p.id) === String(part.productId)), quantity: Math.max(1, Number(part.quantity) || 1) }));
+                if (bundleParts.some(part => !part.product)) return null;
+                const quantity = Math.max(1, Number(item.quantity) || 1);
+                const bundlePrice = Math.max(0, Number(bundle.price) || 0);
+                if (!bundlePrice) return null;
+                const bundleName = String(bundle.title || bundle.name || 'باكدج Green Moon');
+                return { productId: 'bundle:' + bundleId, bundleId, name: bundleName, price: bundlePrice, quantity, lineTotal: bundlePrice * quantity, isBundle: true, bundleItems: bundleParts.map(part => ({ productId: part.product.id, name: part.product.name, quantity: part.quantity * quantity })) };
+              }
 
               const product =
                 products.find(
@@ -1292,7 +1306,9 @@ return {
 
         let shipping = 0;
 
-        if (
+        if (items.some(item => item.isBundle)) {
+          shipping = generalShipping;
+        } else if (
           uniqueProductIds.length === 1
         ) {
 
