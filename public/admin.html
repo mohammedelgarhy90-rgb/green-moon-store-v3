@@ -218,7 +218,7 @@ function collectionForm(type,id){
  if(type==='deals') extra=`<div class="grid2">
 <div class="field"><label>السعر قبل الخصم</label><input id="dop" type="number" min="0" value="${Number(x.oldPrice||0)}"></div>
 <div class="field"><label>سعر الصفقة</label><input id="dp" type="number" min="0" value="${Number(x.price||0)}"></div>
-<div class="field"><label>مدة الصفقة بالدقائق</label><input id="ddur" type="number" min="1" value="${Number(x.durationMinutes||30)}"></div>
+<div class="field"><label>مدة الصفقة بالدقائق</label><input id="ddur" type="number" min="1" value="${Number(x.durationMinutes||30)}"></div><div class="field"><label>مدة نافذة العرض الخاطف بالثواني</label><input id="dpopupsec" type="number" min="10" max="600" value="${Number(x.popupDurationSeconds||60)}"><small>مثال: 60 ثانية. النافذة تظهر أثناء التصفح ويمكن للعميل إغلاقها.</small></div><div class="field"><label>نافذة العرض الخاطف</label><select id="dpopup"><option value="1" ${x.popupEnabled!==false?'selected':''}>مفعلة</option><option value="0" ${x.popupEnabled===false?'selected':''}>موقوفة</option></select></div>
 <div class="field"><label>الحالة</label><select id="dactive"><option value="1" ${x.active!==false?'selected':''}>مفعلة</option><option value="0" ${x.active===false?'selected':''}>موقوفة</option></select></div>
 <div class="field"><label>بداية العرض</label><input id="cs" type="datetime-local" value="${esc(x.startAt||'')}"></div>
 <div class="field"><label>نهاية العرض</label><input id="ce" type="datetime-local" value="${esc(x.endAt||'')}"></div>
@@ -256,6 +256,8 @@ async function saveCollection(type,id){
    x.oldPrice=oldPrice;
    x.price=price;
    x.durationMinutes=Math.max(1,Number($('ddur').value)||30);
+   x.popupDurationSeconds=Math.min(600,Math.max(10,Number($('dpopupsec')?.value)||60));
+   x.popupEnabled=$('dpopup')?.value!=='0';
    x.active=$('dactive').value==='1';
    x.items=selected;
    x.productIds=selected.map(v=>v.productId);
