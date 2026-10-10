@@ -2001,57 +2001,6 @@ return {
       }
     }
 
-
-    /* =========================
-       PRIVACY-MINIMAL ANALYTICS
-    ========================= */
-    if (url.pathname === '/api/analytics/event' && request.method === 'POST') {
-      try {
-        const b = await request.json();
-        const allowed = new Set(['page_view','product_view','add_to_cart','checkout_start','order_success']);
-        const event = String(b.event || '');
-        if (!allowed.has(event)) return json({error:'حدث غير مدعوم'},400);
-        const day = new Date().toISOString().slice(0,10);
-        const page = String(b.page || '/').slice(0,180);
-        const source = String(b.source || 'direct').slice(0,80);
-        const campaign = String(b.campaign || '').slice(0,100);
-        const visitor = String(b.visitor || '').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,80);
-        const key = 'analytics:day:' + day;
-        const d = await kvJson(env,key,{date:day,events:{},sources:{},pages:{},campaigns:{},visitors:[]});
-        d.events=d.events||{}; d.sources=d.sources||{}; d.pages=d.pages||{}; d.campaigns=d.campaigns||{};
-        d.events[event]=(Number(d.events[event])||0)+1;
-        d.sources[source]=(Number(d.sources[source])||0)+1;
-        d.pages[page]=(Number(d.pages[page])||0)+1;
-        if(campaign)d.campaigns[campaign]=(Number(d.campaigns[campaign])||0)+1;
-        d.visitors=Array.isArray(d.visitors)?d.visitors:[];
-        if(visitor&&!d.visitors.includes(visitor))d.visitors.push(visitor);
-        if(d.visitors.length>20000)d.visitors=d.visitors.slice(-20000);
-        await env.GREEN_MOON_KV.put(key,JSON.stringify(d),{expirationTtl:8640000});
-        if(visitor)await env.GREEN_MOON_KV.put('analytics:active:'+visitor,JSON.stringify({lastSeen:Date.now()}),{expirationTtl:600});
-        return json({success:true});
-      } catch(e) { return json({error:'تعذر تسجيل الإحصائية'},500); }
-    }
-    if (url.pathname === '/api/admin/analytics' && request.method === 'GET') {
-      if(!adminOk(request,env))return json({error:'غير مصرح'},401);
-      const days=Math.max(1,Math.min(30,Number(url.searchParams.get('days'))||7));
-      const entries=await env.GREEN_MOON_KV.list({prefix:'analytics:day:',limit:1000});
-      const cutoff=new Date(Date.now()-(days-1)*86400000).toISOString().slice(0,10);
-      const out={days,pageViews:0,productViews:0,addToCart:0,checkoutStarts:0,orders:0,uniqueVisitors:0,activeVisitors:0,sources:{},pages:{},campaigns:{},daily:[]};
-      for(const item of entries.keys){
-        const date=item.name.slice('analytics:day:'.length); if(date<cutoff)continue;
-        const d=await kvJson(env,item.name,null);if(!d)continue;const e=d.events||{};
-        out.pageViews+=Number(e.page_view)||0;out.productViews+=Number(e.product_view)||0;
-        out.addToCart+=Number(e.add_to_cart)||0;out.checkoutStarts+=Number(e.checkout_start)||0;out.orders+=Number(e.order_success)||0;
-        out.uniqueVisitors+=Array.isArray(d.visitors)?d.visitors.length:0;
-        for(const [k,v] of Object.entries(d.sources||{}))out.sources[k]=(out.sources[k]||0)+Number(v||0);
-        for(const [k,v] of Object.entries(d.pages||{}))out.pages[k]=(out.pages[k]||0)+Number(v||0);
-        for(const [k,v] of Object.entries(d.campaigns||{}))out.campaigns[k]=(out.campaigns[k]||0)+Number(v||0);
-        out.daily.push({date,pageViews:Number(e.page_view)||0,visitors:Array.isArray(d.visitors)?d.visitors.length:0,orders:Number(e.order_success)||0});
-      }
-      const active=await env.GREEN_MOON_KV.list({prefix:'analytics:active:',limit:1000});out.activeVisitors=active.keys.length;
-      out.daily.sort((a,b)=>a.date.localeCompare(b.date));return json(out);
-    }
-
     /* =========================
        ADMIN RESET
     ========================= */
