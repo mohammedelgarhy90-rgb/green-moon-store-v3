@@ -36,6 +36,70 @@
 .dealActions .more{width:100%;background:#fff;color:#063b2b;border:1px solid #d9e0da;border-radius:12px;padding:11px;font-size:12px}
 .dealUrgency{text-align:center;color:#6b746f;font-size:11px;margin-top:8px}
 @media(min-width:700px){.deal{display:grid;grid-template-columns:1.05fr .95fr}.dealMedia{height:100%;min-height:520px}.dealText{padding:28px}.dealActions{grid-template-columns:1.4fr 1fr}.dealContents{grid-template-columns:1fr 1fr}}
+
+/* Green Moon Luxury Product Grid — focused UI polish; preserves product/cart logic */
+:root{--gm-luxe-green:#073b2d;--gm-luxe-gold:#d9b65d;--gm-luxe-cream:#f8f6ef}
+body{background:#fbfaf6}
+.header{background:linear-gradient(110deg,#032c20 0%,#07503a 58%,#032b20 100%);box-shadow:0 4px 18px rgba(3,36,25,.18)}
+.brand img{border:1px solid rgba(217,182,93,.8);padding:2px;background:#fff}
+.brand b{letter-spacing:.25px}
+.search,.searchBox input{border-radius:999px}
+#products .wrap{padding-bottom:34px}
+#products .title{margin-bottom:20px}
+#products .title h2{font-size:clamp(22px,4vw,29px);font-weight:900;letter-spacing:-.3px}
+.products{gap:15px}
+.product{position:relative;border:1px solid #e9e3d6;border-radius:19px;background:linear-gradient(180deg,#fff 0%,#fffefa 100%);box-shadow:0 7px 24px rgba(22,52,40,.065);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.product:active{transform:scale(.99)}
+.pimg{aspect-ratio:4/4.25;background:linear-gradient(145deg,#f7f5ec,#eeefe5);padding:8px}
+.pimg img{object-fit:contain;border-radius:12px;mix-blend-mode:multiply}
+.pbody{padding:12px 12px 13px}
+.pbody h3{font-size:14px;line-height:1.65;min-height:46px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:800;color:#17392e;margin-bottom:8px}
+.price{gap:8px;flex-wrap:wrap;align-items:baseline;margin:5px 0}
+.old{font-size:12px;color:#96978f}
+.new{font-size:20px;font-weight:900;color:#087746;white-space:nowrap}
+.save{font-size:11px;line-height:1.5;color:#087746;font-weight:700}
+.qty{background:#f5f3eb;border:1px solid #ece6d7;border-radius:11px;padding:4px;margin-top:11px;gap:8px}
+.qty button{width:34px;height:32px;border-radius:9px;background:var(--gm-luxe-green);font-size:20px;box-shadow:0 2px 5px #073b2d18}
+.qty span{font-weight:800;font-size:14px}
+.add,.detailBtn{border-radius:11px;min-height:40px;margin-top:8px;font-size:12px;transition:filter .15s ease,transform .15s ease}
+.add{background:linear-gradient(110deg,#063b2b,#0b5b40);box-shadow:0 5px 12px rgba(6,59,43,.12);font-weight:800}
+.detailBtn{background:#f4f1e8;border:1px solid #ebe4d5;color:#234b3b;font-weight:700}
+.gm-product-sticker{z-index:2;box-shadow:0 3px 10px #0001}
+.bottom{height:70px;box-shadow:0 -5px 20px rgba(17,45,33,.06);padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.97);backdrop-filter:blur(12px)}
+body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+@media(max-width:600px){
+ .header{height:66px}
+ .head{gap:5px;padding-inline:7px}
+ .menu,.headIcon{width:34px;height:38px;font-size:21px;flex-shrink:0}
+ .brand{gap:6px;min-width:0;flex:1;justify-content:center}
+ .brand img{width:38px;height:38px;flex-shrink:0}
+ .brandText{min-width:0}
+ .brand b{font-size:clamp(13px,3.7vw,17px);white-space:nowrap;letter-spacing:0}
+ .brand small{font-size:7px;letter-spacing:.65px;white-space:nowrap}
+ .brand em{font-size:7px;letter-spacing:.2px;white-space:nowrap}
+ .actions{flex-shrink:0}
+ .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .product{border-radius:16px}
+ .pimg{aspect-ratio:4/4.35;padding:7px}
+ .pimg img{object-fit:contain}
+ .pbody{padding:10px 9px 11px}
+ .pbody h3{font-size:12px;line-height:1.6;min-height:40px;margin-bottom:5px}
+ .price{gap:5px}
+ .old{font-size:10px}
+ .new{font-size:17px}
+ .save{font-size:10px}
+ .qty{margin-top:8px;padding:3px}
+ .qty button{width:30px;height:30px}
+ .add,.detailBtn{min-height:37px;padding:8px 5px;font-size:11px}
+ .bottom{height:68px}
+ body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+ .section{padding:26px 0}
+ .title{margin-bottom:14px}
+ .title h2{font-size:21px}
+}
+@media(min-width:601px) and (max-width:900px){.products{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.pimg{aspect-ratio:4/4.2}}
+@media(prefers-reduced-motion:reduce){.product,.add,.detailBtn{transition:none}}
+
 </style><style id="gm-order-status-css">.gm-order-status{position:fixed;inset:0;background:rgba(2,24,16,.9);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}.gm-order-status .box{width:min(520px,100%);background:#fff;border-radius:28px;padding:34px 24px;text-align:center;box-shadow:0 30px 100px #0007}.gm-order-status .spinner{width:64px;height:64px;border:6px solid #e6eee9;border-top-color:#0b5b3d;border-radius:50%;animation:gmspin 1s linear infinite;margin:0 auto 20px}.gm-order-status .ok{width:78px;height:78px;border-radius:50%;background:#eaf6ef;color:#0b5b3d;font-size:46px;display:grid;place-items:center;margin:0 auto 18px}.gm-order-status h2{margin:0 0 10px}.gm-order-status p{color:#68756e;line-height:1.9}@keyframes gmspin{to{transform:rotate(360deg)}}</style>
 <style id="gm-customer-review-v3">
 /* Customer-flow polish */
@@ -614,7 +678,7 @@
   <div class="gm-tag">THE NATURE • THE GREEN MOON EXPERIENCE</div>
 </div>
 
-<header class="header"><div class="wrap head"><button class="menu" onclick="menu()">☰</button><div class="brand"><img id="logo"><div class="brandText"><b>Green Moon</b><small>Plants and Flowers</small><em>Mohamed Elgarhy</em></div></div><div class="actions"><button class="headIcon" onclick="location.href='/account.html'" title="حسابي">👤</button><button class="headIcon" onclick="searchSite()">⌕</button><button class="headIcon cartBtn" onclick="cartOpen()">🛒<span class="count" id="count">0</span></button></div></div></header><div class="gm-search-wrap"><div class="gm-search"><span aria-hidden="true">⌕</span><input id="gmQuickSearch" type="search" placeholder="ابحث عن نباتك المفضل ..." aria-label="ابحث عن منتج"><button type="button" onclick="gmQuickSearchRun()" aria-label="بحث">بحث</button></div></div><div id="gmOfferTicker" class="gm-ticker" aria-label="عروض Green Moon"></div>
+<header class="header"><div class="wrap head"><button class="menu" onclick="menu()">☰</button><div class="brand"><img id="logo"><div class="brandText"><b>Green Moon</b><small>Plants and Flowers</small><em>Mohamed Elgarhy</em></div></div><div class="actions"><button class="headIcon" onclick="location.href='/account.html'" title="حسابي">👤</button><button class="headIcon" onclick="searchSite()">⌕</button><button class="headIcon cartBtn" onclick="cartOpen()">🛒<span class="count" id="count">0</span></button></div></div></header><div id="gmOfferTicker" class="gm-ticker" aria-label="عروض Green Moon"></div>
 <main><section class="hero"><img id="heroImg"><div class="wrap heroCopy"><div id="heroText"></div></div><div class="dots" id="dots"></div></section><section class="services"><div class="wrap grid" id="services"></div></section><section class="section" id="categories"><div class="wrap"><div class="title"><h2>تسوق حسب الفئة</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="cats" id="cats"></div></div></section><section class="wrap promoArea" id="banners"></section><section class="section" id="deals"><div class="wrap"><div class="title"><h2 id="dealsHeading">العروض الحالية</h2></div><div id="dealList"></div></div></section><section class="section gm-premium-reco-section" id="gmRecommendationSection">
   <div class="wrap">
     <button class="gm-finder-banner gm-art-banner" type="button" onclick="gmOpenFinder()" aria-label="افتح مساعد اختيار النبات">
@@ -2055,169 +2119,4 @@ setTimeout(gmInitSmartWizard,300);
 </script>
 
 <footer class="gm-site-footer" aria-label="وسائل التواصل الاجتماعي"><div class="footer-brand">Green Moon</div><div class="footer-sub">PLANTS AND FLOWERS</div><div class="footer-name">Mohamed Elgarhy</div><div class="gm-footer-social"><a href="https://www.instagram.com/greenmoon.plants/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.4" cy="6.7" r="1"></circle></svg></a><a href="https://wa.me/201151054863" target="_blank" rel="noopener" aria-label="WhatsApp" class="gm-footer-wa">☏</a><a href="tel:+201151054863" aria-label="اتصال">☎</a></div><div class="gm-footer-copy">Green Moon Plants and Flowers © 2026</div></footer>
-
-<script id="gm-luxury-reference-search">
-function gmQuickSearchRun(){
-  var el=document.getElementById('gmQuickSearch'), q=(el&&el.value||'').trim();
-  if(!q){if(el)el.focus();return}
-  var norm=s=>String(s||'').toLocaleLowerCase('ar').replace(/[أإآ]/g,'ا');
-  var found=(Array.isArray(products)?products:[]).filter(p=>norm(p.name+' '+p.category+' '+p.details).includes(norm(q)));
-  renderProducts(found);
-  var title=document.querySelector('#products .title h2');
-  if(title)title.textContent=found.length?'نتائج البحث عن: '+q:'ملقيناش منتجات باسم: '+q;
-  document.getElementById('products')?.scrollIntoView({behavior:'smooth',block:'start'});
-}
-(function(){
- var input=document.getElementById('gmQuickSearch');
- if(input)input.addEventListener('keydown',function(e){if(e.key==='Enter')gmQuickSearchRun()});
-})();
-</script>
-<style id="gm-luxury-reference-design">
-:root{--g:#062f22;--g2:#0b4a35;--gold:#e5bd55;--bg:#fbfaf5;--soft:#f3f0e6;--ink:#102e23;--muted:#737a71;--line:#e8e3d5}
-body{background:var(--bg);color:var(--ink)}
-.header{height:82px;min-height:82px;background:linear-gradient(110deg,#05281d,#063d2b);box-shadow:0 3px 14px #00180f24;position:sticky;top:0;z-index:100}
-.header .wrap.head{width:100%;max-width:1280px;padding:0 14px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
-.header .menu{grid-column:3;grid-row:1;justify-self:end;color:#fff;font-size:27px;border-radius:9px}
-.header .brand{grid-column:2;grid-row:1;margin:0;justify-self:center;gap:9px;flex-direction:row-reverse;text-align:center}
-.header .brand img{width:49px;height:49px;border:1px solid #dfc36f;box-shadow:0 0 0 2px #ffffff15}
-.header .brandText{align-items:center;white-space:nowrap}
-.header .brand b{font:700 23px/1.05 'Playfair Display',Georgia,serif;letter-spacing:.1px;color:#fff}
-.header .brand small{font-size:10px;letter-spacing:1px;color:#e8c766;margin-top:4px}
-.header .brand em{font-size:9px;letter-spacing:.3px;color:#fff;margin-top:3px}
-.header .actions{grid-column:1;grid-row:1;justify-self:start;gap:3px}
-.header .headIcon{width:35px;height:38px;font-size:21px}
-.header .cartBtn{order:0}
-.gm-search-wrap{background:linear-gradient(110deg,#05281d,#063d2b);padding:0 16px 13px;position:sticky;top:82px;z-index:99;border-bottom:1px solid #d8b85d}
-.gm-search{height:42px;display:flex;align-items:center;gap:9px;background:#f7f5ed;border-radius:30px;padding:0 13px;max-width:1050px;margin:auto;color:#183b2c;box-shadow:inset 0 1px 2px #0000000c}
-.gm-search>span{font-size:28px;line-height:1;color:#0a3d2c}
-.gm-search input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#153a2b;font-size:13px}
-.gm-search input::placeholder{color:#77786f}
-.gm-search button{background:#e5bd55;color:#173729;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:800}
-.gm-ticker{position:relative;top:auto;z-index:30}
-.hero{height:clamp(390px,58vw,600px);min-height:390px;background:#082e21}
-.hero img{object-fit:cover;object-position:center}
-.hero:after{background:linear-gradient(270deg,#fff0 0%,#f4e9d02b 38%,#052b1c4a 100%)}
-.heroCopy{width:min(1280px,100% - 28px);justify-content:flex-end;text-align:right;color:#082e21}
-.heroCopy>div{max-width:56%;padding:12px 0}
-.hero .kicker{color:#153b2a;font-weight:800;font-size:clamp(15px,2vw,22px)}
-.hero h1{font-size:clamp(34px,5.2vw,68px);line-height:1.05;color:#0a3424;margin:8px 0 6px;text-shadow:0 1px 12px #fff9}
-.hero h1 span{color:#99751f;text-shadow:0 1px 12px #fff9}
-.hero p{font-size:clamp(12px,1.6vw,18px);line-height:1.7;color:#1c3529;text-shadow:0 1px 10px #fff}
-.hero .cta{border-radius:30px;background:linear-gradient(180deg,#f6d46d,#e5b83f);box-shadow:0 6px 18px #80601e2b;padding:12px 25px;color:#183426}
-.dots{bottom:10px}.dots i{background:#fff9;border:1px solid #fff8}.dots i.on{background:#0c4a32;border-color:#0c4a32}
-.services{background:var(--bg);color:var(--ink);margin-top:0;border-bottom:1px solid #ebe6da}
-.services .grid{width:min(1200px,100% - 20px);grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:10px 0}
-.service{border:0;border-radius:12px;background:#f0eee5;padding:9px 4px;color:#163b2b}
-.service span{display:grid;place-items:center;width:43px;height:43px;margin:0 auto 5px;background:#fffaf0;border-radius:50%;border:1px solid #e5dcc6;font-size:22px}
-.service b{font-size:10px;line-height:1.35}.service small{font-size:9px;color:#6e766b}
-.section{padding:25px 0}
-.section .wrap,.wrap{width:min(1280px,calc(100% - 24px))}
-.title{align-items:center;margin-bottom:14px}
-.title h2{font-size:22px;font-weight:800;letter-spacing:-.4px;color:#103b2b}
-.title h2:after{width:42px;height:3px;margin-top:8px}
-.title a{font-size:12px;color:#5f6f65}
-.cats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;overflow:visible}
-.cat{min-width:0;border-radius:13px;background:#f1efe5;border:1px solid #ece7d9;padding:6px 3px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:112px}
-.catImg{width:100%;height:66px;border:0;border-radius:9px;box-shadow:none;background:#f8f6ed;margin:0;overflow:hidden}
-.catImg img{object-fit:contain;padding:3px}
-.cat b{font-size:10px;line-height:1.3;margin-top:4px;color:#183a2b}
-.promoArea{padding-top:0;padding-bottom:4px}
-.banner{min-height:170px;border-radius:15px;margin:8px 0 15px;box-shadow:0 8px 24px #163b2b13}
-.banner img{object-fit:cover}
-.banner:after{background:linear-gradient(270deg,#052d20e8,#052d2070 48%,#052d2010)}
-.bannerText{padding:20px;max-width:60%;text-align:right}
-.banner h2,.space h2{font-size:clamp(22px,4vw,34px);color:#efc75c}
-.banner p,.space p{font-size:13px}
-.banner .cta{padding:8px 18px;border-radius:25px;font-size:12px}
-#deals .title h2,#products .title h2,#articles .title h2{font-size:23px}
-#dealList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.deal{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) 42%;min-height:235px;border-radius:20px}
-.dealMedia{height:100%;min-height:235px;grid-column:2;grid-row:1}
-.dealMedia img{object-fit:contain;background:#f3f1e8}
-.dealText{grid-column:1;grid-row:1;align-self:center;padding:17px}
-.dealText h3{font-size:clamp(15px,2vw,22px);line-height:1.6}
-.dealText p{font-size:12px;line-height:1.8}
-.dealPrice .new{font-size:24px;color:#0b5b3b}
-.products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.product{min-width:0;overflow:hidden;border:1px solid #e8e3d6;border-radius:16px;background:#fff;box-shadow:0 4px 15px #193b2c0b}
-.pimg{height:190px;background:#f3f0e6}
-.pimg img{width:100%;height:100%;object-fit:contain}
-.pbody{padding:10px}
-.pbody h3{font-size:13px;line-height:1.5}
-.price .new{color:#0a5638}
-.articles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.article{cursor:pointer;min-width:0;overflow:hidden;border:1px solid #e8e3d8;border-radius:16px;background:#fff;box-shadow:0 5px 18px #173b2a0c;transition:transform .18s,box-shadow .18s}
-.article:active{transform:scale(.99)}
-.article>img{width:100%;height:155px;object-fit:cover;display:block}
-.gm-article-body{padding:12px}
-.gm-article-body h3{font-size:15px;line-height:1.6;margin:6px 0}
-.gm-article-body p{font-size:12px;line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.gm-article-read{display:inline-flex;align-items:center;gap:7px;color:#0a5539;font-weight:800;font-size:12px}
-.gm-premium-reco-section .gm-finder-banner,.gm-doctor-banner{width:100%;display:block;border:0;padding:0;background:transparent;border-radius:18px;overflow:hidden}
-.gm-finder-banner img,.gm-doctor-banner img{width:100%;height:auto;display:block;object-fit:contain}
-.bottom{background:#fff;border-top:1px solid #e8e4d9;box-shadow:0 -4px 16px #00000008}
-.bottom>div{width:100%;max-width:1000px;gap:0}
-.bottom a{font-size:11px;color:#85877f}
-.bottom a span{font-size:22px;color:#173e2d}
-.bottom a.home{color:#063b2b;font-weight:800}
-@media(max-width:600px){
- .header{height:82px;min-height:82px}
- .header .wrap.head{padding:0 8px;gap:4px}
- .header .brand{gap:6px}
- .header .brand img{width:44px;height:44px}
- .header .brand b{font-size:19px}
- .header .brand small{font-size:8px;letter-spacing:.6px}
- .header .brand em{font-size:8px}
- .header .headIcon{width:28px;font-size:18px}
- .header .menu{width:30px;font-size:22px}
- .gm-search-wrap{top:82px;padding:0 12px 10px}
- .gm-search{height:40px}
- .hero{height:clamp(390px,118vw,510px);min-height:390px}
- .heroCopy{width:calc(100% - 24px);justify-content:flex-start}
- .heroCopy>div{max-width:62%;padding:0}
- .hero .kicker{font-size:14px}
- .hero h1{font-size:clamp(32px,9vw,45px);line-height:1.08}
- .hero p{font-size:12px;line-height:1.7;margin-bottom:14px}
- .hero .cta{padding:10px 18px;font-size:13px}
- .services .grid{gap:5px;padding:9px 0}
- .service{padding:7px 2px;min-height:76px}
- .service span{width:35px;height:35px;font-size:18px}
- .service b{font-size:9px}.service small{font-size:8px}
- .section{padding:22px 0}
- .title h2{font-size:20px}
- .cats{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
- .cat{min-height:94px;padding:4px 2px 6px;border-radius:10px}
- .catImg{height:48px;border-radius:7px}
- .cat b{font-size:8px;line-height:1.35}
- .banner{min-height:140px}
- .bannerText{max-width:70%;padding:13px}
- .banner h2{font-size:22px}
- .banner p{font-size:11px;margin:5px 0}
- #dealList{grid-template-columns:1fr;gap:12px}
- .deal{grid-template-columns:minmax(0,1fr) 38%;min-height:230px;border-radius:18px}
- .dealMedia{min-height:230px}
- .dealText{padding:10px}
- .dealText h3{font-size:14px;line-height:1.55}
- .dealText p{font-size:10px;line-height:1.6}
- .dealPrice .new{font-size:20px}
- .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .pimg{height:145px}
- .pbody{padding:8px}
- .pbody h3{font-size:11px}
- .articles{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .article>img{height:115px;object-fit:contain;background:#f1eee5}
- .gm-article-body{padding:9px}
- .gm-article-body h3{font-size:12px;line-height:1.5}
- .gm-article-body p{font-size:10px;line-height:1.65;-webkit-line-clamp:3}
- .gm-article-read{font-size:10px}
- .bottom>div{padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
- .bottom a span{font-size:21px}
-}
-@media(min-width:900px){
- .header .wrap.head{padding:0 25px}
- .gm-search-wrap{padding-left:24px;padding-right:24px}
- .heroCopy>div{max-width:50%}
-}
-</style>
-
 </body></html>
