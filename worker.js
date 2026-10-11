@@ -2084,8 +2084,8 @@ return {
         const detectedMime = String(match?.[1] || mime).toLowerCase();
         const base64 = String(match?.[2] || '');
         const finalMime = mime || detectedMime;
-        if (!(finalMime.startsWith('image/') || finalMime.startsWith('video/'))) {
-          return json({ error: 'مسموح فقط بالصور والفيديوهات.' }, 415);
+        if (!(finalMime.startsWith('image/') || finalMime.startsWith('video/') || finalMime.startsWith('audio/'))) {
+          return json({ error: 'مسموح فقط بالصور والفيديوهات والملفات الصوتية.' }, 415);
         }
         const bytes = mediaBytesFromBase64(base64);
         if (!bytes || bytes > MAX_MEDIA_BYTES) {
@@ -2098,7 +2098,7 @@ return {
           data: base64,
           createdAt: new Date().toISOString()
         }));
-        return json({ success: true, id, url: `/media/${encodeURIComponent(id)}`, mime: finalMime, type: finalMime.startsWith('video/') ? 'video' : 'image' });
+        return json({ success: true, id, url: `/media/${encodeURIComponent(id)}`, mime: finalMime, type: finalMime.startsWith('video/') ? 'video' : (finalMime.startsWith('audio/') ? 'audio' : 'image') });
       } catch (e) {
         return json({ error: String(e?.message || e || 'تعذر رفع الملف') }, 500);
       }
