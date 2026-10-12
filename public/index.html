@@ -160,7 +160,7 @@
 #gmPremiumSplash .gm-progress span{
   display:block;width:0;height:100%;background:linear-gradient(90deg,#b98a2d,#f0ce78,#fff2bd);
   box-shadow:0 0 10px rgba(240,206,120,.5);
-  animation:gmProgress 7s linear forwards;
+  animation:gmProgress 5s linear forwards;
 }
 #gmPremiumSplash .gm-tag{
   position:absolute;bottom:42px;left:50%;transform:translateX(-50%);
@@ -585,24 +585,67 @@
 @media(max-width:560px){#articles .wrap,#deals .wrap,#gmRecommendationSection .wrap,#doctor .wrap{width:calc(100% - 24px)}#articleList.articles{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}#articleList .gm-article-card{border-radius:18px!important}#articleList .gm-article-card>img{aspect-ratio:16/9!important}#articleList .gm-article-body{padding:16px!important}#articleList .gm-article-card h3{font-size:18px!important}#articleList .gm-article-card p{font-size:13px!important}#dealList .dealMedia{aspect-ratio:4/3!important}#dealList .dealText h3{font-size:20px!important}}
 @media(prefers-reduced-motion:reduce){#articleList .gm-article-card{transition:none!important}}
 </style>
-<style id="gm-luxury-upgrade-2026">
-:root{--gm-luxury-green:#062d21;--gm-luxury-green2:#0c4b37;--gm-luxury-gold:#c8a65b;--gm-luxury-cream:#f7f3e9;--gm-luxury-ink:#17372b}
-body{background:#fffdf9;color:var(--gm-luxury-ink)}
-.header{background:rgba(5,43,32,.98);box-shadow:0 8px 30px rgba(5,43,32,.13);backdrop-filter:blur(14px)}
-.gm-ticker{background:linear-gradient(90deg,#06291e,#0b503b);color:#f8e9c4}
-.section{padding-top:clamp(26px,4vw,52px);padding-bottom:clamp(26px,4vw,52px)}
-.section .title h2{letter-spacing:-.25px;line-height:1.4}
-.products{gap:16px}
-.products>*{border:1px solid rgba(200,166,91,.24);border-radius:19px;overflow:hidden;background:#fff;box-shadow:0 8px 26px rgba(16,49,36,.055);transition:transform .22s ease,box-shadow .22s ease}
-.products>*:hover{transform:translateY(-4px);box-shadow:0 17px 36px rgba(16,49,36,.12)}
-.products img{background:#f7f3e9}
-.cats>*{transition:transform .2s ease,box-shadow .2s ease}.cats>*:hover{transform:translateY(-3px)}
-.articles>*{border:1px solid #e8e1d4;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(16,49,36,.05)}
-.gm-luxury-section{scroll-margin-top:82px}.gm-luxury-heading{margin:0 0 22px}.gm-luxury-eyebrow{display:inline-block;color:#9b7834;font-size:11px;font-weight:900;letter-spacing:2px;margin-bottom:7px}.gm-luxury-heading h2,.gm-luxury-gift h2{margin:0 0 8px;font-size:clamp(23px,3vw,34px);color:#092f23}.gm-luxury-heading p,.gm-luxury-gift p{color:#68756d;line-height:1.9;margin:0;max-width:650px}.gm-luxury-grid,.gm-care-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.gm-luxury-tile,.gm-care-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;padding:22px;border:1px solid #e7dfcf;border-radius:18px;background:linear-gradient(145deg,#fff,#faf7ef);text-decoration:none;color:#12392b;min-height:150px;box-shadow:0 7px 20px #12392b08;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}.gm-luxury-tile:hover,.gm-care-card:hover{transform:translateY(-3px);border-color:#c8a65b;box-shadow:0 14px 28px #12392b12}.gm-luxury-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#e9efe8;color:#0b4b36;font-size:22px}.gm-luxury-tile strong,.gm-care-card strong{font-size:16px}.gm-luxury-tile small,.gm-care-card small{font-size:12px;line-height:1.8;color:#69776e}.gm-luxury-gift{background:linear-gradient(120deg,#062b20,#0c4b37);color:white}.gm-luxury-gift-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}.gm-luxury-gift h2{color:#fff}.gm-luxury-gift p{color:#e1e9e2}.gm-luxury-gift .gm-luxury-eyebrow{color:#e2c57f}.gm-luxury-cta{display:inline-flex;align-items:center;gap:16px;margin-top:18px;padding:12px 18px;border-radius:999px;background:#d7b86e;color:#152f23;font-weight:900;text-decoration:none}.gm-gift-mark{display:grid;place-items:center;flex:0 0 130px;width:130px;height:130px;border:1px solid #d7b86e80;border-radius:50%;font-size:76px;color:#e2c57f;background:#ffffff08}.gm-care-card>span{font-size:12px;font-weight:900;color:#a17d37;letter-spacing:1px}
-button,.btn,.headIcon{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}button:active,.btn:active{transform:scale(.985)}
-:focus-visible{outline:3px solid #c8a65b;outline-offset:3px}
-@media(max-width:650px){.products{gap:10px}.products>*{border-radius:14px}.gm-luxury-grid,.gm-care-grid{grid-template-columns:1fr;gap:10px}.gm-luxury-tile,.gm-care-card{min-height:unset;padding:17px}.gm-luxury-gift-inner{align-items:flex-start}.gm-gift-mark{flex-basis:70px;width:70px;height:70px;font-size:40px}.gm-luxury-heading{margin-bottom:16px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+<style id="gm-marketplace-layout">
+/* Green Moon marketplace layout inspired by the reference's shopping hierarchy */
+:root{--g:#07382b;--g2:#0b4b39;--gold:#d9b65f;--bg:#fbfaf6;--soft:#f3f0e7;--ink:#17372d;--muted:#68766f;--line:#e6e1d6}
+body{background:var(--bg);color:var(--ink)}
+.header{height:58px;min-height:58px;padding-inline:10px;box-shadow:0 2px 12px #001e1618}
+.brand{gap:7px}.brand img{width:37px;height:37px}.brand b{font-size:clamp(14px,3.6vw,20px)}.brandText{line-height:1.05}.brandText small,.brandText span{font-size:10px}
+.search,.searchBox{border-radius:999px}
+.hero{height:clamp(245px,62vw,480px);min-height:245px}
+.hero .heroContent,.hero .content{max-width:1200px}
+section,.section{margin-top:20px;margin-bottom:20px}
+.sectionTitle,h2{letter-spacing:-.25px}
+.cats{gap:9px;padding:2px 10px 8px}
+.cat{min-width:78px;max-width:110px}
+.catImg{width:clamp(62px,17vw,92px);height:clamp(62px,17vw,92px);border-radius:16px;background:#f0ecdf;border:1px solid #e8e1d1}
+.cat img{object-fit:contain}
+.products{gap:9px!important}
+.product{border:1px solid #e8e4da;border-radius:13px;box-shadow:0 3px 12px #18372d0b;transition:transform .18s ease,box-shadow .18s ease}
+.product:active{transform:scale(.99)}
+.pimg{aspect-ratio:1/1;background:#f4f1e8}
+.pimg img{object-fit:contain;background:#f4f1e8}
+.pbody{padding:9px 9px 10px}
+.product .name,.product h3,.pbody .title{font-size:clamp(11px,2.8vw,14px);line-height:1.55;min-height:2.8em}
+.price{font-size:15px;font-weight:800;color:#0b4b39}
+.old{font-size:10px;color:#899089}
+.actions button,.product button,.cta{border-radius:9px;font-weight:800}
+.product .add,.product .addBtn,.product button.add{min-height:35px}
+.badge,.sticker{border-radius:6px}
+.deal{border-radius:16px;overflow:hidden}
+.dealMedia{height:clamp(150px,42vw,235px)}
+.dealMedia img{width:100%;height:100%;object-fit:contain}
+.articles{gap:10px!important}
+.article{border-radius:13px;box-shadow:0 3px 12px #18372d0a}
+.article img{object-fit:contain;background:#f3f0e7}
+.bottom{box-shadow:0 -4px 20px #0c2f2414;border-top:1px solid #e8e2d7}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media(max-width:600px){
+ .header{height:54px;min-height:54px;padding-inline:7px}
+ .head{gap:7px}
+ .brand{gap:5px}.brand img{width:32px;height:32px}.brand b{font-size:clamp(12px,3.4vw,16px)}
+ .brandText small,.brandText span{font-size:8px}
+ .hero{height:clamp(230px,65vw,330px);min-height:230px}
+ .cats{gap:7px}.cat{min-width:68px}.catImg{width:60px;height:60px;border-radius:13px}
+ .products{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+ .product{border-radius:11px}
+ .pimg{aspect-ratio:1/1}
+ .pbody{padding:7px}
+ .product .name,.product h3,.pbody .title{font-size:11px;line-height:1.45}
+ .price{font-size:13px}
+ .actions{gap:5px}
+ .dealMedia{height:clamp(145px,44vw,210px)}
+ .articles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .bottom{padding-bottom:env(safe-area-inset-bottom)}
+}
+@media(min-width:900px){
+ .products{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:14px!important}
+ .hero{height:460px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+<style id="gm-deal-share-links-2026">
+.gm-deal-share{background:#edf5ef!important;color:#145c3a!important;border-color:#cbded0!important}.gm-deal-share-row{margin:10px 0}.gm-deal-share-modal{width:100%;background:#edf5ef!important;color:#145c3a!important;border:1px solid #cbded0!important}.dealActions .gm-deal-share{grid-column:1/-1}@media(min-width:700px){.dealActions .gm-deal-share{grid-column:auto}}
 </style>
 </head><body>
 
@@ -612,7 +655,7 @@ button,.btn,.headIcon{transition:transform .18s ease,filter .18s ease,box-shadow
   <i class="gm-spark s1"></i><i class="gm-spark s2"></i><i class="gm-spark s3"></i><i class="gm-spark s4"></i>
   <div class="gm-splash-content">
     <div class="gm-logo-ring">
-      <img class="gm-logo" src="/assets/green-moon-logo-transparent.png" alt="Green Moon Plants and Flowers">
+      <img class="gm-logo" src="/assets/logo.jpg" alt="Green Moon Plants and Flowers" onerror="this.onerror=null;this.src='/logo.jpg'">
     </div>
     <div class="gm-company">Green Moon</div>
     <div class="gm-sub">Plants and Flowers</div>
@@ -674,10 +717,7 @@ button,.btn,.headIcon{transition:transform .18s ease,filter .18s ease,box-shadow
       <div id="gmWizardResult" class="gm-wizard-result" aria-live="polite"></div>
     </div>
   </div>
-</div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="products" id="productGrid"></div></div></section><section class="section gm-luxury-section" id="gm-luxury-rooms"><div class="wrap"><div class="gm-luxury-heading"><span class="gm-luxury-eyebrow">GREEN MOON EDIT</span><h2>اختار النبات حسب المكان</h2><p>لمسة خضراء مدروسة لكل ركن في بيتك أو مكتبك.</p></div><div class="gm-luxury-grid"><a class="gm-luxury-tile" href="#products" onclick="showAllProducts();return true"><span class="gm-luxury-icon">⌂</span><strong>غرفة المعيشة</strong><small>نباتات تضيف حضورًا وأناقة</small></a><a class="gm-luxury-tile" href="#products" onclick="showAllProducts();return true"><span class="gm-luxury-icon">▤</span><strong>المكتب</strong><small>اختيارات للمساحات العملية</small></a><a class="gm-luxury-tile" href="#doctor" onclick="doctorOpen();return false"><span class="gm-luxury-icon">✿</span><strong>مش عارف تختار؟</strong><small>اطلب مساعدة Green Moon Doctor</small></a></div></div></section>
-<section class="section gm-luxury-section gm-luxury-gift" id="gm-luxury-gifts"><div class="wrap gm-luxury-gift-inner"><div><span class="gm-luxury-eyebrow">A GIFT THAT GROWS</span><h2>هدية طبيعية تعيش وتكبر</h2><p>اختار هدية نباتية مميزة لعيد ميلاد أو زيارة أو مناسبة خاصة.</p><a class="gm-luxury-cta" href="https://wa.me/201151054863?text=%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%AE%D8%AA%D8%A7%D8%B1%20%D9%87%D8%AF%D9%8A%D8%A9%20%D9%86%D8%A8%D8%A7%D8%AA%D8%A7%D8%AA%20%D9%85%D9%86%20Green%20Moon" target="_blank" rel="noopener">ساعدوني أختار هدية <span>←</span></a></div><div class="gm-gift-mark" aria-hidden="true">❋</div></div></section>
-<section class="section gm-luxury-section" id="gm-luxury-care"><div class="wrap"><div class="gm-luxury-heading"><span class="gm-luxury-eyebrow">GROW WITH CONFIDENCE</span><h2>نباتك يستحق عناية صح</h2><p>ابدأ بالأساسيات، ولو محتاج مساعدة في نباتك استخدم أداة التشخيص.</p></div><div class="gm-care-grid"><a href="#articles" class="gm-care-card"><span>01</span><strong>الإضاءة المناسبة</strong><small>اختار مكان يناسب احتياج النبات للضوء.</small></a><a href="#articles" class="gm-care-card"><span>02</span><strong>الري باعتدال</strong><small>افحص التربة قبل إضافة مياه جديدة.</small></a><a href="#doctor" class="gm-care-card" onclick="doctorOpen();return false"><span>03</span><strong>مساعدة متخصصة</strong><small>ارفع صورة النبات وابدأ طلب المساعدة.</small></a></div></div></section>
-<section class="section" id="articles"><div class="wrap"><div class="title"><h2>مقالات وأخبار</h2></div><div class="articles" id="articleList"></div></div></section><section class="section" id="doctor"><div class="wrap"><button class="gm-doctor-banner gm-art-banner" type="button" onclick="doctorOpen()" aria-label="افتح Green Moon Doctor"><img src="green-moon-doctor-banner.jpg" alt="Green Moon Doctor — ارفع صورة نباتك للحصول على إرشادات العناية" loading="lazy"></button></div></section></main>
+</div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="products" id="productGrid"></div></div></section><section class="section" id="articles"><div class="wrap"><div class="title"><h2>مقالات وأخبار</h2></div><div class="articles" id="articleList"></div></div></section><section class="section" id="doctor"><div class="wrap"><button class="gm-doctor-banner gm-art-banner" type="button" onclick="doctorOpen()" aria-label="افتح Green Moon Doctor"><img src="green-moon-doctor-banner.jpg" alt="Green Moon Doctor — ارفع صورة نباتك للحصول على إرشادات العناية" loading="lazy"></button></div></section></main>
 <nav class="bottom"><div><a href="#" onclick="menu();return false"><span>☰</span>القائمة</a><a href="#deals"><span>🏷</span>العروض</a><a class="home" href="#"><span>⌂</span>الرئيسية</a><a href="#categories"><span>▦</span>الأقسام</a><a href="#" onclick="cartOpen();return false"><span>🛒</span>السلة</a></div></nav>
 <div id="gmOrderStatus" class="gm-order-status"><button class="gm-auto-close gm-order-close" type="button" aria-label="إغلاق" onclick="hideOrderStatus()">×</button><div class="box"><div id="gmOrderLoading"><div class="spinner"></div><h2>جاري إرسال طلبك...</h2><p>لحظات من فضلك، بنسجل طلبك ونتأكد من البيانات 💚</p></div><div id="gmOrderSuccess" style="display:none"><div class="ok">✓</div><h2>تم إرسال طلبك بنجاح 🎉</h2><p>شكرًا لاختيارك Green Moon 🌿<br>رقم طلبك: <b id="gmOrderNo"></b><br>هنراجع طلبك ونتواصل معاك للتأكيد.</p><div style="display:grid;gap:8px;margin-top:14px"><a id="gmOrderTrack" class="submit" href="#" style="display:block;text-align:center;text-decoration:none">📦 تتبع طلبك</a><button class="submit" style="background:#f2f5f2;color:#0b5b3d" onclick="copyLastTracking()">🔗 نسخ رابط التتبع</button></div></div><div id="gmOrderError" style="display:none"><div class="ok" style="background:#fff0ee;color:#b42318">!</div><h2>تعذر إرسال الطلب</h2><p id="gmOrderErrorText"></p><button class="submit" onclick="hideOrderStatus()">حاول مرة أخرى</button></div></div></div><div class="modal" id="cartModal"><div class="box"><button class="x" onclick="closeM('cartModal')">×</button><h2>🛒 سلة المشتريات</h2><div id="cartItems"></div><div class="summary" id="summary"></div><div class="promoBox" style="margin-top:12px;padding:12px;border:1px solid #e4e9e4;border-radius:14px;background:#fbfcfa"><div style="font-weight:900;margin-bottom:7px">🎟️ عندك بروموكود؟</div><div style="display:flex;gap:7px"><input id="promoCode" placeholder="اكتب البروموكود" style="flex:1;padding:11px;border:1px solid #dfe6df;border-radius:10px;direction:ltr;text-align:left"><button class="submit" style="width:auto;padding:10px 14px" onclick="applyPromo()">تطبيق</button></div><div id="promoMsg" style="font-size:12px;margin-top:7px;min-height:18px"></div></div><button class="submit" onclick="checkoutOpen()">إتمام الطلب</button></div></div>
 <div class="modal" id="checkoutModal"><div class="box"><button class="x" onclick="closeM('checkoutModal')">×</button><h2>بيانات الطلب</h2><div class="form"><input id="name" placeholder="الاسم *"><input id="phone" placeholder="رقم الهاتف *"><input id="gov" placeholder="المحافظة"><input id="area" placeholder="المنطقة"><input id="street" placeholder="الشارع"><input id="building" placeholder="رقم العمارة"><input id="floor" placeholder="الدور"><input id="apt" placeholder="الشقة"><textarea id="notes" placeholder="ملاحظات"></textarea><div id="orderMsg"></div><button class="submit" onclick="sendOrder()">تأكيد وإرسال الطلب</button></div></div></div>
@@ -759,10 +799,11 @@ function gmContent(){const c=gmSite().content;return c&&typeof c==='object'?c:{}
 function applySiteOverrides(){
   const v=gmSite(), h=v.header||{}, media=gmMedia(), c=gmContent();
   const logo=h.logo||media.logo||settings.logo||'/assets/logo.jpg';
-  const splashLogo=(v.splash&&v.splash.logo)||media.splashLogo||logo||'/assets/green-moon-logo-transparent.png';
+  const splashLogo=(v.splash&&v.splash.logo)||media.splashLogo||logo||'/assets/logo.jpg';
   const setText=(sel,val)=>{const e=document.querySelector(sel);if(e&&val!==undefined&&val!==null&&String(val)!=='')e.textContent=String(val)};
   const setImg=(sel,val)=>{const e=document.querySelector(sel);if(e&&val)e.src=val};
   setImg('#logo',logo); setImg('#gmPremiumSplash .gm-logo',splashLogo);
+  const splashImg=document.querySelector('#gmPremiumSplash .gm-logo'); if(splashImg){splashImg.onerror=function(){this.onerror=null;this.src='/logo.jpg';};}
   setText('.brand b',h.storeName||'Green Moon');
   setText('.brand small',h.taglineSmall||'Plants and Flowers');
   setText('.brand em',h.owner||'Mohamed Elgarhy');
@@ -830,7 +871,7 @@ const d=activeDeal();
 if(!d){$('dealList').innerHTML='<div class="emptyDeal">لا توجد صفقة نشطة حاليًا. الصفقة القادمة ستظهر تلقائيًا.</div>';return}
 const old=Number(d.oldPrice)||0,price=Number(d.price)||0,off=old>price?Math.round((old-price)/old*100):0,save=Math.max(0,old-price),sec=dealRemaining(d),dd=Math.floor(sec/86400),hh=Math.floor(sec%86400/3600),mm=Math.floor(sec%3600/60),ss=sec%60,contents=Array.isArray(d.contents)?d.contents:[],id=esc(d.id||d._i),title=esc(d.title||d.name||'صفقة Green Moon'),desc=esc(d.description||d.shortDescription||'عرض خاص لفترة محدودة من Green Moon');
 const items=contents.length?contents.slice(0,8).map(x=>'<div class="dealContentItem"><span class="check">✓</span><span>'+esc(x)+'</span></div>').join(''):'<div class="dealContentItem"><span class="check">✓</span><span>محتويات الصفقة موضحة في التفاصيل</span></div>';
-$('dealList').innerHTML='<article class="deal"><div class="dealMedia"><img loading="lazy" src="'+esc(d.image||fallback())+'" alt="'+title+'"></div><div class="dealText"><div class="dealBadge"><span class="limited">⏳ عرض لفترة محدودة</span>'+(off?'<span class="saving">خصم '+off+'%</span>':'')+'</div><h3>'+title+'</h3><p class="dealLead">'+desc+'</p><div class="dealPriceBox"><div class="dealPriceMain">'+(old?'<span class="old">'+old+' ج</span>':'')+'<span class="new">'+price+'</span><span class="currency">جنيه</span></div>'+(save?'<div class="dealSaving"><strong>وفر '+save+' ج</strong>عن السعر الأصلي</div>':'')+'</div><div class="dealSectionTitle">📦 الصفقة بتشمل</div><div class="dealContents">'+items+'</div><div class="dealTimerBox"><div class="dealTimerTitle">🔥 العرض بينتهي خلال</div><div class="dealTimer" id="dealTimer"><div class="dealTimerUnit"><b>'+String(dd).padStart(2,'0')+'</b><span>يوم</span></div><div class="dealTimerUnit"><b>'+String(hh).padStart(2,'0')+'</b><span>ساعة</span></div><div class="dealTimerUnit"><b>'+String(mm).padStart(2,'0')+'</b><span>دقيقة</span></div><div class="dealTimerUnit"><b>'+String(ss).padStart(2,'0')+'</b><span>ثانية</span></div></div></div><div class="dealActions"><button class="order" onclick="dealOrder(\''+id+'\')">🛒 اطلب الصفقة الآن — '+price+' ج</button><button class="more" onclick="dealInfo(\''+id+'\')">👁️ شوف كل تفاصيل الصفقة</button></div><div class="dealUrgency">✔️ السعر الظاهر هو سعر الصفقة بالكامل</div></div></article>'
+$('dealList').innerHTML='<article class="deal"><div class="dealMedia"><img loading="lazy" src="'+esc(d.image||fallback())+'" alt="'+title+'"></div><div class="dealText"><div class="dealBadge"><span class="limited">⏳ عرض لفترة محدودة</span>'+(off?'<span class="saving">خصم '+off+'%</span>':'')+'</div><h3>'+title+'</h3><p class="dealLead">'+desc+'</p><div class="dealPriceBox"><div class="dealPriceMain">'+(old?'<span class="old">'+old+' ج</span>':'')+'<span class="new">'+price+'</span><span class="currency">جنيه</span></div>'+(save?'<div class="dealSaving"><strong>وفر '+save+' ج</strong>عن السعر الأصلي</div>':'')+'</div><div class="dealSectionTitle">📦 الصفقة بتشمل</div><div class="dealContents">'+items+'</div><div class="dealTimerBox"><div class="dealTimerTitle">🔥 العرض بينتهي خلال</div><div class="dealTimer" id="dealTimer"><div class="dealTimerUnit"><b>'+String(dd).padStart(2,'0')+'</b><span>يوم</span></div><div class="dealTimerUnit"><b>'+String(hh).padStart(2,'0')+'</b><span>ساعة</span></div><div class="dealTimerUnit"><b>'+String(mm).padStart(2,'0')+'</b><span>دقيقة</span></div><div class="dealTimerUnit"><b>'+String(ss).padStart(2,'0')+'</b><span>ثانية</span></div></div></div><div class="dealActions"><button class="order" onclick="dealOrder(\''+id+'\')">🛒 اطلب الصفقة الآن — '+price+' ج</button><button class="more" onclick="dealInfo(\''+id+'\')">👁️ شوف كل تفاصيل الصفقة</button><button class="more gm-deal-share" data-deal-id="'+id+'" onclick="shareDeal(this.dataset.dealId)">🔗 مشاركة الصفقة</button></div><div class="dealUrgency">✔️ السعر الظاهر هو سعر الصفقة بالكامل</div></div></article>'
 }
 function tick(){const d=activeDeal(),el=$('dealTimer');if(!d){if(dealList().length)renderDeals();return}if(el){const sec=dealRemaining(d),dd=Math.floor(sec/86400),hh=Math.floor(sec%86400/3600),mm=Math.floor(sec%3600/60),ss=sec%60;el.innerHTML='<div class="dealTimerUnit"><b>'+String(dd).padStart(2,'0')+'</b><span>يوم</span></div><div class="dealTimerUnit"><b>'+String(hh).padStart(2,'0')+'</b><span>ساعة</span></div><div class="dealTimerUnit"><b>'+String(mm).padStart(2,'0')+'</b><span>دقيقة</span></div><div class="dealTimerUnit"><b>'+String(ss).padStart(2,'0')+'</b><span>ثانية</span></div>';if(sec<=0)renderDeals()}else renderDeals()}
 function dealOrder(id){
@@ -843,9 +884,11 @@ const dealId=String(d.id||id),old=Number(d.oldPrice)||0,price=Number(d.price)||0
 if(x)x.quantity+=1;else{const shipping=Math.max(Number(settings.shipping)||0,...valid.map(v=>Number(v.p.shippingPrice)||0));cart.push({id:'deal-'+dealId,dealId,isDeal:true,name:d.title||d.name||'صفقة Green Moon',price,oldPrice:old,shippingPrice:shipping,image:d.image||valid[0].p.image||fallback(),gift:d.gift||'',quantity:1,dealItems:valid.map(v=>({productId:v.p.id,name:v.p.name,quantity:v.quantity}))})}
 updateCart();openM('cartModal')
 }
+function dealUrl(id){return location.origin+location.pathname+'?deal='+encodeURIComponent(String(id))+'#deals'}
+async function shareDeal(id){const d=findDeal(id);if(!d){toast('الصفقة غير متاحة حاليًا');return}const url=dealUrl(d.id||id),title=d.title||d.name||'صفقة Green Moon',text=title+' 🌿 — '+(Number(d.price)||0)+' جنيه';try{if(navigator.share){await navigator.share({title,text,url})}else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(url);toast('تم نسخ رابط الصفقة، ابعته لعملائك 💚')}else{prompt('انسخ رابط الصفقة وابعته لعملائك:',url)}}catch(e){if(e&&e.name!=='AbortError'){try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(url);toast('تم نسخ رابط الصفقة 💚')}else prompt('انسخ رابط الصفقة:',url)}catch(_){prompt('انسخ رابط الصفقة:',url)}}}}
 function dealInfo(id){
 const d=findDeal(id);if(!d)return;const old=Number(d.oldPrice)||0,price=Number(d.price)||0,items=Array.isArray(d.items)?d.items:(Array.isArray(d.productIds)?d.productIds.map(productId=>({productId,quantity:1})):(d.productId?[{productId:d.productId,quantity:1}]:[])),names=items.map(it=>{const p=products.find(x=>String(x.id)===String(it.productId));return p?p.name+' × '+Math.max(1,Number(it.quantity)||1):''}).filter(Boolean),did=esc(String(d.id||id));
-$('dealDetails').innerHTML='<img src="'+esc(d.image||fallback())+'" style="width:100%;border-radius:14px;max-height:360px;object-fit:cover"><h2>'+esc(d.title||d.name||'صفقة')+'</h2><p style="line-height:1.9">'+esc(d.description||d.shortDescription||'')+'</p><div class="dealPrice">'+(old?'<span class="old">'+old+' ج</span>':'')+'<span class="new">'+price+' ج</span></div><h3>📦 محتويات الصفقة</h3><p style="line-height:1.9">'+esc(names.length?names.join('\n'):(Array.isArray(d.contents)?d.contents.join('\n'):""))+'</p>'+(d.sizes?'<h3>📏 المقاسات</h3><p>'+esc(Array.isArray(d.sizes)?d.sizes.join('، '):d.sizes)+'</p>':'')+(d.features?'<h3>✨ المميزات</h3><p>'+esc(Array.isArray(d.features)?d.features.join('، '):d.features)+'</p>':'')+(d.shipping?'<h3>🚚 الشحن</h3><p>'+esc(d.shipping)+'</p>':'')+(d.notes?'<h3>📝 ملاحظات</h3><p>'+esc(d.notes)+'</p>':'')+'<button class="submit" data-deal-id="'+did+'" onclick="closeM(\'dealModal\');dealOrder(this.dataset.dealId)">🛒 اطلب الصفقة الآن</button>';openM('dealModal')
+$('dealDetails').innerHTML='<img src="'+esc(d.image||fallback())+'" style="width:100%;border-radius:14px;max-height:360px;object-fit:cover"><h2>'+esc(d.title||d.name||'صفقة')+'</h2><p style="line-height:1.9">'+esc(d.description||d.shortDescription||'')+'</p><div class="dealPrice">'+(old?'<span class="old">'+old+' ج</span>':'')+'<span class="new">'+price+' ج</span></div><h3>📦 محتويات الصفقة</h3><p style="line-height:1.9">'+esc(names.length?names.join('\n'):(Array.isArray(d.contents)?d.contents.join('\n'):""))+'</p>'+(d.sizes?'<h3>📏 المقاسات</h3><p>'+esc(Array.isArray(d.sizes)?d.sizes.join('، '):d.sizes)+'</p>':'')+(d.features?'<h3>✨ المميزات</h3><p>'+esc(Array.isArray(d.features)?d.features.join('، '):d.features)+'</p>':'')+(d.shipping?'<h3>🚚 الشحن</h3><p>'+esc(d.shipping)+'</p>':'')+(d.notes?'<h3>📝 ملاحظات</h3><p>'+esc(d.notes)+'</p>':'')+'<div class="gm-deal-share-row"><button class="submit gm-deal-share-modal" data-deal-id="'+did+'" onclick="shareDeal(this.dataset.dealId)">🔗 مشاركة الصفقة</button></div><button class="submit" data-deal-id="'+did+'" onclick="closeM(\'dealModal\');dealOrder(this.dataset.dealId)">🛒 اطلب الصفقة الآن</button>';openM('dealModal');try{history.replaceState({},'',dealUrl(d.id||id))}catch(_){}
 }
 function renderArticles(){let a=settings.gm_articles||settings.articles||[];$('articleList').innerHTML=a.length?a.slice(0,3).map((x,i)=>'<article class="article gm-article-card" role="button" tabindex="0" aria-label="اقرأ مقال '+esc(x.title||'Green Moon')+'" onclick="article('+i+')" onkeydown="if(event.key.charCodeAt(0)===13||event.key.charCodeAt(0)===32){event.preventDefault();article('+i+')}"><img loading="lazy" src="'+esc(x.image||fallback())+'" alt="'+esc(x.title||'مقال من Green Moon')+'"><div class="gm-article-body"><span class="gm-article-kicker">GREEN MOON • دليل النباتات</span><h3>'+esc(x.title||'مقال')+'</h3><p>'+esc(x.excerpt||x.description||'')+'</p><span class="gm-article-read">اقرأ المقال <b>←</b></span></div></article>').join(''):'<p class="gm-articles-empty">سيتم نشر مقالات ونصائح جديدة قريبًا.</p>'}function article(i){let a=settings.gm_articles||settings.articles||[],x=a[i];if(!x)return;$('articleImg').src=x.image||fallback();$('articleTitle').textContent=x.title||'';$('articleContent').textContent=x.content||x.text||x.description||x.excerpt||'';openM('articleModal')}
 function menu(){let d=document.querySelector('.drawer');if(d){d.remove();return}d=document.createElement('div');d.className='drawer';d.innerHTML='<div class="drawerBox"><button class="drawerClose" onclick="menu()">×</button><h2>Green Moon</h2><nav><a href="#">الرئيسية</a><a href="/account.html">👤 حسابي وطلباتي</a><a href="/track.html">📦 تتبع طلب</a><a href="#" onclick="gmEnableNotifications();return false">🔔 تفعيل الإشعارات</a><a href="#deals">الصفقات والعروض</a><a href="#products">المنتجات</a><a href="#articles">المقالات</a><a href="#doctor">🌿 Green Moon Doctor</a></nav></div>';document.body.appendChild(d)}function searchSite(){let q=prompt('اكتب اسم النبات أو المنتج');if(q===null)return;let a=products.filter(p=>String(p.name||'').toLowerCase().includes(q.toLowerCase()));renderProducts(a);$('products').scrollIntoView({behavior:'smooth'})}function normalizeCat(v){return String(v??'').toLowerCase().replace(/أ|إ|آ/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/[ًٌٍَُِّْـ]/g,'').replace(/[^\u0600-\u06FFa-z0-9]+/gi,'')}
@@ -886,7 +929,7 @@ function customerToken(){return localStorage.getItem('gm_customer_token')||''}
 function gmUrl64(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
 async function gmEnableNotifications(){try{if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)){toast('المتصفح لا يدعم إشعارات المتجر');return false}const p=await Notification.requestPermission();if(p!=='granted'){toast('تم رفض إذن الإشعارات');return false}const reg=await navigator.serviceWorker.register('/sw.js');const cfg=await fetch('/api/push/config').then(r=>r.json());let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:gmUrl64(cfg.publicKey)});const h={'content-type':'application/json'};const t=customerToken();if(t)h.authorization='Bearer '+t;await fetch('/api/push/subscribe',{method:'POST',headers:h,body:JSON.stringify({subscription:sub.toJSON(),guestKey:ensureGuestKey()})});localStorage.setItem('gm_push_enabled','1');toast('تم تفعيل إشعارات Green Moon 🔔');return true}catch(e){toast('تعذر تفعيل الإشعارات');return false}}
 async function load(){let saved=localStorage.getItem('gm_cart_v2');if(saved){try{cart=JSON.parse(saved)||[]}catch(_){cart=[]}}
-try{let [a,b]=await Promise.all([fetch('/api/products'),fetch('/api/settings')]);products=await a.json();settings=await b.json();if(!settings||typeof settings!=='object')settings={};render();updateCart();if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});const qid=new URLSearchParams(location.search).get('product');if(qid){setTimeout(()=>detail(qid),120)}heroTimer=setInterval(()=>{let h=getHeroes();if(h.length>1){heroIndex=(heroIndex+1)%h.length;renderHero()}},5000);setInterval(tick,1000)}catch(e){document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:Cairo">تعذر تحميل المتجر. حدّث الصفحة وحاول مرة أخرى.</div>'}}load();
+try{let [a,b]=await Promise.all([fetch('/api/products'),fetch('/api/settings')]);products=await a.json();settings=await b.json();if(!settings||typeof settings!=='object')settings={};render();updateCart();if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});const params=new URLSearchParams(location.search);const dealQ=params.get('deal');const qid=params.get('product');if(dealQ){setTimeout(()=>{const d=findDeal(dealQ);if(d&&d.active!==false){dealInfo(dealQ)}else{const box=$('dealList');if(box)box.scrollIntoView({behavior:'smooth'});toast('الصفقة غير متاحة حاليًا')}},180)}else if(qid){setTimeout(()=>detail(qid),120)}heroTimer=setInterval(()=>{let h=getHeroes();if(h.length>1){heroIndex=(heroIndex+1)%h.length;renderHero()}},5000);setInterval(tick,1000)}catch(e){document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:Cairo">تعذر تحميل المتجر. حدّث الصفحة وحاول مرة أخرى.</div>'}}load();
 document.addEventListener('click',e=>{const m=e.target.closest('.modal');if(m&&e.target===m)closeM(m.id)});document.addEventListener('keydown',e=>{if(e.key==='Escape'){const fm=$('gmFinderModal');if(fm&&fm.classList.contains('open'))gmCloseFinder();document.querySelectorAll('.modal.open').forEach(m=>{if(m.id!=='gmFinderModal')closeM(m.id)});const d=document.querySelector('.drawer');if(d)d.remove()}});</script>
 <script id="gm-premium-splash-js">
 (function(){
@@ -900,8 +943,8 @@ document.addEventListener('click',e=>{const m=e.target.closest('.modal');if(m&&e
       if(splash && splash.parentNode)splash.parentNode.removeChild(splash);
     },650);
   }
-  // 7-second premium entrance. The store loads underneath while the motion intro plays.
-  setTimeout(closeSplash,7000);
+  // 5-second premium entrance. The store loads underneath while the motion intro plays.
+  setTimeout(closeSplash,5000);
 })();
 </script>
 <script id="gm-premium-creative-upgrade">
