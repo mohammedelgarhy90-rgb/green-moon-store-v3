@@ -586,6 +586,51 @@
 @media(prefers-reduced-motion:reduce){#articleList .gm-article-card{transition:none!important}}
 </style>
 <style id="gm-root-fix-hidden">[hidden]{display:none!important}</style>
+<style id="gm-market-upgrade-css">
+/* Green Moon marketplace upgrade — Raneen-inspired shopping patterns, original brand styling */
+:root{--gm-market-ink:#17372c;--gm-market-muted:#68766e;--gm-market-border:#e3e9e3;--gm-market-cream:#f7f8f3;--gm-market-red:#bd3434}
+html{scroll-behavior:smooth;scroll-padding-top:112px}
+.header{backdrop-filter:blur(14px);border-bottom:1px solid rgba(231,191,98,.22)}
+.gm-market-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) minmax(150px,220px);gap:10px;margin:0 0 18px;padding:13px;background:#fff;border:1px solid var(--gm-market-border);border-radius:16px;box-shadow:0 8px 26px #12332908}
+.gm-market-search{width:100%;min-width:0;border:1px solid #dce5dc;background:#f9fbf8;border-radius:11px;padding:12px 14px;font:inherit;color:var(--gm-market-ink);outline:none}
+.gm-market-search:focus,.gm-market-sort:focus{border-color:#087842;box-shadow:0 0 0 3px #08784214}
+.gm-market-sort{width:100%;border:1px solid #dce5dc;background:#fff;border-radius:11px;padding:12px 10px;font:inherit;color:var(--gm-market-ink)}
+.gm-market-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-5px 2px 12px;color:var(--gm-market-muted);font-size:12px}
+.gm-market-clear{border:0;background:transparent;color:#087842;font:inherit;font-weight:800;cursor:pointer}
+.products{gap:16px}
+.product{position:relative;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;border-color:#e5e9e3;border-radius:17px}
+.product:hover{transform:translateY(-3px);box-shadow:0 14px 34px #12332915;border-color:#c9d9cb}
+.pimg{background:#f4f6f0}
+.pimg img{transition:transform .35s ease}
+.product:hover .pimg img{transform:scale(1.035)}
+.pbody{padding:13px}
+.pbody h3{font-size:14px;line-height:1.65;min-height:46px;color:#263d31}
+.price{margin-top:5px;flex-wrap:wrap}
+.new{font-size:20px;color:#087842}
+.add{min-height:41px;box-shadow:0 4px 10px #08784212}
+.detailBtn{min-height:38px}
+.gm-product-sticker{z-index:2}
+.gm-ticker{font-size:12px}
+.title h2{letter-spacing:-.2px}
+.cats{padding:4px 2px 10px}
+.cat{transition:transform .2s ease}
+.cat:hover{transform:translateY(-3px)}
+.gm-favorite-toggle{width:38px;height:38px;border-radius:50%;border:1px solid #dfe8df;background:#fff;color:#a23b4a;font-size:20px;display:grid;place-items:center;cursor:pointer;position:relative}.gm-favorite-toggle.active{background:#fff0f1;border-color:#e8b7bd}.gm-card-favorite{position:absolute;left:10px;top:10px;z-index:4;width:34px;height:34px;border-radius:50%;background:#ffffffed;border:1px solid #e5e9e3;color:#b33446;font-size:19px;display:grid;place-items:center;box-shadow:0 3px 10px #00000012;cursor:pointer}.gm-card-favorite.active{background:#fff0f1;color:#b51f38}.gm-market-empty{grid-column:1/-1;padding:30px 18px;text-align:center;border:1px dashed #cbd8cc;border-radius:16px;background:#fbfcf9;color:#68766e;line-height:1.9}
+.gm-market-empty strong{display:block;color:#17372c;font-size:17px;margin-bottom:4px}
+@media(max-width:700px){
+ .gm-market-toolbar{grid-template-columns:1fr 135px;gap:8px;padding:9px;margin-bottom:14px}
+ .gm-market-search,.gm-market-sort{font-size:12px;padding:11px 9px}
+ .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .product{border-radius:13px}
+ .pbody{padding:9px}
+ .pbody h3{font-size:12px;min-height:42px}
+ .new{font-size:17px}
+ .add,.detailBtn{font-size:12px;padding:8px 5px}
+ .qty button{width:27px}
+ .gm-market-meta{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.product,.pimg img,.cat{transition:none}}
+</style>
 </head><body>
 
 <div id="gmPremiumSplash" aria-label="Green Moon welcome">
@@ -656,7 +701,18 @@
       <div id="gmWizardResult" class="gm-wizard-result" aria-live="polite"></div>
     </div>
   </div>
-</div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="products" id="productGrid"></div></div></section><section class="section" id="articles"><div class="wrap"><div class="title"><h2>مقالات وأخبار</h2></div><div class="articles" id="articleList"></div></div></section><section class="section" id="doctor"><div class="wrap"><button class="gm-doctor-banner gm-art-banner" type="button" onclick="doctorOpen()" aria-label="افتح Green Moon Doctor"><img src="green-moon-doctor-banner.jpg" alt="Green Moon Doctor — ارفع صورة نباتك للحصول على إرشادات العناية" loading="lazy"></button></div></section></main>
+</div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="gm-market-toolbar" role="search" aria-label="البحث وترتيب المنتجات">
+  <input id="gmCatalogSearch" class="gm-market-search" type="search" placeholder="ابحث عن نبات أو منتج أو فئة…" autocomplete="off" aria-label="ابحث عن منتج">
+  <select id="gmCatalogSort" class="gm-market-sort" aria-label="ترتيب المنتجات">
+    <option value="default">الترتيب الافتراضي</option>
+    <option value="price-asc">السعر: من الأقل للأعلى</option>
+    <option value="price-desc">السعر: من الأعلى للأقل</option>
+    <option value="name">الاسم: أ–ي</option>
+    <option value="discount">أكبر توفير</option>
+  </select>
+</div>
+<div class="gm-market-meta"><span id="gmCatalogCount" aria-live="polite">تصفح منتجات Green Moon</span><button id="gmCatalogClear" class="gm-market-clear" type="button">مسح البحث</button></div>
+<div class="products" id="productGrid"></div></div></section><section class="section" id="articles"><div class="wrap"><div class="title"><h2>مقالات وأخبار</h2></div><div class="articles" id="articleList"></div></div></section><section class="section" id="doctor"><div class="wrap"><button class="gm-doctor-banner gm-art-banner" type="button" onclick="doctorOpen()" aria-label="افتح Green Moon Doctor"><img src="green-moon-doctor-banner.jpg" alt="Green Moon Doctor — ارفع صورة نباتك للحصول على إرشادات العناية" loading="lazy"></button></div></section></main>
 <nav class="bottom"><div><a href="#" onclick="menu();return false"><span>☰</span>القائمة</a><a href="#deals"><span>🏷</span>العروض</a><a class="home" href="#"><span>⌂</span>الرئيسية</a><a href="#categories"><span>▦</span>الأقسام</a><a href="#" onclick="cartOpen();return false"><span>🛒</span>السلة</a></div></nav>
 <div id="gmOrderStatus" class="gm-order-status"><button class="gm-auto-close gm-order-close" type="button" aria-label="إغلاق" onclick="hideOrderStatus()">×</button><div class="box"><div id="gmOrderLoading"><div class="spinner"></div><h2>جاري إرسال طلبك...</h2><p>لحظات من فضلك، بنسجل طلبك ونتأكد من البيانات 💚</p></div><div id="gmOrderSuccess" style="display:none"><div class="ok">✓</div><h2>تم إرسال طلبك بنجاح 🎉</h2><p>شكرًا لاختيارك Green Moon 🌿<br>رقم طلبك: <b id="gmOrderNo"></b><br>هنراجع طلبك ونتواصل معاك للتأكيد.</p><div style="display:grid;gap:8px;margin-top:14px"><a id="gmOrderTrack" class="submit" href="#" style="display:block;text-align:center;text-decoration:none">📦 تتبع طلبك</a><button class="submit" style="background:#f2f5f2;color:#0b5b3d" onclick="copyLastTracking()">🔗 نسخ رابط التتبع</button></div></div><div id="gmOrderError" style="display:none"><div class="ok" style="background:#fff0ee;color:#b42318">!</div><h2>تعذر إرسال الطلب</h2><p id="gmOrderErrorText"></p><button class="submit" onclick="hideOrderStatus()">حاول مرة أخرى</button></div></div></div><div class="modal" id="cartModal"><div class="box"><button class="x" onclick="closeM('cartModal')">×</button><h2>🛒 سلة المشتريات</h2><div id="cartItems"></div><div class="summary" id="summary"></div><div class="promoBox" style="margin-top:12px;padding:12px;border:1px solid #e4e9e4;border-radius:14px;background:#fbfcfa"><div style="font-weight:900;margin-bottom:7px">🎟️ عندك بروموكود؟</div><div style="display:flex;gap:7px"><input id="promoCode" placeholder="اكتب البروموكود" style="flex:1;padding:11px;border:1px solid #dfe6df;border-radius:10px;direction:ltr;text-align:left"><button class="submit" style="width:auto;padding:10px 14px" onclick="applyPromo()">تطبيق</button></div><div id="promoMsg" style="font-size:12px;margin-top:7px;min-height:18px"></div></div><button class="submit" onclick="checkoutOpen()">إتمام الطلب</button></div></div>
 <div class="modal" id="checkoutModal"><div class="box"><button class="x" onclick="closeM('checkoutModal')">×</button><h2>بيانات الطلب</h2><div class="form"><input id="name" placeholder="الاسم *"><input id="phone" placeholder="رقم الهاتف *"><input id="gov" placeholder="المحافظة"><input id="area" placeholder="المنطقة"><input id="street" placeholder="الشارع"><input id="building" placeholder="رقم العمارة"><input id="floor" placeholder="الدور"><input id="apt" placeholder="الشقة"><textarea id="notes" placeholder="ملاحظات"></textarea><div id="orderMsg"></div><button class="submit" onclick="sendOrder()">تأكيد وإرسال الطلب</button></div></div></div>
@@ -2085,4 +2141,23 @@ setTimeout(gmInitSmartWizard,300);
 </script>
 
 <footer class="gm-site-footer" aria-label="وسائل التواصل الاجتماعي"><div class="footer-brand">Green Moon</div><div class="footer-sub">PLANTS AND FLOWERS</div><div class="footer-name">Mohamed Elgarhy</div><div class="gm-footer-social"><a href="https://www.instagram.com/greenmoon.plants/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.4" cy="6.7" r="1"></circle></svg></a><a href="https://wa.me/201151054863" target="_blank" rel="noopener" aria-label="WhatsApp" class="gm-footer-wa">☏</a><a href="tel:+201151054863" aria-label="اتصال">☎</a></div><div class="gm-footer-copy">Green Moon Plants and Flowers © 2026</div></footer>
+
+<script id="gm-market-upgrade-js">
+(function(){
+  'use strict';
+  var query='',sortMode='default',baseRender=null,favoritesOnly=false,favorites=new Set();try{favorites=new Set(JSON.parse(localStorage.getItem('gm_favorites_v1')||'[]').map(String))}catch(e){favorites=new Set()}
+  function norm(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').trim()}
+  function matches(p){if(favoritesOnly&&!favorites.has(String(p.id)))return false;var q=norm(query);if(!q)return true;return norm([p.name,p.category,p.categoryName,p.type,p.description,p.shortDescription].join(' ')).includes(q)}
+  function installCardFavorites(){var grid=document.getElementById('productGrid');if(!grid)return;grid.querySelectorAll('.product').forEach(function(card){var btn=card.querySelector('.gm-card-favorite');if(!btn){btn=document.createElement('button');btn.type='button';btn.className='gm-card-favorite';btn.setAttribute('aria-label','إضافة للمفضلة');var img=card.querySelector('.pimg');if(img)img.appendChild(btn)}var name=card.querySelector('h3')?.textContent||'';var p=(window.products||[]).find(function(x){return String(x.name||'')===name});if(!p)return;btn.dataset.productId=String(p.id);var on=favorites.has(String(p.id));btn.classList.toggle('active',on);btn.textContent=on?'♥':'♡';btn.setAttribute('aria-pressed',on?'true':'false');btn.title=on?'إزالة من المفضلة':'أضف للمفضلة'})}
+  function saveFavorites(){try{localStorage.setItem('gm_favorites_v1',JSON.stringify(Array.from(favorites)))}catch(e){}}
+  function addFavoriteHeader(){var actions=document.querySelector('.header .actions');if(!actions||document.getElementById('gmFavoritesToggle'))return;var b=document.createElement('button');b.id='gmFavoritesToggle';b.type='button';b.className='gm-favorite-toggle';b.title='المفضلة';b.setAttribute('aria-label','عرض المنتجات المفضلة');b.textContent='♡';b.addEventListener('click',function(){favoritesOnly=!favoritesOnly;b.classList.toggle('active',favoritesOnly);b.textContent=favoritesOnly?'♥':'♡';var i=document.getElementById('gmCatalogSearch');if(i){i.value=query}if(favoritesOnly){var e=document.getElementById('products');if(e)e.scrollIntoView({behavior:'smooth'})}else if(!query){var s=document.getElementById('gmCatalogSort');if(s)s.value='default';sortMode='default'}refresh()});actions.insertBefore(b,actions.lastElementChild||null);}
+  function sortList(list){var a=list.slice();if(sortMode==='price-asc')a.sort(function(x,y){return (+x.price||0)-(+y.price||0)});else if(sortMode==='price-desc')a.sort(function(x,y){return (+y.price||0)-(+x.price||0)});else if(sortMode==='name')a.sort(function(x,y){return String(x.name||'').localeCompare(String(y.name||''),'ar')});else if(sortMode==='discount')a.sort(function(x,y){return ((+y.oldPrice||0)-(+y.price||0))-((+x.oldPrice||0)-(+x.price||0))});return a}
+  function refresh(){if(!Array.isArray(window.products)||typeof window.renderProducts!=='function')return;var a=window.products.filter(matches);a=sortList(a);baseRender(a);var c=document.getElementById('gmCatalogCount');if(c)c.textContent=(favoritesOnly?'المفضلة: ':'عرض ')+a.length+(favoritesOnly?' منتج':' من '+window.products.length+' منتج');var e=document.getElementById('productGrid');if(e&&!a.length)e.innerHTML='<div class="gm-market-empty"><strong>'+(favoritesOnly?'لسه مفيش منتجات في المفضلة 💚':'ملقيناش المنتج ده 🌿')+'</strong>'+(favoritesOnly?'اضغط على القلب في أي منتج علشان تحفظه هنا.':'جرّب كلمة تانية أو امسح البحث علشان تشوف كل المنتجات.')+'</div>';installCardFavorites();}
+  function setup(){var input=document.getElementById('gmCatalogSearch'),select=document.getElementById('gmCatalogSort'),clear=document.getElementById('gmCatalogClear');if(!input||!select||!clear||input.dataset.gmReady)return;input.dataset.gmReady='1';baseRender=window.renderProducts;window.renderProducts=function(list){if(!Array.isArray(list))return baseRender(list);var filtered=list.filter(matches);baseRender(sortList(filtered));var c=document.getElementById('gmCatalogCount');if(c&&Array.isArray(window.products))c.textContent='عرض '+filtered.length+' من '+window.products.length+' منتج'};input.addEventListener('input',function(){query=input.value;refresh()});select.addEventListener('change',function(){sortMode=select.value;refresh()});clear.addEventListener('click',function(){query='';input.value='';sortMode='default';select.value='default';refresh();input.focus()});document.getElementById('productGrid')?.addEventListener('click',function(e){var b=e.target.closest('.gm-card-favorite');if(!b)return;var id=String(b.dataset.productId||'');if(!id)return;if(favorites.has(id))favorites.delete(id);else favorites.add(id);saveFavorites();installCardFavorites();if(favoritesOnly)refresh()});addFavoriteHeader();input.addEventListener('keydown',function(e){if(e.key==='Escape'){input.value='';query='';refresh()}})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
+  var tries=0;var timer=setInterval(function(){tries++;if(typeof window.renderProducts==='function'&&Array.isArray(window.products)){if(!baseRender)setup();if(baseRender){clearInterval(timer);refresh()}}if(tries>80)clearInterval(timer)},250);
+  window.searchSite=function(){var input=document.getElementById('gmCatalogSearch');if(input){input.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){input.focus()},250)}else{var q=prompt('اكتب اسم النبات أو المنتج');if(q===null)return;var a=(window.products||[]).filter(function(p){return norm(p.name).includes(norm(q))});if(typeof window.renderProducts==='function')window.renderProducts(a);var e=document.getElementById('products');if(e)e.scrollIntoView({behavior:'smooth'})}};
+})();
+</script>
+
 </body></html>
