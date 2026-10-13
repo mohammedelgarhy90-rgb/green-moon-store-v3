@@ -160,7 +160,7 @@
 #gmPremiumSplash .gm-progress span{
   display:block;width:0;height:100%;background:linear-gradient(90deg,#b98a2d,#f0ce78,#fff2bd);
   box-shadow:0 0 10px rgba(240,206,120,.5);
-  animation:gmProgress 3s linear forwards;
+  animation:gmProgress 7s linear forwards;
 }
 #gmPremiumSplash .gm-tag{
   position:absolute;bottom:42px;left:50%;transform:translateX(-50%);
@@ -587,52 +587,17 @@
 </style>
 <style id="gm-root-fix-hidden">[hidden]{display:none!important}</style>
 
-<style id="gm-repair-brand-fixes">
-/* Green Moon repair: visible fallback logo */
-#gmPremiumSplash .gm-logo-ring.gm-logo-fallback{
-  background:radial-gradient(circle,#fffbe9 0%,#f0e4b5 72%,#d5b15b 100%)!important;
-  box-shadow:0 0 0 5px rgba(231,191,98,.35),0 12px 40px #0005;
-  position:relative;
-}
-#gmPremiumSplash .gm-logo-ring.gm-logo-fallback:before{
-  content:"GM";display:grid;place-items:center;width:100%;height:100%;
-  border:2px solid #1a6046;border-radius:50%;color:#075039;
-  font:800 clamp(54px,15vw,100px)/1 Georgia,serif;letter-spacing:-5px;
-}
-#gmPremiumSplash .gm-logo-ring.gm-logo-fallback:after{
-  content:"GREEN MOON";position:absolute;left:0;right:0;bottom:23%;
-  text-align:center;color:#075039;font:800 11px/1 Arial,sans-serif;letter-spacing:2px;
-  width:auto;height:auto;border:0;animation:none;
-}
-#gmPremiumSplash .gm-progress span{animation-duration:3s!important}
-#gmPremiumSplash .gm-logo-ring{width:min(43vw,190px);height:min(43vw,190px)}
-#gmPremiumSplash .gm-logo-ring:after{width:calc(min(43vw,190px) + 22px);height:calc(min(43vw,190px) + 22px)}
-/* Product photos: show the complete product, not a cropped close-up */
-.product img,.product-card img,.productImage,.product-image,.p-img img,.product-media img,
-#products img,.products-grid img,.product-grid img,.deal-card img,.bundle-card img{
-  object-fit:contain!important;object-position:center!important;background:#fff!important;
-}
-/* Drawer is a real overlay over the page, never an inline expansion */
-.drawer{position:fixed!important;inset:0!important;z-index:1000000!important;
-  display:flex!important;justify-content:flex-end!important;background:rgba(0,0,0,.48)!important;
-  overflow:hidden!important}
-.drawer .drawerBox{position:relative!important;z-index:1!important;height:100dvh!important;
-  max-height:100dvh!important;overflow-y:auto!important;flex:0 0 min(88vw,420px)!important;
-  width:min(88vw,420px)!important;margin:0!important;border-radius:0!important;
-  padding:28px 20px!important;background:#fff!important;box-sizing:border-box!important}
-.drawer .drawerClose{position:sticky!important;top:0!important;z-index:2!important}
-.drawer .drawerBox h2{font-size:28px!important;line-height:1.15!important;
-  white-space:normal!important;overflow-wrap:anywhere!important;margin:20px 0 30px!important;
-  color:#063b2b!important}
-.drawer .drawerBox nav a{display:flex!important;align-items:center!important;
-  width:100%!important;min-height:64px!important;box-sizing:border-box!important;
-  white-space:normal!important;line-height:1.5!important}
-.brand{display:flex!important;align-items:center!important;gap:8px!important;min-width:0!important}
-.brandText{min-width:0!important;white-space:normal!important}
-.brand b,.brand small,.brand em{display:block!important;line-height:1.2!important;overflow-wrap:anywhere!important}
-.brand b{font-size:clamp(14px,4vw,21px)!important}
-.brand small{font-size:clamp(7px,1.8vw,9px)!important;letter-spacing:1px!important}
-.brand em{font-size:clamp(7px,1.8vw,9px)!important}
+<style id="gm-fullpage-navigation-fix">
+#gmFullPage{position:fixed!important;inset:0!important;z-index:2147483000!important;background:#f8f8f4!important;color:#123d2e!important;display:flex!important;flex-direction:column!important;width:100vw!important;height:100dvh!important;overflow:hidden!important}
+.gmFullHead{display:flex!important;align-items:center!important;gap:14px!important;padding:14px 18px!important;padding-top:max(14px,env(safe-area-inset-top))!important;background:#073d2d!important;color:#fff!important;box-shadow:0 3px 16px #0002!important;flex-shrink:0!important}
+.gmFullHead>div{flex:1!important;min-width:0!important;text-align:center!important}
+.gmFullHead b,.gmFullHead small{display:block!important;line-height:1.25!important}.gmFullHead b{font-size:22px!important}.gmFullHead small{font-size:11px!important;color:#e6d08b!important;margin-top:3px!important}
+.gmFullBack,.gmFullX{border:0!important;border-radius:50%!important;width:44px!important;height:44px!important;background:#fff!important;color:#073d2d!important;font-size:26px!important;flex-shrink:0!important}
+.gmFullBody{overflow:auto!important;overscroll-behavior:contain!important;flex:1!important;padding:16px!important;padding-bottom:max(24px,env(safe-area-inset-bottom))!important}
+.gmFullFrame{border:0!important;width:100%!important;height:100%!important;min-height:70vh!important;background:#fff!important}
+.gmPageCard{background:#fff!important;border-radius:18px!important;padding:24px!important;margin:10px auto!important;max-width:720px!important;box-shadow:0 4px 22px #073d2d12!important}
+.gmPageCard h2{color:#073d2d!important;font-size:25px!important}.gmPageAction{border:0!important;border-radius:12px!important;background:#073d2d!important;color:white!important;padding:14px 22px!important;font-weight:700!important}
+#gmFullPage .product,#gmFullPage .product-card{max-width:100%!important}
 </style>
 
 </head><body>
@@ -643,7 +608,7 @@
   <i class="gm-spark s1"></i><i class="gm-spark s2"></i><i class="gm-spark s3"></i><i class="gm-spark s4"></i>
   <div class="gm-splash-content">
     <div class="gm-logo-ring">
-      <img class="gm-logo" src="/assets/green-moon-logo-transparent.png" alt="Green Moon Plants and Flowers" onerror="this.style.display='none';this.parentElement.classList.add('gm-logo-fallback')">
+      <img class="gm-logo" src="/assets/green-moon-logo-transparent.png" alt="Green Moon Plants and Flowers">
     </div>
     <div class="gm-company">Green Moon</div>
     <div class="gm-sub">Plants and Flowers</div>
@@ -802,7 +767,7 @@ function applySiteOverrides(){
     setText('#gmPremiumSplash .gm-sub',splash.subtitle||'Plants and Flowers');
     setText('#gmPremiumSplash .gm-name',splash.owner||h.owner||'Mohamed Elgarhy');
     const tag=$('#gmPremiumSplash .gm-tag'); if(tag&&splash.tagline)tag.textContent=splash.tagline;
-    const sec=Math.max(3,Math.min(12,3));document.documentElement.style.setProperty('--gm-splash-duration',sec+'s');
+    const sec=Math.max(3,Math.min(12,Number(splash.duration)||5));document.documentElement.style.setProperty('--gm-splash-duration',sec+'s');
     const prog=$('#gmPremiumSplash .gm-progress span');if(prog)prog.style.animationDuration=sec+'s';
     window.setTimeout(()=>{const sp=$('gmPremiumSplash');if(sp&&!sp.classList.contains('gmSplashOut')){sp.classList.add('gmSplashOut');setTimeout(()=>sp.remove(),650)}},sec*1000);
   }
@@ -905,7 +870,33 @@ const d=findDeal(id);if(!d)return;const old=Number(d.oldPrice)||0,price=Number(d
 $('dealDetails').innerHTML='<img src="'+esc(d.image||fallback())+'" style="width:100%;border-radius:14px;max-height:360px;object-fit:cover"><h2>'+esc(d.title||d.name||'صفقة')+'</h2><p style="line-height:1.9">'+esc(d.description||d.shortDescription||'')+'</p><div class="dealPrice">'+(old?'<span class="old">'+old+' ج</span>':'')+'<span class="new">'+price+' ج</span></div><h3>📦 محتويات الصفقة</h3><p style="line-height:1.9">'+esc(names.length?names.join('\n'):(Array.isArray(d.contents)?d.contents.join('\n'):""))+'</p>'+(d.sizes?'<h3>📏 المقاسات</h3><p>'+esc(Array.isArray(d.sizes)?d.sizes.join('، '):d.sizes)+'</p>':'')+(d.features?'<h3>✨ المميزات</h3><p>'+esc(Array.isArray(d.features)?d.features.join('، '):d.features)+'</p>':'')+(d.shipping?'<h3>🚚 الشحن</h3><p>'+esc(d.shipping)+'</p>':'')+(d.notes?'<h3>📝 ملاحظات</h3><p>'+esc(d.notes)+'</p>':'')+'<button class="submit" data-deal-id="'+did+'" onclick="closeM(\'dealModal\');dealOrder(this.dataset.dealId)">🛒 اطلب الصفقة الآن</button>';openM('dealModal')
 }
 function renderArticles(){let a=settings.gm_articles||settings.articles||[];$('articleList').innerHTML=a.length?a.slice(0,3).map((x,i)=>'<article class="article gm-article-card" role="button" tabindex="0" aria-label="اقرأ مقال '+esc(x.title||'Green Moon')+'" onclick="article('+i+')" onkeydown="if(event.key.charCodeAt(0)===13||event.key.charCodeAt(0)===32){event.preventDefault();article('+i+')}"><img loading="lazy" src="'+esc(x.image||fallback())+'" alt="'+esc(x.title||'مقال من Green Moon')+'"><div class="gm-article-body"><span class="gm-article-kicker">GREEN MOON • دليل النباتات</span><h3>'+esc(x.title||'مقال')+'</h3><p>'+esc(x.excerpt||x.description||'')+'</p><span class="gm-article-read">اقرأ المقال <b>←</b></span></div></article>').join(''):'<p class="gm-articles-empty">سيتم نشر مقالات ونصائح جديدة قريبًا.</p>'}function article(i){let a=settings.gm_articles||settings.articles||[],x=a[i];if(!x)return;$('articleImg').src=x.image||fallback();$('articleTitle').textContent=x.title||'';$('articleContent').textContent=x.content||x.text||x.description||x.excerpt||'';openM('articleModal')}
-function menu(){let d=document.querySelector('.drawer');if(d){d.remove();return}d=document.createElement('div');d.className='drawer';d.innerHTML='<div class="drawerBox"><button class="drawerClose" onclick="menu()">×</button><h2>Green Moon</h2><nav><a href="#">الرئيسية</a><a href="/account.html">👤 حسابي وطلباتي</a><a href="/track.html">📦 تتبع طلب</a><a href="#" onclick="gmEnableNotifications();return false">🔔 تفعيل الإشعارات</a><a href="#deals">الصفقات والعروض</a><a href="#products">المنتجات</a><a href="#articles">المقالات</a><a href="#doctor">🌿 Green Moon Doctor</a></nav></div>';document.body.appendChild(d)}function searchSite(){let q=prompt('اكتب اسم النبات أو المنتج');if(q===null)return;let a=products.filter(p=>String(p.name||'').toLowerCase().includes(q.toLowerCase()));renderProducts(a);$('products').scrollIntoView({behavior:'smooth'})}function normalizeCat(v){return String(v??'').toLowerCase().replace(/أ|إ|آ/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/[ًٌٍَُِّْـ]/g,'').replace(/[^\u0600-\u06FFa-z0-9]+/gi,'')}
+function menu(){let d=document.querySelector('.drawer');if(d){d.remove();return}d=document.createElement('div');d.className='drawer';d.innerHTML='<div class="drawerBox"><button class="drawerClose" onclick="menu()">×</button><h2>Green Moon<br><small>Plants and Flowers</small><small>Mohamed Elgarhy</small></h2><nav><a href="#" onclick="gmMenuPage(\'home\');return false">الرئيسية</a><a href="#" onclick="gmMenuPage(\'account\');return false">👤 حسابي وطلباتي</a><a href="#" onclick="gmMenuPage(\'track\');return false">📦 تتبع طلب</a><a href="#" onclick="gmMenuPage(\'notifications\');return false">🔔 تفعيل الإشعارات</a><a href="#" onclick="gmMenuPage(\'deals\');return false">الصفقات والعروض</a><a href="#" onclick="gmMenuPage(\'products\');return false">المنتجات</a><a href="#" onclick="gmMenuPage(\'articles\');return false">المقالات</a><a href="#" onclick="gmMenuPage(\'doctor\');return false">🌿 Green Moon Doctor</a><a href="#" onclick="gmMenuPage(\'about\');return false">عن الشركة</a></nav></div>';document.body.appendChild(d)}
+function gmMenuPage(which){
+ const drawer=document.querySelector('.drawer'); if(drawer)drawer.remove();
+ const prior=document.getElementById('gmFullPage'); if(prior)prior.remove();
+ const overlay=document.createElement('section');overlay.id='gmFullPage';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+ overlay.innerHTML='<header class="gmFullHead"><button type="button" class="gmFullBack" aria-label="رجوع" onclick="document.getElementById(\'gmFullPage\').remove()">←</button><div><b>Green Moon</b><small>Plants and Flowers</small><small>Mohamed Elgarhy</small></div><button type="button" class="gmFullX" onclick="document.getElementById(\'gmFullPage\').remove()">×</button></header><div class="gmFullBody" id="gmFullBody"></div>';
+ document.body.appendChild(overlay);document.body.style.overflow='hidden';
+ const body=overlay.querySelector('#gmFullBody');
+ const sectionMap={deals:'deals',products:'products',articles:'articles',doctor:'doctor'};
+ if(sectionMap[which]){
+   const source=document.getElementById(sectionMap[which]);
+   if(source){const clone=source.cloneNode(true);clone.removeAttribute('id');body.appendChild(clone);}
+   else body.innerHTML='<p>القسم غير متاح حاليًا.</p>';
+ }else if(which==='notifications'){
+   body.innerHTML='<div class="gmPageCard"><h2>تفعيل الإشعارات</h2><p>فعّل الإشعارات لتصلك تحديثات العروض والطلبات.</p><button class="gmPageAction" onclick="gmEnableNotifications()">تفعيل الإشعارات</button></div>';
+ }else if(which==='account'||which==='track'){
+   const url=which==='account'?'/account.html':'/track.html';
+   body.innerHTML='<iframe title="'+(which==='account'?'حسابي وطلباتي':'تتبع الطلب')+'" src="'+url+'" class="gmFullFrame"></iframe>';
+ }else if(which==='about'){
+   body.innerHTML='<div class="gmPageCard"><h2>عن Green Moon</h2><h3>Plants and Flowers</h3><p>Mohamed Elgarhy</p><p>نباتات زينة طبيعية واختيارات خضراء تضيف الجمال والحياة لبيتك ومكتبك.</p></div>';
+ }else{
+   body.innerHTML='<div class="gmPageCard"><h2>Green Moon</h2><p>أهلًا بيك في متجر جرين مون.</p><button class="gmPageAction" onclick="document.getElementById(\'gmFullPage\').remove()">العودة للمتجر</button></div>';
+ }
+ overlay.querySelector('.gmFullX').addEventListener('click',()=>{document.body.style.overflow=''});
+ overlay.querySelector('.gmFullBack').addEventListener('click',()=>{document.body.style.overflow=''});
+}
+function searchSite(){let q=prompt('اكتب اسم النبات أو المنتج');if(q===null)return;let a=products.filter(p=>String(p.name||'').toLowerCase().includes(q.toLowerCase()));renderProducts(a);$('products').scrollIntoView({behavior:'smooth'})}function normalizeCat(v){return String(v??'').toLowerCase().replace(/أ|إ|آ/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/[ًٌٍَُِّْـ]/g,'').replace(/[^\u0600-\u06FFa-z0-9]+/gi,'')}
 function categoryMatches(p,key){
   const cat=normalizeCat(p.category||p.categoryName||p.type||'');
   const name=normalizeCat(p.name||'');
