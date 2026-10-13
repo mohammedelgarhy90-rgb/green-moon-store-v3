@@ -1,11 +1,15 @@
-Green Moon — Marketplace UX Upgrade (Raneen-inspired patterns)
+Green Moon — Visual Repair Patch
+Date: 2026-10-13
 
-Included files:
-- public/index.html: responsive product search and sorting toolbar, improved product card polish and mobile spacing.
-- public/admin.html: current admin file preserved unchanged for compatibility.
+Includes:
+- public/index.html: 3-second splash target, visible logo fallback if logo asset fails,
+  product images use contain to reduce cropping, and mobile drawer overlays the page
+  instead of appearing under the header.
+- public/admin.html: unchanged safety/reference copy.
 
-Important:
-- This borrows common e-commerce patterns (search, sort, product cards) but does not copy Raneen branding, photos, or proprietary layout.
-- No worker.js, wrangler.toml, API endpoints, KV keys, product data, prices, logo files, plant photos, checkout, cart, Doctor, or existing admin features were intentionally changed.
-- Make a backup of the currently deployed public/index.html before replacing it. Upload the two files to the matching public paths in your existing project.
-- Validation performed: source anchors present and JavaScript syntax check on the new script. This is not a live deployment or end-to-end browser test.
+IMPORTANT:
+1. This patch only modifies storefront HTML/CSS; it does not contain worker.js and does not touch KV/database data.
+2. Back up the deployed public/index.html first.
+3. Upload ONLY public/index.html to the matching public/index.html path, after confirming it matches the currently deployed build.
+4. Do not replace worker.js, wrangler.toml, assets, or product data using this patch.
+5. The exact selectors and behavior still require testing against the deployed version. If the site currently uses a different index.html than this source, do not upload until the files are reconciled.
