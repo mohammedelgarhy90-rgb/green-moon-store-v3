@@ -587,17 +587,53 @@
 </style>
 <style id="gm-root-fix-hidden">[hidden]{display:none!important}</style>
 
-<style id="gm-fullpage-navigation-fix">
-#gmFullPage{position:fixed!important;inset:0!important;z-index:2147483000!important;background:#f8f8f4!important;color:#123d2e!important;display:flex!important;flex-direction:column!important;width:100vw!important;height:100dvh!important;overflow:hidden!important}
-.gmFullHead{display:flex!important;align-items:center!important;gap:14px!important;padding:14px 18px!important;padding-top:max(14px,env(safe-area-inset-top))!important;background:#073d2d!important;color:#fff!important;box-shadow:0 3px 16px #0002!important;flex-shrink:0!important}
-.gmFullHead>div{flex:1!important;min-width:0!important;text-align:center!important}
-.gmFullHead b,.gmFullHead small{display:block!important;line-height:1.25!important}.gmFullHead b{font-size:22px!important}.gmFullHead small{font-size:11px!important;color:#e6d08b!important;margin-top:3px!important}
-.gmFullBack,.gmFullX{border:0!important;border-radius:50%!important;width:44px!important;height:44px!important;background:#fff!important;color:#073d2d!important;font-size:26px!important;flex-shrink:0!important}
-.gmFullBody{overflow:auto!important;overscroll-behavior:contain!important;flex:1!important;padding:16px!important;padding-bottom:max(24px,env(safe-area-inset-bottom))!important}
-.gmFullFrame{border:0!important;width:100%!important;height:100%!important;min-height:70vh!important;background:#fff!important}
-.gmPageCard{background:#fff!important;border-radius:18px!important;padding:24px!important;margin:10px auto!important;max-width:720px!important;box-shadow:0 4px 22px #073d2d12!important}
-.gmPageCard h2{color:#073d2d!important;font-size:25px!important}.gmPageAction{border:0!important;border-radius:12px!important;background:#073d2d!important;color:white!important;padding:14px 22px!important;font-weight:700!important}
-#gmFullPage .product,#gmFullPage .product-card{max-width:100%!important}
+<style id="gm-pro-sections-v1">
+/* Green Moon premium service sections */
+#doctor .wrap,#gmRecommendationSection .wrap{width:min(1200px,calc(100% - 28px))!important}
+#doctor{padding:34px 0!important}
+#doctor .gm-doctor-banner{width:100%!important;min-height:410px!important;border-radius:30px!important;overflow:hidden!important;
+ box-shadow:0 24px 65px rgba(3,48,34,.18)!important;display:grid!important;grid-template-columns:1.05fr .95fr!important;
+ background:radial-gradient(circle at 20% 10%,#286d50,#063b2b 60%,#02271d)!important;cursor:pointer!important}
+#doctor .gm-doctor-banner img{width:100%!important;height:410px!important;max-height:none!important;object-fit:cover!important;border-radius:0!important}
+.gm-extra-services{padding:32px 0!important;background:linear-gradient(180deg,#f6f7f1,#fff)!important}
+.gm-extra-services .gm-service-head{text-align:right;margin:0 0 20px}
+.gm-extra-services .gm-service-head .eyebrow{color:#a17b2d;font-weight:900;letter-spacing:1px;font-size:12px}
+.gm-extra-services .gm-service-head h2{font-size:clamp(25px,4vw,38px);line-height:1.3;color:#083d2d;margin:8px 0}
+.gm-extra-services .gm-service-head p{color:#65756b;line-height:1.9;margin:0;max-width:720px}
+.gm-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gm-service-card{background:#fff;border:1px solid #e5e9df;border-radius:22px;overflow:hidden;box-shadow:0 12px 34px #073d2d0b;display:flex;flex-direction:column;min-width:0}
+.gm-service-card .gm-service-icon{height:112px;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#e9f2df,#f8f7ed);font-size:46px}
+.gm-service-card .gm-service-content{padding:18px;display:flex;flex:1;flex-direction:column;align-items:flex-start;gap:8px}
+.gm-service-card h3{margin:0;color:#093d2e;font-size:20px;line-height:1.4}
+.gm-service-card p{margin:0;color:#68766c;font-size:14px;line-height:1.8}
+.gm-service-card button{margin-top:auto;border:0;border-radius:12px;background:#07432f;color:white;font-weight:800;padding:13px 17px;width:100%;cursor:pointer}
+.gm-promo-shelves{padding:28px 0;background:#fff}
+.gm-promo-shelf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gm-promo-shelf{border-radius:22px;padding:22px;color:#fff;min-height:145px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(120deg,#073d2d,#0b6746);position:relative;overflow:hidden}
+.gm-promo-shelf:nth-child(2){background:linear-gradient(120deg,#7a5921,#d0a84f)}
+.gm-promo-shelf:nth-child(3){background:linear-gradient(120deg,#2d563d,#8a9d63)}
+.gm-promo-shelf:nth-child(4){background:linear-gradient(120deg,#5c3d2b,#a8784c)}
+.gm-promo-shelf h3{font-size:22px;margin:0 0 6px;position:relative;z-index:1}
+.gm-promo-shelf p{margin:0;line-height:1.7;opacity:.92;position:relative;z-index:1}
+.gm-promo-shelf button{align-self:flex-start;margin-top:14px;background:#fff;color:#07432f;border:0;border-radius:10px;padding:11px 16px;font-weight:900;position:relative;z-index:1}
+.gm-visualizer-panel{border-radius:28px;background:linear-gradient(125deg,#062f24,#0b5b3d);color:white;padding:clamp(22px,4vw,42px);display:grid;grid-template-columns:1fr .8fr;gap:20px;align-items:center;overflow:hidden;box-shadow:0 20px 55px #073d2d18}
+.gm-visualizer-panel h2{font-size:clamp(26px,4vw,40px);line-height:1.25;margin:8px 0 12px}
+.gm-visualizer-panel p{line-height:1.9;color:#d7e7dc}
+.gm-visualizer-panel .gm-viz-art{min-height:220px;border-radius:24px;border:1px solid #ffffff2b;background:radial-gradient(circle at 50% 30%,#2b7553,#06402e 65%);display:grid;place-items:center;font-size:clamp(70px,12vw,130px)}
+.gm-visualizer-panel button{background:#e5c16a;color:#143b2b;border:0;border-radius:13px;padding:14px 20px;font-weight:900;font-size:15px}
+.gm-visualizer-panel .gm-viz-note{font-size:12px;color:#b9d4c5}
+@media(max-width:700px){
+ #doctor .gm-doctor-banner{min-height:0!important;display:block!important}
+ #doctor .gm-doctor-banner img{height:auto!important;min-height:250px!important;max-height:none!important;object-fit:contain!important;background:#073d2d!important}
+ .gm-service-grid{grid-template-columns:1fr!important}
+ .gm-service-card{display:grid;grid-template-columns:86px 1fr}
+ .gm-service-card .gm-service-icon{height:100%;min-height:145px;font-size:36px}
+ .gm-service-card .gm-service-content{padding:14px}
+ .gm-service-card h3{font-size:17px}
+ .gm-promo-shelf-grid{grid-template-columns:1fr!important}
+ .gm-visualizer-panel{grid-template-columns:1fr!important}
+ .gm-visualizer-panel .gm-viz-art{min-height:150px!important}
+}
 </style>
 
 </head><body>
@@ -630,7 +666,37 @@
 </div>
 
 <header class="header"><div class="wrap head"><button class="menu" onclick="menu()">☰</button><div class="brand"><img id="logo"><div class="brandText"><b>Green Moon</b><small>Plants and Flowers</small><em>Mohamed Elgarhy</em></div></div><div class="actions"><button class="headIcon" onclick="location.href='/account.html'" title="حسابي">👤</button><button class="headIcon" onclick="searchSite()">⌕</button><button class="headIcon cartBtn" onclick="cartOpen()">🛒<span class="count" id="count">0</span></button></div></div></header><div id="gmOfferTicker" class="gm-ticker" aria-label="عروض Green Moon"></div>
-<main><section class="hero"><img id="heroImg"><div class="wrap heroCopy"><div id="heroText"></div></div><div class="dots" id="dots"></div></section><section class="services"><div class="wrap grid" id="services"></div></section><section class="section" id="categories"><div class="wrap"><div class="title"><h2>تسوق حسب الفئة</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="cats" id="cats"></div></div></section><section class="wrap promoArea" id="banners"></section><section class="section" id="deals"><div class="wrap"><div class="title"><h2 id="dealsHeading">العروض الحالية</h2></div><div id="dealList"></div></div></section><section class="section gm-premium-reco-section" id="gmRecommendationSection">
+<main><section class="hero"><img id="heroImg"><div class="wrap heroCopy"><div id="heroText"></div></div><div class="dots" id="dots"></div></section><section class="services"><div class="wrap grid" id="services"></div></section><section class="section" id="categories"><div class="wrap"><div class="title"><h2>تسوق حسب الفئة</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="cats" id="cats"></div></div></section><section class="wrap promoArea" id="banners"></section><section class="section" id="deals"><div class="wrap"><div class="title"><h2 id="dealsHeading">العروض الحالية</h2></div><div id="dealList"></div></div></section>
+<section class="gm-extra-services" id="gmExtraServices">
+ <div class="wrap">
+  <div class="gm-service-head"><span class="eyebrow">GREEN MOON • SMART PLANT CARE</span><h2>اختار نباتك بثقة 🌿</h2><p>خدمات ذكية تساعدك تختار النبات المناسب، وتعتني بنباتاتك، وتشوف شكل النبات في مساحتك قبل ما تطلبه.</p></div>
+  <div class="gm-service-grid">
+   <article class="gm-service-card"><div class="gm-service-icon">🪴</div><div class="gm-service-content"><h3>اختارلي زرعي</h3><p>جاوب على أسئلة بسيطة عن الإضاءة والمساحة ووقت العناية، ونساعدك تلاقي النباتات المناسبة من منتجات المتجر.</p><button type="button" onclick="gmOpenFinder()">ابدأ الاختيار ←</button></div></article>
+   <article class="gm-service-card"><div class="gm-service-icon">🩺</div><div class="gm-service-content"><h3>Green Moon Doctor</h3><p>ارفع صورة نباتك واعرف العلامات الظاهرة ونصائح العناية الأولية، مع توضيح إن التشخيص بالصور إرشادي.</p><button type="button" onclick="doctorOpen()">افحص نباتي ←</button></div></article>
+   <article class="gm-service-card"><div class="gm-service-icon">📸</div><div class="gm-service-content"><h3>جرّب النبات في مكانك</h3><p>ارفع صورة الركن أو المكتب أو البلكونة وحدد النبات اللي عايز تجربه بصريًا قبل الشراء.</p><button type="button" onclick="gmOpenVisualizer()">جرّب في مساحتي ←</button></div></article>
+  </div>
+ </div>
+</section>
+<section class="gm-promo-shelves" id="gmPromoShelves">
+ <div class="wrap">
+  <div class="gm-service-head"><span class="eyebrow">SHOP BY MOOD • SHOP BY DEAL</span><h2>عروض متقسمة على ذوقك</h2><p>استخدم الأقسام دي لتوجيه العميل لمجموعات المنتجات المحددة والعروض اللي بتجهزها من لوحة التحكم.</p></div>
+  <div class="gm-promo-shelf-grid">
+   <article class="gm-promo-shelf"><div><h3>🔥 الصفقات السريعة</h3><p>عروض محدودة المدة ومنتجات مختارة.</p></div><button onclick="document.getElementById('deals').scrollIntoView({behavior:'smooth'})">شوف الصفقات ←</button></article>
+   <article class="gm-promo-shelf"><div><h3>🏷️ خصومات جرين مون</h3><p>تصفّح المنتجات اللي عليها سعر عرض.</p></div><button onclick="gmShowDiscountProducts()">تسوق الخصومات ←</button></article>
+   <article class="gm-promo-shelf"><div><h3>🎁 باكدجات وهدايا</h3><p>اختيارات جاهزة للبيت والمكتب والهدايا.</p></div><button onclick="gmShowBundleProducts()">شوف الباكدجات ←</button></article>
+   <article class="gm-promo-shelf"><div><h3>🌿 اختيارات جرين مون</h3><p>نباتات مميزة وترشيحات حسب المساحة.</p></div><button onclick="gmOpenFinder()">اكتشف اختياراتك ←</button></article>
+  </div>
+ </div>
+</section>
+<section class="gm-extra-services" id="gmPlantVisualizerSection">
+ <div class="wrap">
+  <div class="gm-visualizer-panel">
+   <div><span class="eyebrow">ROOM PREVIEW • GREEN MOON</span><h2>شوف زرعتك في مكانها قبل ما تشتري</h2><p>ارفع صورة المكان واختار النبات اللي في بالك. افتح أداة المعاينة لبدء التجربة، مع إمكانية ربط توليد صورة واقعية بالذكاء الاصطناعي من خلال خدمة صور متصلة بالسيرفر.</p><button type="button" onclick="gmOpenVisualizer()">ابدأ تجربة النبات في مكاني ←</button><p class="gm-viz-note">تنبيه: المعاينة الواقعية المولّدة بالذكاء الاصطناعي تحتاج تفعيل خدمة توليد صور على الخادم؛ لا يتم الادعاء بأنها مفعّلة قبل ربطها واختبارها.</p></div>
+   <div class="gm-viz-art" aria-hidden="true">🪴</div>
+  </div>
+ </div>
+</section>
+<section class="section gm-premium-reco-section" id="gmRecommendationSection">
   <div class="wrap">
     <button class="gm-finder-banner gm-art-banner" type="button" onclick="gmOpenFinder()" aria-label="افتح مساعد اختيار النبات">
       <img src="green-moon-finder-banner.jpg" alt="مش عارف تختار؟ Green Moon يساعدك تختار النبات المناسب لبيتك" loading="lazy">
@@ -670,7 +736,15 @@
       <div id="gmWizardResult" class="gm-wizard-result" aria-live="polite"></div>
     </div>
   </div>
-</div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="products" id="productGrid"></div></div></section><section class="section" id="articles"><div class="wrap"><div class="title"><h2>مقالات وأخبار</h2></div><div class="articles" id="articleList"></div></div></section><section class="section" id="doctor"><div class="wrap"><button class="gm-doctor-banner gm-art-banner" type="button" onclick="doctorOpen()" aria-label="افتح Green Moon Doctor"><img src="green-moon-doctor-banner.jpg" alt="Green Moon Doctor — ارفع صورة نباتك للحصول على إرشادات العناية" loading="lazy"></button></div></section></main>
+</div></section><section class="section" id="products"><div class="wrap"><div class="title"><h2>وصل حديثًا</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="products" id="productGrid"></div></div></section><section class="section" id="articles"><div class="wrap"><div class="title"><h2>مقالات وأخبار</h2></div><div class="articles" id="articleList"></div></div></section><section class="section" id="doctor"><div class="wrap"><button class="gm-doctor-banner gm-art-banner" type="button" onclick="doctorOpen()" aria-label="افتح Green Moon Doctor"><img src="green-moon-doctor-banner.jpg" alt="Green Moon Doctor — ارفع صورة نباتك للحصول على إرشادات العناية" loading="lazy"></button></div></section>
+<div class="modal" id="gmVizModal" aria-hidden="true"><div class="box" style="max-width:900px;width:96%;max-height:92vh;overflow:auto"><button class="x" onclick="gmCloseVisualizer()">×</button>
+<div class="gm-visualizer-panel" style="margin-bottom:16px"><div><span class="eyebrow">GREEN MOON VISUALIZER</span><h2>جرّب النبات في مساحتك</h2><p>ارفع صورة واضحة للمكان، ثم اختار النبات. هذه النسخة تتيح تجهيز الصورة والاختيار؛ توليد دمج واقعي بالذكاء الاصطناعي يحتاج ربط خدمة توليد صور بالخادم.</p></div><div class="gm-viz-art">📷</div></div>
+<label style="display:block;font-weight:800;margin:12px 0">١. صورة المكان</label><input id="gmVizFile" type="file" accept="image/*" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:12px">
+<div id="gmVizStage" style="margin:14px 0;min-height:180px;background:#f4f4ee;border-radius:16px;display:grid;place-items:center;overflow:hidden"><span>معاينة صورة المكان هتظهر هنا</span></div>
+<label style="display:block;font-weight:800;margin:12px 0">٢. اختار النبات</label><select id="gmVizProduct" style="width:100%;padding:14px;border-radius:12px;border:1px solid #ddd"></select>
+<p id="gmVizHint" style="font-size:13px;line-height:1.8;color:#667">بعد اختيار الصورة والنبات، تقدر تجهز طلب المعاينة.</p><button class="submit" type="button" onclick="gmVizPrepare()">تجهيز طلب المعاينة</button><div id="gmVizResults" style="margin-top:12px"></div>
+</div></div>
+</main>
 <nav class="bottom"><div><a href="#" onclick="menu();return false"><span>☰</span>القائمة</a><a href="#deals"><span>🏷</span>العروض</a><a class="home" href="#"><span>⌂</span>الرئيسية</a><a href="#categories"><span>▦</span>الأقسام</a><a href="#" onclick="cartOpen();return false"><span>🛒</span>السلة</a></div></nav>
 <div id="gmOrderStatus" class="gm-order-status"><button class="gm-auto-close gm-order-close" type="button" aria-label="إغلاق" onclick="hideOrderStatus()">×</button><div class="box"><div id="gmOrderLoading"><div class="spinner"></div><h2>جاري إرسال طلبك...</h2><p>لحظات من فضلك، بنسجل طلبك ونتأكد من البيانات 💚</p></div><div id="gmOrderSuccess" style="display:none"><div class="ok">✓</div><h2>تم إرسال طلبك بنجاح 🎉</h2><p>شكرًا لاختيارك Green Moon 🌿<br>رقم طلبك: <b id="gmOrderNo"></b><br>هنراجع طلبك ونتواصل معاك للتأكيد.</p><div style="display:grid;gap:8px;margin-top:14px"><a id="gmOrderTrack" class="submit" href="#" style="display:block;text-align:center;text-decoration:none">📦 تتبع طلبك</a><button class="submit" style="background:#f2f5f2;color:#0b5b3d" onclick="copyLastTracking()">🔗 نسخ رابط التتبع</button></div></div><div id="gmOrderError" style="display:none"><div class="ok" style="background:#fff0ee;color:#b42318">!</div><h2>تعذر إرسال الطلب</h2><p id="gmOrderErrorText"></p><button class="submit" onclick="hideOrderStatus()">حاول مرة أخرى</button></div></div></div><div class="modal" id="cartModal"><div class="box"><button class="x" onclick="closeM('cartModal')">×</button><h2>🛒 سلة المشتريات</h2><div id="cartItems"></div><div class="summary" id="summary"></div><div class="promoBox" style="margin-top:12px;padding:12px;border:1px solid #e4e9e4;border-radius:14px;background:#fbfcfa"><div style="font-weight:900;margin-bottom:7px">🎟️ عندك بروموكود؟</div><div style="display:flex;gap:7px"><input id="promoCode" placeholder="اكتب البروموكود" style="flex:1;padding:11px;border:1px solid #dfe6df;border-radius:10px;direction:ltr;text-align:left"><button class="submit" style="width:auto;padding:10px 14px" onclick="applyPromo()">تطبيق</button></div><div id="promoMsg" style="font-size:12px;margin-top:7px;min-height:18px"></div></div><button class="submit" onclick="checkoutOpen()">إتمام الطلب</button></div></div>
 <div class="modal" id="checkoutModal"><div class="box"><button class="x" onclick="closeM('checkoutModal')">×</button><h2>بيانات الطلب</h2><div class="form"><input id="name" placeholder="الاسم *"><input id="phone" placeholder="رقم الهاتف *"><input id="gov" placeholder="المحافظة"><input id="area" placeholder="المنطقة"><input id="street" placeholder="الشارع"><input id="building" placeholder="رقم العمارة"><input id="floor" placeholder="الدور"><input id="apt" placeholder="الشقة"><textarea id="notes" placeholder="ملاحظات"></textarea><div id="orderMsg"></div><button class="submit" onclick="sendOrder()">تأكيد وإرسال الطلب</button></div></div></div>
@@ -870,33 +944,7 @@ const d=findDeal(id);if(!d)return;const old=Number(d.oldPrice)||0,price=Number(d
 $('dealDetails').innerHTML='<img src="'+esc(d.image||fallback())+'" style="width:100%;border-radius:14px;max-height:360px;object-fit:cover"><h2>'+esc(d.title||d.name||'صفقة')+'</h2><p style="line-height:1.9">'+esc(d.description||d.shortDescription||'')+'</p><div class="dealPrice">'+(old?'<span class="old">'+old+' ج</span>':'')+'<span class="new">'+price+' ج</span></div><h3>📦 محتويات الصفقة</h3><p style="line-height:1.9">'+esc(names.length?names.join('\n'):(Array.isArray(d.contents)?d.contents.join('\n'):""))+'</p>'+(d.sizes?'<h3>📏 المقاسات</h3><p>'+esc(Array.isArray(d.sizes)?d.sizes.join('، '):d.sizes)+'</p>':'')+(d.features?'<h3>✨ المميزات</h3><p>'+esc(Array.isArray(d.features)?d.features.join('، '):d.features)+'</p>':'')+(d.shipping?'<h3>🚚 الشحن</h3><p>'+esc(d.shipping)+'</p>':'')+(d.notes?'<h3>📝 ملاحظات</h3><p>'+esc(d.notes)+'</p>':'')+'<button class="submit" data-deal-id="'+did+'" onclick="closeM(\'dealModal\');dealOrder(this.dataset.dealId)">🛒 اطلب الصفقة الآن</button>';openM('dealModal')
 }
 function renderArticles(){let a=settings.gm_articles||settings.articles||[];$('articleList').innerHTML=a.length?a.slice(0,3).map((x,i)=>'<article class="article gm-article-card" role="button" tabindex="0" aria-label="اقرأ مقال '+esc(x.title||'Green Moon')+'" onclick="article('+i+')" onkeydown="if(event.key.charCodeAt(0)===13||event.key.charCodeAt(0)===32){event.preventDefault();article('+i+')}"><img loading="lazy" src="'+esc(x.image||fallback())+'" alt="'+esc(x.title||'مقال من Green Moon')+'"><div class="gm-article-body"><span class="gm-article-kicker">GREEN MOON • دليل النباتات</span><h3>'+esc(x.title||'مقال')+'</h3><p>'+esc(x.excerpt||x.description||'')+'</p><span class="gm-article-read">اقرأ المقال <b>←</b></span></div></article>').join(''):'<p class="gm-articles-empty">سيتم نشر مقالات ونصائح جديدة قريبًا.</p>'}function article(i){let a=settings.gm_articles||settings.articles||[],x=a[i];if(!x)return;$('articleImg').src=x.image||fallback();$('articleTitle').textContent=x.title||'';$('articleContent').textContent=x.content||x.text||x.description||x.excerpt||'';openM('articleModal')}
-function menu(){let d=document.querySelector('.drawer');if(d){d.remove();return}d=document.createElement('div');d.className='drawer';d.innerHTML='<div class="drawerBox"><button class="drawerClose" onclick="menu()">×</button><h2>Green Moon<br><small>Plants and Flowers</small><small>Mohamed Elgarhy</small></h2><nav><a href="#" onclick="gmMenuPage(\'home\');return false">الرئيسية</a><a href="#" onclick="gmMenuPage(\'account\');return false">👤 حسابي وطلباتي</a><a href="#" onclick="gmMenuPage(\'track\');return false">📦 تتبع طلب</a><a href="#" onclick="gmMenuPage(\'notifications\');return false">🔔 تفعيل الإشعارات</a><a href="#" onclick="gmMenuPage(\'deals\');return false">الصفقات والعروض</a><a href="#" onclick="gmMenuPage(\'products\');return false">المنتجات</a><a href="#" onclick="gmMenuPage(\'articles\');return false">المقالات</a><a href="#" onclick="gmMenuPage(\'doctor\');return false">🌿 Green Moon Doctor</a><a href="#" onclick="gmMenuPage(\'about\');return false">عن الشركة</a></nav></div>';document.body.appendChild(d)}
-function gmMenuPage(which){
- const drawer=document.querySelector('.drawer'); if(drawer)drawer.remove();
- const prior=document.getElementById('gmFullPage'); if(prior)prior.remove();
- const overlay=document.createElement('section');overlay.id='gmFullPage';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
- overlay.innerHTML='<header class="gmFullHead"><button type="button" class="gmFullBack" aria-label="رجوع" onclick="document.getElementById(\'gmFullPage\').remove()">←</button><div><b>Green Moon</b><small>Plants and Flowers</small><small>Mohamed Elgarhy</small></div><button type="button" class="gmFullX" onclick="document.getElementById(\'gmFullPage\').remove()">×</button></header><div class="gmFullBody" id="gmFullBody"></div>';
- document.body.appendChild(overlay);document.body.style.overflow='hidden';
- const body=overlay.querySelector('#gmFullBody');
- const sectionMap={deals:'deals',products:'products',articles:'articles',doctor:'doctor'};
- if(sectionMap[which]){
-   const source=document.getElementById(sectionMap[which]);
-   if(source){const clone=source.cloneNode(true);clone.removeAttribute('id');body.appendChild(clone);}
-   else body.innerHTML='<p>القسم غير متاح حاليًا.</p>';
- }else if(which==='notifications'){
-   body.innerHTML='<div class="gmPageCard"><h2>تفعيل الإشعارات</h2><p>فعّل الإشعارات لتصلك تحديثات العروض والطلبات.</p><button class="gmPageAction" onclick="gmEnableNotifications()">تفعيل الإشعارات</button></div>';
- }else if(which==='account'||which==='track'){
-   const url=which==='account'?'/account.html':'/track.html';
-   body.innerHTML='<iframe title="'+(which==='account'?'حسابي وطلباتي':'تتبع الطلب')+'" src="'+url+'" class="gmFullFrame"></iframe>';
- }else if(which==='about'){
-   body.innerHTML='<div class="gmPageCard"><h2>عن Green Moon</h2><h3>Plants and Flowers</h3><p>Mohamed Elgarhy</p><p>نباتات زينة طبيعية واختيارات خضراء تضيف الجمال والحياة لبيتك ومكتبك.</p></div>';
- }else{
-   body.innerHTML='<div class="gmPageCard"><h2>Green Moon</h2><p>أهلًا بيك في متجر جرين مون.</p><button class="gmPageAction" onclick="document.getElementById(\'gmFullPage\').remove()">العودة للمتجر</button></div>';
- }
- overlay.querySelector('.gmFullX').addEventListener('click',()=>{document.body.style.overflow=''});
- overlay.querySelector('.gmFullBack').addEventListener('click',()=>{document.body.style.overflow=''});
-}
-function searchSite(){let q=prompt('اكتب اسم النبات أو المنتج');if(q===null)return;let a=products.filter(p=>String(p.name||'').toLowerCase().includes(q.toLowerCase()));renderProducts(a);$('products').scrollIntoView({behavior:'smooth'})}function normalizeCat(v){return String(v??'').toLowerCase().replace(/أ|إ|آ/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/[ًٌٍَُِّْـ]/g,'').replace(/[^\u0600-\u06FFa-z0-9]+/gi,'')}
+function menu(){let d=document.querySelector('.drawer');if(d){d.remove();return}d=document.createElement('div');d.className='drawer';d.innerHTML='<div class="drawerBox"><button class="drawerClose" onclick="menu()">×</button><h2>Green Moon</h2><nav><a href="#">الرئيسية</a><a href="/account.html">👤 حسابي وطلباتي</a><a href="/track.html">📦 تتبع طلب</a><a href="#" onclick="gmEnableNotifications();return false">🔔 تفعيل الإشعارات</a><a href="#deals">الصفقات والعروض</a><a href="#products">المنتجات</a><a href="#articles">المقالات</a><a href="#doctor">🌿 Green Moon Doctor</a></nav></div>';document.body.appendChild(d)}function searchSite(){let q=prompt('اكتب اسم النبات أو المنتج');if(q===null)return;let a=products.filter(p=>String(p.name||'').toLowerCase().includes(q.toLowerCase()));renderProducts(a);$('products').scrollIntoView({behavior:'smooth'})}function normalizeCat(v){return String(v??'').toLowerCase().replace(/أ|إ|آ/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/[ًٌٍَُِّْـ]/g,'').replace(/[^\u0600-\u06FFa-z0-9]+/gi,'')}
 function categoryMatches(p,key){
   const cat=normalizeCat(p.category||p.categoryName||p.type||'');
   const name=normalizeCat(p.name||'');
@@ -2125,4 +2173,46 @@ setTimeout(gmInitSmartWizard,300);
 </script>
 
 <footer class="gm-site-footer" aria-label="وسائل التواصل الاجتماعي"><div class="footer-brand">Green Moon</div><div class="footer-sub">PLANTS AND FLOWERS</div><div class="footer-name">Mohamed Elgarhy</div><div class="gm-footer-social"><a href="https://www.instagram.com/greenmoon.plants/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.4" cy="6.7" r="1"></circle></svg></a><a href="https://wa.me/201151054863" target="_blank" rel="noopener" aria-label="WhatsApp" class="gm-footer-wa">☏</a><a href="tel:+201151054863" aria-label="اتصال">☎</a></div><div class="gm-footer-copy">Green Moon Plants and Flowers © 2026</div></footer>
+
+<script id="gm-pro-services-js">
+(function(){
+ const $=id=>document.getElementById(id);
+ window.gmShowDiscountProducts=function(){
+   const arr=Array.isArray(window.products)?window.products:[];
+   const discounted=arr.filter(p=>Number(p.oldPrice||p.old_price||0)>Number(p.price||0));
+   if(typeof renderProducts==='function'){window.__gmFilteredProducts=discounted;try{renderProducts(discounted)}catch(e){}}
+   const sec=$('products');if(sec){sec.scrollIntoView({behavior:'smooth'});}
+   if(!discounted.length){const d=$('dealList');if(d)d.scrollIntoView({behavior:'smooth'});}
+ };
+ window.gmShowBundleProducts=function(){
+   const arr=Array.isArray(window.products)?window.products:[];
+   const bundles=arr.filter(p=>/باكدج|باكج|bundle|package|باقة|مجموعة/i.test((p.name||p.title||'')+' '+(p.category||'')));
+   if(typeof renderProducts==='function'){try{renderProducts(bundles)}catch(e){}}
+   const sec=$('products');if(sec)sec.scrollIntoView({behavior:'smooth'});
+   if(!bundles.length){const d=$('deals');if(d)d.scrollIntoView({behavior:'smooth'});}
+ };
+ window.gmOpenVisualizer=function(){const m=$('gmVizModal');if(!m)return;m.classList.add('open');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';gmVizLoadProducts();};
+ window.gmCloseVisualizer=function(){const m=$('gmVizModal');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}document.body.style.overflow='';};
+ function gmVizLoadProducts(){
+  const sel=$('gmVizProduct');if(!sel||sel.dataset.ready)return;
+  const arr=Array.isArray(window.products)?window.products:[];
+  sel.innerHTML='<option value="">اختار نبات من منتجات المتجر</option>'+arr.map((p,i)=>'<option value="'+i+'">'+String(p.name||p.title||'نبات').replace(/[<>&"]/g,'')+'</option>').join('');
+  sel.dataset.ready='1';
+ }
+ const file=$('gmVizFile');
+ if(file)file.addEventListener('change',function(){
+  const f=this.files&&this.files[0];const stage=$('gmVizStage');if(!f||!stage)return;
+  if(!f.type.startsWith('image/')){stage.textContent='من فضلك اختار صورة';return;}
+  const url=URL.createObjectURL(f);stage.innerHTML='<img alt="صورة المكان" src="'+url+'" style="display:block;max-width:100%;max-height:360px;object-fit:contain">';
+ });
+ window.gmVizPrepare=function(){
+  const f=$('gmVizFile')?.files?.[0],sel=$('gmVizProduct'),res=$('gmVizResults');
+  if(!f){res.textContent='ارفع صورة المكان الأول.';return;}
+  if(!sel||!sel.value){res.textContent='اختار النبات اللي عايز تجربه.';return;}
+  const p=(Array.isArray(window.products)?window.products:[])[Number(sel.value)];
+  res.innerHTML='<div class="gmPageCard"><h3>طلب المعاينة جاهز للتجهيز</h3><p>النبات المختار: '+String(p?.name||p?.title||'النبات').replace(/[<>&"]/g,'')+'</p><p>الصورة اتحملت في المعاينة. دمج النبات بشكل واقعي داخل نفس المكان يتطلب ربط محرك توليد صور بالذكاء الاصطناعي في الـ Worker أو خدمة صور خارجية، وهو غير متصل في هذا التعديل.</p></div>';
+ };
+})();
+</script>
+
 </body></html>
