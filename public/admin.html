@@ -459,6 +459,22 @@ function builder(){
    </div>
 
    <div class="panel" style="margin-top:14px">
+    <div class="head"><div><h3>🌿 عن الشركة والتواصل</h3><p>تحكم في نبذة Green Moon وروابط التواصل التي تظهر للعملاء.</p></div></div>
+    <div class="grid2">
+      <div class="field"><label>عنوان قسم عن الشركة</label><input id="b_about_title" value="${esc((v.about||{}).title||'حكايتنا مع الطبيعة')}"></div>
+      <div class="field"><label>الجملة التعريفية</label><input id="b_about_intro" value="${esc((v.about||{}).intro||'في Green Moon بنؤمن إن النبات مش مجرد ديكور؛ هو حياة وهدوء وجمال بيغيّر إحساس المكان.')}"></div>
+      <div class="field" style="grid-column:1/-1"><label>نبذة عن الشركة</label><textarea id="b_about_story" rows="4">${esc((v.about||{}).story||'بنختار نباتات الزينة والإكسسوارات بعناية، ونساعدك تلاقي الاختيار المناسب لبيتك أو مكتبك أو هديتك، مع إرشادات بسيطة للعناية بالنبات. هدفنا إن تجربة اختيار النبات وشرائه تكون سهلة وممتعة من أول سؤال لحد ما يوصل لك.')}</textarea></div>
+      <div class="field"><label>وعدنا للعميل</label><input id="b_about_promise" value="${esc((v.about||{}).promise||'اختيارات بعناية • خدمة قريبة منك • اهتمام بتجربة العميل')}"></div>
+      <div class="field"><label>رابط Instagram</label><input id="b_social_instagram" type="url" value="${esc((v.contacts||{}).instagram||'https://www.instagram.com/greenmoon.plants/')}"></div>
+      <div class="field"><label>رابط Facebook الحقيقي</label><input id="b_social_facebook" type="url" value="${esc((v.contacts||{}).facebook||'')}" placeholder="الصق رابط صفحة جرين مون"></div>
+      <div class="field"><label>رابط TikTok الحقيقي</label><input id="b_social_tiktok" type="url" value="${esc((v.contacts||{}).tiktok||'')}" placeholder="الصق رابط حساب جرين مون"></div>
+      <div class="field"><label>رابط WhatsApp</label><input id="b_social_whatsapp" type="url" value="${esc((v.contacts||{}).whatsapp||'https://wa.me/201151054863')}"></div>
+      <div class="field"><label>رابط الاتصال الهاتفي</label><input id="b_social_phone" value="${esc((v.contacts||{}).phone||'tel:+201151054863')}"></div>
+    </div>
+    <p class="hint">أيقونتا Facebook وTikTok لن تظهرا للعميل إلا بعد إدخال الرابط الحقيقي، حتى لا نرسل العملاء إلى روابط وهمية.</p>
+   </div>
+
+   <div class="panel" style="margin-top:14px">
     <div class="head"><div><h3>📱 شريط الموبايل السفلي</h3><p>النصوص والظهور والترتيب.</p></div></div>
     <div class="grid2">
       <div class="field"><label>الرئيسية</label><input id="b_n1" value="${esc(nav.home||'الرئيسية')}"></div>
@@ -482,6 +498,7 @@ function builder(){
         ['showRewards','المكافآت'],
         ['showDoctor','Green Moon Doctor'],
         ['showContact','التواصل'],
+        ['showAbout','عن الشركة'],
         ['showFooter','الفوتر']
       ].map(([k,l])=>`<label class="field" style="display:flex;align-items:center;gap:10px"><input id="b_${k}" type="checkbox" ${sections[k]!==false?'checked':''}><span>${l}</span></label>`).join('')}
     </div>
@@ -502,10 +519,12 @@ function builder(){
 }
 async function saveBuilder(){
  const s={...D.settings};
- s.gm_site={
+ const previousSite=s.gm_site&&typeof s.gm_site==='object'?s.gm_site:{};
+ const previousHeader=previousSite.header||{};
+ s.gm_site={...previousSite,
    header:{
      storeName:$('b_store').value,owner:$('b_owner').value,tagline:$('b_tag').value,
-     logo:$('b_logo_value').value||header.logo||s.logo||'/assets/logo.jpg',logoType:$('b_logo_type').value||header.logoType||'image',searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
+     logo:$('b_logo_value').value||previousHeader.logo||s.logo||'/assets/logo.jpg',logoType:$('b_logo_type').value||previousHeader.logoType||'image',searchPlaceholder:$('b_search').value,contactText:$('b_contact').value
    },
    hero:{
      title:$('b_ht').value,subtitle:$('b_hs').value,cta:$('b_hc').value,
@@ -516,15 +535,18 @@ async function saveBuilder(){
      background:$('b_c4').value,text:$('b_c5').value,radius:Number($('b_radius').value)||22
    },
    nav:{
-     home:$('b_n1').value,categories:$('b_n2').value,deals:$('b_n3').value,
+     ...(previousSite.nav||{}),home:$('b_n1').value,categories:$('b_n2').value,deals:$('b_n3').value,
      articles:$('b_n4').value,contact:$('b_n5').value
    },
+   about:{...(previousSite.about||{}),title:$('b_about_title').value.trim(),intro:$('b_about_intro').value.trim(),story:$('b_about_story').value.trim(),promise:$('b_about_promise').value.trim()},
+   contacts:{...(previousSite.contacts||{}),instagram:$('b_social_instagram').value.trim(),facebook:$('b_social_facebook').value.trim(),tiktok:$('b_social_tiktok').value.trim(),whatsapp:$('b_social_whatsapp').value.trim(),phone:$('b_social_phone').value.trim()},
+   footer:previousSite.footer||{},splash:previousSite.splash||{},media:previousSite.media||{},content:previousSite.content||{},
    sections:{
      showCategories:$('b_showCategories').checked,showHero:$('b_showHero').checked,
      showDeals:$('b_showDeals').checked,showProducts:$('b_showProducts').checked,
      showArticles:$('b_showArticles').checked,showReviews:$('b_showReviews').checked,showRewards:$('b_showRewards').checked,
      showDoctor:$('b_showDoctor').checked,showContact:$('b_showContact').checked,
-     showFooter:$('b_showFooter').checked
+     showAbout:$('b_showAbout').checked,showFooter:$('b_showFooter').checked
    }
  };
  await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});
