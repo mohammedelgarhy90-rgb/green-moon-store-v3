@@ -669,6 +669,38 @@ body{background:#fffdf8;color:#18392f} .header{backdrop-filter:saturate(125%) bl
 @media(max-width:650px){.gm-about-card{grid-template-columns:1fr;gap:12px;border-radius:20px}.gm-about-mark{width:64px;height:64px;border-radius:19px;font-size:34px}.gm-about-actions{display:grid;grid-template-columns:1fr}.gm-about-actions a{width:100%}.gm-viz-launch-inner{min-height:0}.gm-search-modal .box{padding:17px}.gm-search-result{grid-template-columns:56px minmax(0,1fr)}.gm-search-result img{width:56px;height:56px}.gm-search-result .gm-search-arrow{display:none}}
 @media(prefers-reduced-motion:reduce){.product,.drawerBox{animation:none!important;transition:none!important}}
 </style>
+
+<style id="gm-additive-luxury-motion">
+/* Additive enhancement: existing category structure and behavior are preserved. */
+#cats .cat{transform:translateY(0);transition:transform .35s ease,filter .35s ease}
+#cats .catImg{border-radius:22px;border:1px solid #d7c28b;box-shadow:0 8px 22px #09251b12;transition:transform .38s cubic-bezier(.2,.8,.2,1),box-shadow .38s ease,border-radius .38s ease}
+#cats .catImg img{transition:transform .5s cubic-bezier(.2,.8,.2,1);will-change:transform}
+#cats .cat:hover,#cats .cat:focus-visible{transform:translateY(-5px)}
+#cats .cat:hover .catImg,#cats .cat:focus-visible .catImg{box-shadow:0 16px 30px #09251b20;border-radius:18px}
+#cats .cat:hover .catImg img,#cats .cat:focus-visible .catImg img{transform:scale(1.07)}
+#cats .cat b{transition:color .25s ease}
+#cats .cat:hover b,#cats .cat:focus-visible b{color:#9b7930}
+.gm-spotlight-section{background:radial-gradient(circle at 8% 10%,#c7a75b1c,transparent 28%),linear-gradient(135deg,#06291f,#0a4734);color:#fff;overflow:hidden}
+.gm-spotlight-head{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}
+.gm-spotlight-head span:first-child{font-size:10px;letter-spacing:2px;color:#dfc47f;font-weight:800}
+.gm-spotlight-head h2{font-size:clamp(25px,4vw,38px);margin:8px 0;color:#fff}
+.gm-spotlight-head p{margin:0;color:#d5e1da;line-height:1.8}
+.gm-spotlight-mark{font-size:44px;color:#d8bd78;text-shadow:0 0 26px #d8bd7850;animation:gmSpotlightPulse 3s ease-in-out infinite}
+.gm-spotlight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.gm-spotlight-card{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(0,1fr);gap:16px;align-items:center;background:#f7f3e9;color:#16392c;border:1px solid #d9c48d;border-radius:20px;padding:14px;overflow:hidden;box-shadow:0 18px 45px #0002;animation:gmSpotlightEnter .7s both}
+.gm-spotlight-card:nth-child(2){animation-delay:.12s}
+.gm-spotlight-card img{width:100%;aspect-ratio:4/5;object-fit:contain;border-radius:13px;background:#fff}
+.gm-spotlight-card h3{font-size:18px;margin:0 0 8px}
+.gm-spotlight-card .gm-sp-old{text-decoration:line-through;color:#8d928a;font-size:13px}
+.gm-spotlight-card .gm-sp-price{font-size:27px;font-weight:900;color:#087747;margin:4px 0 12px}
+.gm-spotlight-card button{width:100%;border-radius:10px;padding:11px;background:#d7bb75;color:#092b20;font-weight:900}
+.gm-spotlight-card button:hover{filter:brightness(1.04);transform:translateY(-1px)}
+@keyframes gmSpotlightEnter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes gmSpotlightPulse{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.08);opacity:1}}
+@media(max-width:650px){.gm-spotlight-grid{grid-template-columns:1fr}.gm-spotlight-card{grid-template-columns:110px minmax(0,1fr);gap:12px;padding:10px}.gm-spotlight-card h3{font-size:15px}.gm-spotlight-card .gm-sp-price{font-size:22px}.gm-spotlight-head{align-items:flex-start}.gm-spotlight-mark{font-size:32px}}
+@media(prefers-reduced-motion:reduce){#cats .cat,#cats .catImg,#cats .catImg img,.gm-spotlight-mark,.gm-spotlight-card{animation:none!important;transition:none!important}}
+</style>
+
 </head><body>
 
 <div id="gmPremiumSplash" aria-label="Green Moon welcome">
@@ -699,7 +731,7 @@ body{background:#fffdf8;color:#18392f} .header{backdrop-filter:saturate(125%) bl
 </div>
 
 <header class="header"><div class="wrap head"><button class="menu" onclick="menu()">☰</button><div class="brand"><img id="logo"><div class="brandText"><b>Green Moon</b><small>Plants and Flowers</small><em>Mohamed Elgarhy</em></div></div><div class="actions"><button class="headIcon" onclick="location.href='/account.html'" title="حسابي">👤</button><button class="headIcon" onclick="searchSite()">⌕</button><button class="headIcon cartBtn" onclick="cartOpen()">🛒<span class="count" id="count">0</span></button></div></div></header><div id="gmOfferTicker" class="gm-ticker" aria-label="عروض Green Moon"></div>
-<main><section class="hero"><img id="heroImg"><div class="wrap heroCopy"><div id="heroText"></div></div><div class="dots" id="dots"></div></section><section class="services"><div class="wrap grid" id="services"></div></section><section class="section" id="categories"><div class="wrap"><div class="title"><h2>تسوق حسب الفئة</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="cats" id="cats"></div></div></section><section class="wrap promoArea" id="banners"></section><section class="section" id="deals"><div class="wrap"><div class="title"><h2 id="dealsHeading">العروض الحالية</h2></div><div id="dealList"></div></div></section><section class="section gm-premium-reco-section" id="gmRecommendationSection">
+<main><section class="hero"><img id="heroImg"><div class="wrap heroCopy"><div id="heroText"></div></div><div class="dots" id="dots"></div></section><section class="services"><div class="wrap grid" id="services"></div></section><section class="section" id="categories"><div class="wrap"><div class="title"><h2>تسوق حسب الفئة</h2><a href="#products" onclick="showAllProducts();return false">عرض الكل ←</a></div><div class="cats" id="cats"></div></div></section><section class="section gm-spotlight-section" id="gmSpotlightSection" hidden><div class="wrap"><div class="gm-spotlight-head"><div><span>GREEN MOON · EXCLUSIVE</span><h2 id="gmSpotlightTitle">اختيارين.. بسعر استثنائي</h2><p id="gmSpotlightSubtitle">منتجان مختاران بعناية، بسعر خاص لفترة محدودة.</p></div><span class="gm-spotlight-mark">✦</span></div><div id="gmSpotlightProducts" class="gm-spotlight-grid"></div></div></section><section class="wrap promoArea" id="banners"></section><section class="section" id="deals"><div class="wrap"><div class="title"><h2 id="dealsHeading">العروض الحالية</h2></div><div id="dealList"></div></div></section><section class="section gm-premium-reco-section" id="gmRecommendationSection">
   <div class="wrap">
     <button class="gm-finder-banner gm-art-banner" type="button" onclick="gmOpenFinder()" aria-label="افتح مساعد اختيار النبات">
       <img src="green-moon-finder-banner.jpg" alt="مش عارف تختار؟ Green Moon يساعدك تختار النبات المناسب لبيتك" loading="lazy">
@@ -857,7 +889,25 @@ function applySiteOverrides(){
   if(media.doctor){document.querySelectorAll('.gm-doctor-banner img,.doctorImg').forEach(e=>e.src=media.doctor)}
   if(media.heroFallback){window.gmHeroFallback=media.heroFallback}
 }
-function render(){renderHero();let sv=settings.services||[{icon:'🚚',title:'توصيل سريع',text:'لكل المحافظات'},{icon:'🛡️',title:'منتجات مضمونة',text:'جودة عالية'},{icon:'🌿',title:'اختيارات متنوعة',text:'لكل ذوق'},{icon:'♧',title:'خدمة عملاء مميزة',text:'دائمًا معك'}];$('services').innerHTML=sv.slice(0,4).map(x=>'<div class="service"><span>'+esc(x.icon||'🌿')+'</span><div><b>'+esc(x.title||'خدمة')+'</b><small>'+esc(x.text||'Green Moon')+'</small></div></div>').join('');let ca=getCats();$('cats').innerHTML=ca.map((x,i)=>{let key=x.name||x.title||'';return '<a class="cat" href="#products" role="button" onclick="catFilter(\''+esc(key)+'\');return false"><div class="catImg"><img loading="lazy" src="'+esc(x.image||fallback())+'"></div><b>'+esc(x.name||x.title||'قسم')+'</b></a>'}).join('');let home=settings.gm_home||{};let bs=Array.isArray(home.banners)?home.banners:(Array.isArray(settings.banners)?settings.banners:[]);$('banners').innerHTML=bs.filter(x=>x&&x.active!==false).slice(0,2).map(x=>'<div class="banner"><img loading="lazy" src="'+esc(x.image||fallback())+'"><div class="bannerText"><a class="cta" href="'+esc(x.link||'#products')+'">'+esc(x.cta||'اكتشف الآن')+' ←</a></div></div>').join('');$('dealsHeading').textContent=(home.headings&&home.headings.deals)||gmContent().dealsHeading||'العروض الحالية';renderDeals();renderProducts(products.slice(0,12));renderArticles();applySiteOverrides();}
+
+function renderGreenMoonSpotlight(){
+ const section=document.getElementById('gmSpotlightSection'),grid=document.getElementById('gmSpotlightProducts');
+ if(!section||!grid)return;
+ const cfg=(settings.gm_home||{}).spotlight||{};
+ const ids=Array.isArray(cfg.productIds)?cfg.productIds:[];
+ const selected=ids.map(id=>products.find(p=>String(p.id)===String(id))).filter(Boolean).slice(0,2);
+ if(cfg.active!==true||selected.length!==2){section.hidden=true;return}
+ section.hidden=false;
+ document.getElementById('gmSpotlightTitle').textContent=cfg.title||'اختيارين.. بسعر استثنائي';
+ document.getElementById('gmSpotlightSubtitle').textContent=cfg.subtitle||'منتجان مختاران بعناية، بسعر خاص لفترة محدودة.';
+ grid.innerHTML=selected.map((p,i)=>{
+  const price=Number((cfg.prices||{})[String(p.id)]||p.price||0);
+  const old=Number((cfg.oldPrices||{})[String(p.id)]||p.oldPrice||0);
+  return `<article class="gm-spotlight-card"><img loading="lazy" src="${esc(p.image||fallback())}" alt="${esc(p.name||'نبات Green Moon')}"><div><h3>${esc(p.name||'منتج Green Moon')}</h3>${old>price?`<div class="gm-sp-old">${old} ج.م</div>`:''}<div class="gm-sp-price">${price} ج.م</div><button type="button" onclick="add('${esc(p.id)}')">اطلب العرض الآن</button></div></article>`;
+ }).join('');
+}
+
+function render(){renderHero();renderGreenMoonSpotlight();let sv=settings.services||[{icon:'🚚',title:'توصيل سريع',text:'لكل المحافظات'},{icon:'🛡️',title:'منتجات مضمونة',text:'جودة عالية'},{icon:'🌿',title:'اختيارات متنوعة',text:'لكل ذوق'},{icon:'♧',title:'خدمة عملاء مميزة',text:'دائمًا معك'}];$('services').innerHTML=sv.slice(0,4).map(x=>'<div class="service"><span>'+esc(x.icon||'🌿')+'</span><div><b>'+esc(x.title||'خدمة')+'</b><small>'+esc(x.text||'Green Moon')+'</small></div></div>').join('');let ca=getCats();$('cats').innerHTML=ca.map((x,i)=>{let key=x.name||x.title||'';return '<a class="cat" href="#products" role="button" onclick="catFilter(\''+esc(key)+'\');return false"><div class="catImg"><img loading="lazy" src="'+esc(x.image||fallback())+'"></div><b>'+esc(x.name||x.title||'قسم')+'</b></a>'}).join('');let home=settings.gm_home||{};let bs=Array.isArray(home.banners)?home.banners:(Array.isArray(settings.banners)?settings.banners:[]);$('banners').innerHTML=bs.filter(x=>x&&x.active!==false).slice(0,2).map(x=>'<div class="banner"><img loading="lazy" src="'+esc(x.image||fallback())+'"><div class="bannerText"><a class="cta" href="'+esc(x.link||'#products')+'">'+esc(x.cta||'اكتشف الآن')+' ←</a></div></div>').join('');$('dealsHeading').textContent=(home.headings&&home.headings.deals)||gmContent().dealsHeading||'العروض الحالية';renderDeals();renderProducts(products.slice(0,12));renderArticles();applySiteOverrides();}
 function renderProducts(a){$('productGrid').innerHTML=a.length?a.map(p=>{let o=+p.oldPrice||0,n=+p.price||0,s=p.sticker&&typeof p.sticker==='object'?p.sticker:{};let sticker=s.active!==false&&s.image?'<span class="gm-product-sticker"><img src="'+esc(s.image)+'" alt=""></span>':(s.active!==false&&s.text?'<span class="gm-product-sticker" style="background:'+esc(s.color||'#e7bf62')+'22;color:'+esc(s.color||'#7b5a0a')+';border:1px solid '+esc(s.color||'#e7bf62')+'55"><span class="gm-product-sticker-text">'+esc(s.text)+'</span></span>':'');return '<article class="product"><div class="pimg"><img loading="lazy" src="'+esc(p.image||fallback())+'"></div><div class="pbody">'+sticker+'<h3>'+esc(p.name)+'</h3><div class="price">'+(o>n?'<span class="old">'+o+' ج</span>':'')+'<span class="new">'+n+' ج</span></div>'+(o>n?'<div class="save">💚 توفير '+(o-n)+' ج</div>':'')+(p.gift?'<div class="save">🎁 '+esc(p.gift)+'</div>':'')+'<div class="qty"><button onclick="cardQ(\''+esc(p.id)+'\',-1)">−</button><span id="q'+esc(p.id)+'">1</span><button onclick="cardQ(\''+esc(p.id)+'\',1)">+</button></div><button class="add" onclick="add(\''+esc(p.id)+'\')">أضف للسلة 🛒</button><button class="detailBtn" onclick="detail(\''+esc(p.id)+'\')">التفاصيل</button></div></article>'}).join(''):'<p>لا توجد منتجات.</p>'}
 function cardQ(id,n){let e=$('q'+id);if(e)e.textContent=Math.max(1,(+e.textContent||1)+n)}function add(id,forcedQty=null,openCart=true){
 let p=products.find(x=>String(x.id)===String(id));if(!p)return false;

@@ -42,6 +42,7 @@
   <button class="nav active" data-tab="home"><span class="ico">📊</span> الرئيسية</button>
   <button class="nav" data-tab="products"><span class="ico">🌿</span> المنتجات</button>
   <button class="nav" data-tab="categories"><span class="ico">🗂️</span> التصنيفات</button>
+  <button class="nav" data-tab="spotlight"><span class="ico">✨</span> Spotlight المتحرك</button>
   <div class="sectiontitle">المحتوى</div>
   <button class="nav" data-tab="hero"><span class="ico">🖼️</span> Hero والعروض الرئيسية</button>
   <button class="nav" data-tab="deals"><span class="ico">🎯</span> الصفقات</button>
@@ -95,7 +96,7 @@ async function load(){
  render();
 }
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function render(){const f={home,products,categories,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,media,homebuilder};$('content').innerHTML=f[tab]()}
+function render(){const f={home,products,categories,spotlight,hero,deals,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,media,homebuilder};$('content').innerHTML=f[tab]()}
 function home(){
  return `<div class="stats">
  <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
@@ -176,6 +177,22 @@ async function saveProduct(id){
  closeModal();await load();toast('تم حفظ المنتج بنجاح')}
 async function delProduct(id){if(!confirm('هل تريد حذف المنتج؟'))return;await api('/api/admin/products',{method:'DELETE',body:JSON.stringify({id})});await load();toast('تم حذف المنتج')}
 
+function spotlight(){
+ const cfg=(D.home&&D.home.spotlight)||{},ids=Array.isArray(cfg.productIds)?cfg.productIds:[],p1=ids[0]||'',p2=ids[1]||'',prices=cfg.prices||{},oldPrices=cfg.oldPrices||{};
+ const opts=(selected)=>`<option value="">اختر منتجًا</option>`+D.products.map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(selected)?'selected':''}>${esc(p.name)} — ${Number(p.price||0)} ج.م</option>`).join('');
+ return `<div class="panel"><div class="head"><div><h2>✨ Green Moon Spotlight</h2><p>قسم ثابت متحرك يعرض منتجين مختارين في الصفحة الرئيسية. لا يظهر للعميل إلا عند تفعيل العرض واختيار منتجين.</p></div><button class="btn primary" onclick="saveSpotlight()">حفظ ونشر</button></div>
+ <label class="check"><input id="sp_active" type="checkbox" ${cfg.active===true?'checked':''}> تفعيل قسم Spotlight</label>
+ <div class="grid2" style="margin-top:14px"><div class="field"><label>عنوان القسم</label><input id="sp_title" value="${esc(cfg.title||'اختيارين.. بسعر استثنائي')}"></div><div class="field"><label>وصف القسم</label><input id="sp_subtitle" value="${esc(cfg.subtitle||'منتجان مختاران بعناية، بسعر خاص لفترة محدودة.')}"></div>
+ <div class="field"><label>المنتج الأول</label><select id="sp_p1">${opts(p1)}</select></div><div class="field"><label>المنتج الثاني</label><select id="sp_p2">${opts(p2)}</select></div>
+ <div class="field"><label>سعر العرض للمنتج الأول (ج.م)</label><input id="sp_price1" type="number" min="0" value="${Number(prices[String(p1)]||0)||''}" placeholder="اتركه فارغًا لاستخدام سعر المنتج"></div><div class="field"><label>سعر العرض للمنتج الثاني (ج.م)</label><input id="sp_price2" type="number" min="0" value="${Number(prices[String(p2)]||0)||''}" placeholder="اتركه فارغًا لاستخدام سعر المنتج"></div>
+ <div class="field"><label>السعر السابق للمنتج الأول (اختياري)</label><input id="sp_old1" type="number" min="0" value="${Number(oldPrices[String(p1)]||0)||''}"></div><div class="field"><label>السعر السابق للمنتج الثاني (اختياري)</label><input id="sp_old2" type="number" min="0" value="${Number(oldPrices[String(p2)]||0)||''}"></div>
+ </div><div class="hint">الأسعار الفارغة تستخدم السعر الحالي من بيانات المنتج. لا تدخل سعرًا سابقًا إلا إذا كان حقيقيًا. الحركة خفيفة وتحترم إعداد تقليل الحركة في الجهاز.</div></div>`;
+}
+async function saveSpotlight(){
+ const p1=$('sp_p1').value,p2=$('sp_p2').value;if($('sp_active').checked&&(!p1||!p2||p1===p2)){toast('اختار منتجين مختلفين لتفعيل القسم');return}
+ const prices={},oldPrices={};if(p1&&Number($('sp_price1').value)>0)prices[p1]=Number($('sp_price1').value);if(p2&&Number($('sp_price2').value)>0)prices[p2]=Number($('sp_price2').value);if(p1&&Number($('sp_old1').value)>0)oldPrices[p1]=Number($('sp_old1').value);if(p2&&Number($('sp_old2').value)>0)oldPrices[p2]=Number($('sp_old2').value);
+ D.home={...(D.home||{}),spotlight:{active:$('sp_active').checked,title:$('sp_title').value.trim(),subtitle:$('sp_subtitle').value.trim(),productIds:[p1,p2].filter(Boolean),prices,oldPrices}};await saveHomeOnly();toast('تم حفظ إعدادات Spotlight');
+}
 function categories(){return collection('categories','🗂️ التصنيفات','اسم التصنيف + صورة + المنتجات التابعة له','category')}
 function hero(){return collection('hero','🖼️ Hero الرئيسي','حتى 10 شرائح — صورة، عنوان، نص، زر، ورابط','hero')}
 function deals(){return collection('deals','🎯 الصفقات والعروض','العروض مع وقت بداية ونهاية وعدّاد تنازلي','deal')}
