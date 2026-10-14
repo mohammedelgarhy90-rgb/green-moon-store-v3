@@ -56,7 +56,7 @@
   <button class="nav" data-tab="orders"><span class="ico">📦</span> الطلبات</button>
   <button class="nav" data-tab="notifications"><span class="ico">🔔</span> الإشعارات</button>
   <button class="nav" data-tab="settings"><span class="ico">⚙️</span> الإعدادات</button>
-  <button class="nav" data-tab="builder"><span class="ico">🎨</span> تحكم كامل في الواجهة</button><button class="nav" data-tab="homebuilder"><span class="ico">🏠</span> منشئ الصفحة الرئيسية</button>
+  <button class="nav" data-tab="builder"><span class="ico">🎨</span> تحكم كامل في الواجهة</button><button class="nav" data-tab="homebuilder"><span class="ico">🏠</span> منشئ الصفحة الرئيسية</button><button class="nav" data-tab="spotlight"><span class="ico">✦</span> صفقات Spotlight</button>
 </aside>
 <section id="content" class="content"></section>
 </div></main></div>
@@ -94,7 +94,7 @@ async function load(){
  render();
 }
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function render(){const f={home,products,categories,hero,deals,bundles,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,homebuilder};$('content').innerHTML=f[tab]()}
+function render(){const f={home,products,categories,hero,deals,bundles,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,homebuilder,spotlight};$('content').innerHTML=f[tab]();if(tab==='spotlight'){const ids=D.home.spotlight?.productIds||[];if($('sp_p1'))$('sp_p1').value=ids[0]||'';if($('sp_p2'))$('sp_p2').value=ids[1]||''}}
 function home(){
  return `<div class="stats">
  <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
@@ -324,6 +324,28 @@ function orderItemsHtml(o){const items=Array.isArray(o.items)?o.items:[];if(!ite
 function details(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const addr=[o.governorate,o.area,o.street,o.building&&('عمارة '+o.building),o.floor&&('دور '+o.floor),o.apartment&&('شقة '+o.apartment)].filter(Boolean).join(' — ');const items=Array.isArray(o.items)?o.items:[];const gifts=Array.isArray(o.gifts)?o.gifts.filter(Boolean):[];const phone=String(o.phone||'').replace(/\D/g,'');const wa=phone?`https://wa.me/${phone.startsWith('20')?phone:'20'+phone.replace(/^0/,'')}?text=${encodeURIComponent('مرحبًا '+(o.name||'')+'، بخصوص طلب Green Moon رقم '+(o.id||''))}`:'#';openModal('تفاصيل الطلب',`<div class="grid2"><div class="panel" style="margin:0"><b>👤 العميل</b><p>${esc(o.name||'—')}</p><b>📞 الهاتف</b><p>${esc(o.phone||'—')}</p><b>📍 العنوان</b><p>${esc(addr||'—')}</p><b>📝 الملاحظات</b><p>${esc(o.notes||'—')}</p></div><div class="panel" style="margin:0"><b>📦 حالة الطلب</b><div style="margin-top:9px"><select id="detailStatus" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:12px"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد التجهيز'?'selected':''}>قيد التجهيز</option><option ${o.status==='تم الشحن'?'selected':''}>تم الشحن</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><button class="btn primary" style="margin-top:9px" onclick="saveDetailStatus('${esc(o.id)}')">حفظ الحالة</button><p class="muted" style="margin-top:12px">تاريخ الطلب: ${esc(o.createdAt||o.date||'—')}</p></div></div><div class="panel"><h3>🛍️ المنتجات (${items.length})</h3>${orderItemsHtml(o)}</div><div class="grid3"><div class="panel" style="margin:0"><span class="muted">قيمة المنتجات</span><h2>${money(o.productsTotal??o.subtotal??0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الشحن</span><h2>${money(o.shipping||0)}</h2></div><div class="panel" style="margin:0"><span class="muted">الإجمالي</span><h2>${money(o.total)}</h2></div></div>${gifts.length?`<div class="panel"><b>🎁 الهدايا</b><p>${esc(gifts.join('، '))}</p></div>`:''}<div class="modalfoot"><a class="btn soft" href="tel:${esc(o.phone||'')}" style="text-decoration:none">📞 اتصال</a><a class="btn soft" href="${wa}" target="_blank" rel="noopener" style="text-decoration:none">💬 واتساب</a><button class="btn gold" onclick="printOrder('${esc(o.id)}')">🖨️ طباعة</button></div>`)}
 async function saveDetailStatus(id){const status=$('detailStatus')?.value;if(!status)return;await orderStatus(id,status);closeModal();details(id)}
 function printOrder(id){const o=D.orders.find(x=>String(x.id)===String(id));if(!o)return;const items=Array.isArray(o.items)?o.items:[];const w=window.open('','_blank');if(!w){toast('اسمح بفتح نافذة الطباعة');return}w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>طلب ${esc(o.id)}</title><style>body{font-family:Tahoma,Arial;padding:25px;color:#15221c}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:right}h1,h2{color:#0b5b3d}</style></head><body><h1>Green Moon 🌿</h1><h2>طلب #${esc(o.id)}</h2><p><b>العميل:</b> ${esc(o.name||'')}<br><b>الهاتف:</b> ${esc(o.phone||'')}<br><b>العنوان:</b> ${esc([o.governorate,o.area,o.street,o.building,o.floor,o.apartment].filter(Boolean).join(' — '))}</p><table><tr><th>المنتج</th><th>الكمية</th><th>السعر</th></tr>${items.map(it=>`<tr><td>${esc(it.name||it.productId||'منتج')}</td><td>${Number(it.quantity||1)}</td><td>${money(it.price||0)}</td></tr>`).join('')}</table><h2>الإجمالي: ${money(o.total)}</h2><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
+
+
+function spotlight(){
+ const cfg=D.home.spotlight||{},ids=Array.isArray(cfg.productIds)?cfg.productIds.map(String):[],prices=cfg.prices||{},oldPrices=cfg.oldPrices||{};
+ const opts=D.products.map(p=>`<option value="${esc(p.id)}">${esc(p.name||'منتج')} — ${+p.price||0} ج.م</option>`).join('');
+ return `<div class="panel"><div class="head"><div><h2>✦ صفقات Spotlight الحصرية</h2><p>القسم يظهر في واجهة المتجر عند تفعيله واختيار منتجين موجودين بالفعل. لا يتم إنشاء منتجات أو أسعار افتراضية.</p></div><label class="check"><input id="sp_active" type="checkbox" ${cfg.active===true?'checked':''}> تفعيل القسم</label></div>
+ <div class="grid2"><div class="field"><label>عنوان القسم</label><input id="sp_title" value="${esc(cfg.title||'اختيارين.. بسعر استثنائي')}"></div><div class="field"><label>الوصف</label><input id="sp_subtitle" value="${esc(cfg.subtitle||'منتجان مختاران بعناية، بسعر خاص لفترة محدودة.')}"></div>
+ <div class="field"><label>المنتج الأول</label><select id="sp_p1"><option value="">اختر منتجًا</option>${opts}</select><small>السعر الخاص اختياري؛ اتركه فارغًا لاستخدام سعر المنتج الحالي.</small><input id="sp_price1" type="number" min="0" placeholder="السعر الخاص (اختياري)" value="${esc(prices[ids[0]]??'')}"><input id="sp_old1" type="number" min="0" placeholder="السعر قبل الخصم (اختياري)" value="${esc(oldPrices[ids[0]]??'')}" style="margin-top:7px"></div>
+ <div class="field"><label>المنتج الثاني</label><select id="sp_p2"><option value="">اختر منتجًا</option>${opts}</select><small>اختر منتجين مختلفين.</small><input id="sp_price2" type="number" min="0" placeholder="السعر الخاص (اختياري)" value="${esc(prices[ids[1]]??'')}"><input id="sp_old2" type="number" min="0" placeholder="السعر قبل الخصم (اختياري)" value="${esc(oldPrices[ids[1]]??'')}" style="margin-top:7px"></div></div>
+ <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><button class="btn primary" onclick="saveSpotlight()">حفظ صفقات Spotlight</button><button class="btn ghost" onclick="go('homebuilder')">إدارة الصفحة الرئيسية</button></div></div>`;
+}
+async function saveSpotlight(){
+ const p1=$('sp_p1').value,p2=$('sp_p2').value;
+ if($('sp_active').checked&&(!p1||!p2||p1===p2)){toast('اختار منتجين مختلفين قبل التفعيل');return}
+ const ids=[p1,p2].filter(Boolean),prices={},oldPrices={};
+ if(p1&&$('sp_price1').value.trim()!=='')prices[p1]=Number($('sp_price1').value);
+ if(p2&&$('sp_price2').value.trim()!=='')prices[p2]=Number($('sp_price2').value);
+ if(p1&&$('sp_old1').value.trim()!=='')oldPrices[p1]=Number($('sp_old1').value);
+ if(p2&&$('sp_old2').value.trim()!=='')oldPrices[p2]=Number($('sp_old2').value);
+ D.home.spotlight={active:$('sp_active').checked,title:$('sp_title').value.trim(),subtitle:$('sp_subtitle').value.trim(),productIds:ids,prices,oldPrices};
+ await saveHomeOnly();toast('تم حفظ إعدادات Spotlight');render();
+}
 
 function homebuilder(){
  const h=D.home||{}, hs=h.headings||{}, nav=h.bottomNav||{}, sec=h.sections||{};
