@@ -586,29 +586,6 @@
 @media(prefers-reduced-motion:reduce){#articleList .gm-article-card{transition:none!important}}
 </style>
 <style id="gm-root-fix-hidden">[hidden]{display:none!important}</style>
-
-<style id="gm-viz-product-picker-css">
-#gmVizProductPicker{position:fixed!important;inset:0!important;z-index:2147483647!important;background:#f8f8f4!important;display:none;flex-direction:column;width:100vw;height:100dvh;overflow:hidden;color:#143d2e}
-#gmVizProductPicker.open{display:flex!important}
-.gm-vpp-head{display:flex;align-items:center;gap:12px;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));background:#073d2d;color:white;flex-shrink:0}
-.gm-vpp-head button{border:0;border-radius:50%;width:44px;height:44px;font-size:24px;background:white;color:#073d2d}
-.gm-vpp-head div{flex:1;text-align:center}.gm-vpp-head b,.gm-vpp-head small{display:block}.gm-vpp-head small{font-size:11px;color:#e6d08b;margin-top:3px}
-.gm-vpp-tools{padding:12px 14px;background:white;flex-shrink:0}
-#gmVppSearch{width:100%;box-sizing:border-box;padding:13px 15px;border:1px solid #d8e1d8;border-radius:13px;font-size:16px}
-.gm-vpp-grid{overflow:auto;flex:1;padding:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
-.gm-vpp-card{background:white;border:2px solid transparent;border-radius:17px;overflow:hidden;box-shadow:0 4px 18px #073d2d10;display:flex;flex-direction:column;min-width:0}
-.gm-vpp-card.selected{border-color:#0a754b;box-shadow:0 0 0 2px #0a754b22}
-.gm-vpp-card img{width:100%;height:170px;object-fit:contain;background:#f5f5ef}
-.gm-vpp-card .gm-vpp-info{padding:10px;display:flex;flex-direction:column;gap:7px;flex:1}
-.gm-vpp-card h3{font-size:14px;line-height:1.5;margin:0;color:#173e2f}
-.gm-vpp-card .price{font-weight:900;color:#08734b}
-.gm-vpp-card button{border:0;border-radius:10px;padding:10px;background:#073d2d;color:white;font-weight:800;margin-top:auto}
-.gm-vpp-empty{grid-column:1/-1;text-align:center;padding:50px 12px;color:#65766b}
-.gm-vpp-confirm{padding:12px 16px;background:white;border-top:1px solid #e6e9e2;flex-shrink:0}
-.gm-vpp-confirm button{width:100%;border:0;border-radius:13px;background:#d9b65c;color:#123d2e;font-weight:900;padding:15px}
-@media(max-width:380px){.gm-vpp-grid{gap:8px;padding:8px}.gm-vpp-card img{height:140px}}
-</style>
-
 </head><body>
 
 <div id="gmPremiumSplash" aria-label="Green Moon welcome">
@@ -2108,75 +2085,4 @@ setTimeout(gmInitSmartWizard,300);
 </script>
 
 <footer class="gm-site-footer" aria-label="وسائل التواصل الاجتماعي"><div class="footer-brand">Green Moon</div><div class="footer-sub">PLANTS AND FLOWERS</div><div class="footer-name">Mohamed Elgarhy</div><div class="gm-footer-social"><a href="https://www.instagram.com/greenmoon.plants/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.4" cy="6.7" r="1"></circle></svg></a><a href="https://wa.me/201151054863" target="_blank" rel="noopener" aria-label="WhatsApp" class="gm-footer-wa">☏</a><a href="tel:+201151054863" aria-label="اتصال">☎</a></div><div class="gm-footer-copy">Green Moon Plants and Flowers © 2026</div></footer>
-
-<div id="gmVizProductPicker" aria-hidden="true">
- <header class="gm-vpp-head"><button type="button" onclick="gmCloseProductPicker()" aria-label="رجوع">←</button><div><b>Green Moon</b><small>Plants and Flowers • Mohamed Elgarhy</small></div><button type="button" onclick="gmCloseProductPicker()" aria-label="إغلاق">×</button></header>
- <div class="gm-vpp-tools"><input id="gmVppSearch" type="search" placeholder="ابحث عن اسم النبات..." oninput="gmRenderProductPicker()"><p id="gmVppCount" style="margin:8px 2px 0;color:#667;font-size:12px"></p></div>
- <div class="gm-vpp-grid" id="gmVppGrid"></div>
- <div class="gm-vpp-confirm"><button type="button" onclick="gmConfirmPickedProduct()">تأكيد اختيار النبات ←</button></div>
-</div>
-
-
-<script id="gm-viz-product-picker-js">
-(function(){
- let picked=null;
- const $=id=>document.getElementById(id);
- function productName(p){return p.name||p.title||p.productName||'نبات من جرين مون'}
- function productPrice(p){return Number(p.price||p.salePrice||0)}
- function productImage(p){return p.image||p.imageUrl||p.image_url||p.photo||p.thumbnail||''}
- window.gmOpenProductPicker=function(){
-  const page=$('gmVizProductPicker');if(!page)return;
-  page.classList.add('open');page.setAttribute('aria-hidden','false');
-  document.body.style.overflow='hidden';picked=null;
-  const search=$('gmVppSearch');if(search)search.value='';
-  window.gmRenderProductPicker();
- };
- window.gmCloseProductPicker=function(){
-  const page=$('gmVizProductPicker');if(page){page.classList.remove('open');page.setAttribute('aria-hidden','true')}
-  const viz=$('gmVizModal');document.body.style.overflow=viz&&viz.classList.contains('open')?'hidden':'';
- };
- window.gmRenderProductPicker=function(){
-  const grid=$('gmVppGrid');if(!grid)return;
-  const all=Array.isArray(window.products)?window.products:[];
-  const q=String($('gmVppSearch')?.value||'').trim().toLowerCase();
-  const visible=all.filter(p=>String(productName(p)).toLowerCase().includes(q));
-  $('gmVppCount').textContent='عدد المنتجات المتاحة: '+visible.length;
-  if(!visible.length){grid.innerHTML='<div class="gm-vpp-empty">مفيش منتجات ظاهرة حاليًا. تأكد إن منتجات المتجر اتحملت بنجاح.</div>';return}
-  grid.innerHTML=visible.map((p)=> {
-   const id=String(p.id??p.slug??productName(p));
-   const image=productImage(p);
-   const safeName=String(productName(p)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-   const safeImage=String(image).replace(/["'<>]/g,'');
-   const price=productPrice(p);
-   return '<article class="gm-vpp-card '+(picked&&String(picked.id??picked.slug??productName(p))===id?'selected':'')+'"><img src="'+safeImage+'" alt="'+safeName+'" loading="lazy" onerror="this.style.visibility=\'hidden\'"><div class="gm-vpp-info"><h3>'+safeName+'</h3><div class="price">'+(price?price.toLocaleString('en-US')+' ج.م':'السعر حسب المنتج')+'</div><button type="button" data-pick="'+encodeURIComponent(id)+'">اختار النبات</button></div></article>';
-  }).join('');
-  grid.querySelectorAll('[data-pick]').forEach(btn=>btn.addEventListener('click',()=>{
-   const id=decodeURIComponent(btn.getAttribute('data-pick'));
-   picked=visible.find(p=>String(p.id??p.slug??productName(p))===id)||null;
-   window.gmRenderProductPicker();
-  }));
- };
- window.gmConfirmPickedProduct=function(){
-  if(!picked){alert('اختار نبات من المنتجات الأول.');return}
-  const chosen=$('gmVizChosen');if(chosen){
-   const name=String(productName(picked)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-   const image=String(productImage(picked)).replace(/["'<>]/g,'');
-   chosen.style.display='block';chosen.innerHTML='<div style="display:flex;gap:12px;align-items:center"><img src="'+image+'" alt="" style="width:82px;height:82px;object-fit:contain;border-radius:12px;background:#f5f5ef"><div><b>النبات المختار</b><p style="margin:6px 0">'+name+'</p><strong style="color:#08734b">'+(productPrice(picked)?productPrice(picked).toLocaleString('en-US')+' ج.م':'')+'</strong></div></div>';
-  }
-  const modal=$('gmVizModal');if(modal){modal.dataset.pickedProduct=String(picked.id??picked.slug??productName(picked))}
-  window.gmCloseProductPicker();
-  const hint=$('gmVizHint');if(hint)hint.textContent='تم اختيار النبات. ارفع صورة المكان ثم جهّز طلب المعاينة.';
- };
- window.gmVizPrepare=function(){
-  const file=$('gmVizFile')?.files?.[0],modal=$('gmVizModal'),chosen=modal?.dataset.pickedProduct,res=$('gmVizResults');
-  if(!file){res.textContent='ارفع صورة المكان الأول.';return}
-  if(!chosen){res.textContent='افتح صفحة المنتجات واختار النبات الأول.';return}
-  const all=Array.isArray(window.products)?window.products:[];
-  const p=all.find(x=>String(x.id??x.slug??productName(x))===chosen);
-  const name=String(p?productName(p):'النبات المختار').replace(/[&<>"']/g,'');
-  res.innerHTML='<div class="gmPageCard"><h3>تم تجهيز اختيارك</h3><p>النبات: '+name+'</p><p>صورة المكان جاهزة للمعاينة. تركيب النبات داخل الصورة بجودة واقعية يحتاج تفعيل خدمة توليد الصور بالذكاء الاصطناعي على الخادم.</p></div>';
- };
-})();
-</script>
-
 </body></html>
