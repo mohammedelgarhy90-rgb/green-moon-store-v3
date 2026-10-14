@@ -1,0 +1,17 @@
+تقرير تحسين سرعة Green Moon
+
+التعديلات المضافة:
+1. تحويل صور ثابتة كبيرة إلى WebP مع الاحتفاظ بالأصول الأصلية.
+2. تحديث مراجع صور بانرات الطبيب وترشيح النباتات إلى WebP لتقليل حجم التنزيل الأولي.
+3. تحميل خطوط Google بطريقة لا تحجب العرض الأولي، مع بديل عند تعطيل JavaScript.
+4. إزالة حلقة الحركة المكررة للفئات واستبدالها بمؤقت خفيف يتوقف عندما تكون الصفحة بالخلفية أو عند تقليل الحركة، مع استمرار تحريك الفئات.
+
+نتائج ضغط الصور:
+- green-moon-finder-banner.jpg: 160 KB → green-moon-finder-banner.webp: 73 KB (توفير 87 KB)
+- green-moon-doctor-banner.jpg: 121 KB → green-moon-doctor-banner.webp: 51 KB (توفير 70 KB)
+- logo-splash.jpg: 183 KB → logo-splash.webp: 40 KB (توفير 143 KB)
+- LOGO-ORIGINAL-REFERENCE.jpg: 183 KB → LOGO-ORIGINAL-REFERENCE.webp: 40 KB (توفير 143 KB)
+- logo.jpg: 106 KB → logo.webp: 37 KB (توفير 69 KB)
+- green-moon-doctor.png: 2412 KB → green-moon-doctor.webp: 112 KB (توفير 2301 KB)
+
+القيود: لم يتم النشر على Cloudflare ولم يتم قياس Core Web Vitals على الموقع الحي. ملفات الصور الأصلية لم تُحذف. لم يتم تغيير worker.js أو إعدادات KV/API. يجب اختبار الصفحة والسلة والطلبات والدكتور ولوحة الإدارة في Preview قبل النشر.
