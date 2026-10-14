@@ -66,7 +66,7 @@
   color:#fff;opacity:1;visibility:visible;
 }
 #gmPremiumSplash.gmSplashOut{
-  animation:gmSplashOut .65s cubic-bezier(.65,0,.2,1) forwards;
+  animation:gmSplashOut .42s cubic-bezier(.65,0,.2,1) forwards;
 }
 #gmPremiumSplash .gm-splash-noise{
   position:absolute;inset:-50%;opacity:.09;pointer-events:none;
@@ -669,6 +669,72 @@ body{background:#fffdf8;color:#18392f} .header{backdrop-filter:saturate(125%) bl
 @media(max-width:650px){.gm-about-card{grid-template-columns:1fr;gap:12px;border-radius:20px}.gm-about-mark{width:64px;height:64px;border-radius:19px;font-size:34px}.gm-about-actions{display:grid;grid-template-columns:1fr}.gm-about-actions a{width:100%}.gm-viz-launch-inner{min-height:0}.gm-search-modal .box{padding:17px}.gm-search-result{grid-template-columns:56px minmax(0,1fr)}.gm-search-result img{width:56px;height:56px}.gm-search-result .gm-search-arrow{display:none}}
 @media(prefers-reduced-motion:reduce){.product,.drawerBox{animation:none!important;transition:none!important}}
 </style>
+<style id="gm-splash-luxury-4s">
+/* Calm, minimal luxury intro: real brand assets, restrained gold, no visual clutter. */
+#gmPremiumSplash{
+  background:
+    radial-gradient(ellipse at 50% 38%,rgba(35,111,78,.22),transparent 39%),
+    linear-gradient(155deg,#031a12 0%,#073b2b 54%,#02170f 100%) !important;
+}
+#gmPremiumSplash .gm-splash-noise,
+#gmPremiumSplash .gm-spark,
+#gmPremiumSplash .gm-creative-orbit,
+#gmPremiumSplash .gm-creative-leaves,
+#gmPremiumSplash .gm-social,
+#gmPremiumSplash .gm-tag{display:none !important}
+#gmPremiumSplash .gm-orb{
+  width:min(74vw,430px);height:min(74vw,430px);
+  border-color:rgba(226,197,126,.13);
+  box-shadow:0 0 65px rgba(42,133,91,.07),inset 0 0 55px rgba(226,197,126,.025);
+  animation:gmOrb 3.2s ease-out both;
+}
+#gmPremiumSplash .gm-logo-ring{
+  width:clamp(132px,35vw,184px);height:clamp(132px,35vw,184px);padding:7px;
+  background:linear-gradient(145deg,#fffdf4,#e9dfc2) !important;
+  border:1px solid rgba(232,204,135,.9);
+  box-shadow:0 0 0 5px rgba(255,255,255,.025),0 0 44px rgba(231,191,98,.13),0 20px 60px rgba(0,0,0,.25) !important;
+  animation:gmLogoIn .85s .08s cubic-bezier(.18,.82,.25,1) forwards !important;
+}
+#gmPremiumSplash .gm-logo-ring:after{display:none}
+#gmPremiumSplash .gm-logo{filter:none !important;animation:none !important}
+#gmPremiumSplash .gm-company{
+  margin-top:20px;font-size:clamp(34px,8vw,51px);letter-spacing:2px;
+  animation:gmTextIn .65s .38s cubic-bezier(.2,.8,.2,1) forwards !important;
+}
+#gmPremiumSplash .gm-sub{
+  margin-top:8px;font-size:12px;letter-spacing:4px;color:rgba(255,253,244,.86);
+  animation:gmTextIn .55s .58s ease forwards !important;
+}
+#gmPremiumSplash .gm-welcome-ar{
+  margin-top:21px;color:#fffdf5;font-size:clamp(17px,4.4vw,22px);font-weight:700;
+  opacity:0;transform:translateY(8px);
+  animation:gmTextIn .55s .78s ease forwards;
+}
+#gmPremiumSplash .gm-welcome-tagline{
+  margin-top:7px;color:rgba(244,232,197,.78);font-size:13px;font-weight:500;
+  opacity:0;transform:translateY(7px);
+  animation:gmTextIn .5s .96s ease forwards;
+}
+#gmPremiumSplash .gm-line{margin:17px auto 12px;animation:gmLineIn .65s .98s ease forwards}
+#gmPremiumSplash .gm-name{
+  font-size:12px;font-weight:500;letter-spacing:2.4px;color:rgba(255,255,255,.65);
+  animation:gmTextIn .5s 1.08s ease forwards !important;
+}
+#gmPremiumSplash .gm-progress{bottom:24px;width:min(54vw,230px);height:2px;background:rgba(255,255,255,.10)}
+#gmPremiumSplash .gm-progress span{animation:gmProgress 3s linear forwards}
+#gmPremiumSplash.gmSplashOut{animation:gmSplashOut .42s cubic-bezier(.65,0,.2,1) forwards}
+@media(max-width:520px){
+ #gmPremiumSplash .gm-logo-ring{width:150px;height:150px}
+ #gmPremiumSplash .gm-company{letter-spacing:1.5px}
+ #gmPremiumSplash .gm-sub{letter-spacing:3px}
+ #gmPremiumSplash .gm-welcome-ar{margin-top:18px}
+}
+@media(prefers-reduced-motion:reduce){
+ #gmPremiumSplash .gm-logo-ring,#gmPremiumSplash .gm-company,#gmPremiumSplash .gm-sub,
+ #gmPremiumSplash .gm-welcome-ar,#gmPremiumSplash .gm-welcome-tagline,#gmPremiumSplash .gm-name,
+ #gmPremiumSplash .gm-line{animation-duration:.01ms!important;animation-delay:0ms!important}
+}
+</style>
 </head><body>
 
 <div id="gmPremiumSplash" aria-label="Green Moon welcome">
@@ -681,6 +747,8 @@ body{background:#fffdf8;color:#18392f} .header{backdrop-filter:saturate(125%) bl
     </div>
     <div class="gm-company">Green Moon</div>
     <div class="gm-sub">Plants and Flowers</div>
+    <div class="gm-welcome-ar">أهلاً بيك في Green Moon</div>
+    <div class="gm-welcome-tagline">خلّي الطبيعة أقرب ليك</div>
     <div class="gm-line"></div>
     <div class="gm-name">Mohamed Elgarhy</div>
     <div class="gm-social">
@@ -695,7 +763,7 @@ body{background:#fffdf8;color:#18392f} .header{backdrop-filter:saturate(125%) bl
     </div>
   </div>
   <div class="gm-progress"><span></span></div>
-  <div class="gm-tag">THE NATURE • THE GREEN MOON EXPERIENCE</div>
+  <div class="gm-tag">A QUIET MOMENT WITH NATURE</div>
 </div>
 
 <header class="header"><div class="wrap head"><button class="menu" onclick="menu()">☰</button><div class="brand"><img id="logo"><div class="brandText"><b>Green Moon</b><small>Plants and Flowers</small><em>Mohamed Elgarhy</em></div></div><div class="actions"><button class="headIcon" onclick="location.href='/account.html'" title="حسابي">👤</button><button class="headIcon" onclick="searchSite()">⌕</button><button class="headIcon cartBtn" onclick="cartOpen()">🛒<span class="count" id="count">0</span></button></div></div></header><div id="gmOfferTicker" class="gm-ticker" aria-label="عروض Green Moon"></div>
@@ -968,8 +1036,8 @@ document.addEventListener('click',e=>{const m=e.target.closest('.modal');if(m&&e
       if(splash && splash.parentNode)splash.parentNode.removeChild(splash);
     },650);
   }
-  // 5-second premium entrance. The store loads underneath while the motion intro plays.
-  setTimeout(closeSplash,5000);
+  // Luxury intro is intentionally brief: 3.15s visible + 0.42s fade = under 4 seconds.
+  setTimeout(closeSplash,3150);
 })();
 </script>
 <script id="gm-premium-creative-upgrade">
