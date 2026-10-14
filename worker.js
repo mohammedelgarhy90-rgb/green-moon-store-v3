@@ -822,11 +822,28 @@ ${catalogText}
 ${userNote || 'لا توجد معلومات إضافية.'}
 `;
 
+        // Cloudflare Workers AI vision models expect image bytes, not a data-URL string.
+        // Convert the validated data URL into a byte array before invoking the model.
+        const imageParts = image.match(/^data:image\/[^;]+;base64,([A-Za-z0-9+/=\r\n]+)$/);
+        if (!imageParts) {
+          return json({ error: 'تعذر قراءة الصورة. ارفع صورة JPG أو PNG أو WebP واضحة.' }, 400);
+        }
+        let imageBytes;
+        try {
+          const binary = atob(imageParts[1].replace(/[\r\n]/g, ''));
+          imageBytes = Array.from(binary, ch => ch.charCodeAt(0));
+        } catch (_) {
+          return json({ error: 'ملف الصورة غير صالح أو تالف. جرّب صورة أخرى.' }, 400);
+        }
+        if (!imageBytes.length) {
+          return json({ error: 'الصورة فارغة. اختار صورة واضحة للنبات.' }, 400);
+        }
+
         const aiResponse = await env.AI.run(
           '@cf/meta/llama-3.2-11b-vision-instruct',
           {
             prompt,
-            image,
+            image: imageBytes,
             max_tokens: 1100,
             temperature: 0.2
           }
