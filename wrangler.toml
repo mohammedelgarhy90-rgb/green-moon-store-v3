@@ -11,10 +11,5 @@ not_found_handling = "single-page-application"
 binding = "GREEN_MOON_KV"
 id = "fcc82f6add084ccb875865171252f4d1"
 
-[[durable_objects.bindings]]
-name = "GIFT_CARD_LEDGER"
-class_name = "GiftCardLedger"
-
-[[migrations]]
-tag = "v1-gift-card-ledger"
-new_sqlite_classes = ["GiftCardLedger"]
+[ai]
+binding = "AI"
