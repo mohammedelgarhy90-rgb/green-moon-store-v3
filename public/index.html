@@ -52,10 +52,10 @@
 <section class="section" id="categories"><div class="container">
  <div class="section-head"><div><span class="over">SHOP BY CATEGORY</span><h2>اكتشف عالم جرين مون</h2><p>اختار القسم المناسب وابدأ رحلتك مع النباتات.</p></div><a class="textlink" href="#products">كل المنتجات ←</a></div>
  <div class="category-grid" id="categoryGrid">
-  <div class="category-card" data-category="بامبو"><img src="/01_lucky_bamboo.png" alt="بامبو" onerror="this.src='/product-1.jpg'"><div class="cattext"><h3>البامبو</h3><p>حظ وطاقة خضراء</p></div></div>
-  <div class="category-card" data-category="نباتات داخلية"><img src="/02_indoor_plants.png" alt="نباتات داخلية" onerror="this.src='/product-2.jpg'"><div class="cattext"><h3>نباتات داخلية</h3><p>جمال طبيعي لكل ركن</p></div></div>
-  <div class="category-card" data-category="نباتات خارجية"><img src="/03_outdoor_plants.png" alt="نباتات خارجية" onerror="this.src='/product-3.jpg'"><div class="cattext"><h3>نباتات خارجية</h3><p>حياة ومساحات خضراء</p></div></div>
-  <div class="category-card" data-category="فازات وديكورات"><img src="/04_pots_and_vases.png" alt="فازات وديكورات" onerror="this.src='/product-4.jpg'"><div class="cattext"><h3>فازات وديكورات</h3><p>التفاصيل اللي بتكمل الشكل</p></div></div>
+  <div class="category-card" data-category="بامبو"><img src="/product-1.jpg" alt="بامبو" onerror="this.src='/product-1.jpg'"><div class="cattext"><h3>البامبو</h3><p>حظ وطاقة خضراء</p></div></div>
+  <div class="category-card" data-category="نباتات داخلية"><img src="/product-2.jpg" alt="نباتات داخلية" onerror="this.src='/product-2.jpg'"><div class="cattext"><h3>نباتات داخلية</h3><p>جمال طبيعي لكل ركن</p></div></div>
+  <div class="category-card" data-category="نباتات خارجية"><img src="/product-3.jpg" alt="نباتات خارجية" onerror="this.src='/product-3.jpg'"><div class="cattext"><h3>نباتات خارجية</h3><p>حياة ومساحات خضراء</p></div></div>
+  <div class="category-card" data-category="فازات وديكورات"><img src="/product-4.jpg" alt="فازات وديكورات" onerror="this.src='/product-4.jpg'"><div class="cattext"><h3>فازات وديكورات</h3><p>التفاصيل اللي بتكمل الشكل</p></div></div>
  </div>
 </div></section>
 <section class="section soft" id="deals"><div class="container">
@@ -150,5 +150,13 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.open').forEach(o=>close(o.id))});
 $('#year').textContent=new Date().getFullYear();renderCartCount();boot();
 })();
+</script>
+<script>
+/* Register the existing Green Moon notification worker; no store data is changed. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }, { once: true });
+}
 </script>
 </body></html>
