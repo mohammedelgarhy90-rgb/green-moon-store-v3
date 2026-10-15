@@ -5,6 +5,9 @@ const ORDERS_KEY = 'orders';
 const SHIPPING_KEY = 'shipping';
 const DEALS_KEY = 'deals';
 const MEDIA_PREFIX = 'media:';
+const GIFT_PAYMENT_PREFIX = 'giftpay:';
+const GIFT_RECEIPT_PREFIX = 'giftreceipt:';
+const GIFT_CARD_PREFIX = 'giftcard:';
 const MAX_MEDIA_BYTES = 12 * 1024 * 1024;
 const ACCOUNT_PREFIX = 'acct:';
 const SESSION_PREFIX = 'custsess:';
@@ -323,7 +326,7 @@ function initialTimeline(status='جديد') { return [{status,at:new Date().toIS
 function statusText(status){return String(status||'').trim()}
 function publicOrder(o) {
   if(!o)return null;
-  return {id:o.id,createdAt:o.createdAt,status:o.status,name:o.name||'',items:o.items||[],gifts:Array.isArray(o.gifts)?o.gifts:[],productsTotal:o.productsTotal||0,shipping:o.shipping||0,promoCode:o.promoCode||'',promoDiscount:o.promoDiscount||0,total:o.total||0,timeline:Array.isArray(o.timeline)?o.timeline:initialTimeline(o.status),trackingUrl:'/track.html?token='+encodeURIComponent(o.trackingToken||'')};
+  return {id:o.id,createdAt:o.createdAt,status:o.status,name:o.name||'',items:o.items||[],gifts:Array.isArray(o.gifts)?o.gifts:[],productsTotal:o.productsTotal||0,shipping:o.shipping||0,promoCode:o.promoCode||'',promoDiscount:o.promoDiscount||0,total:o.total||0,giftCardDiscount:o.giftCardDiscount||0,giftCardStatus:o.giftCardStatus||'',timeline:Array.isArray(o.timeline)?o.timeline:initialTimeline(o.status),trackingUrl:'/track.html?token='+encodeURIComponent(o.trackingToken||'')};
 }
 async function getVapid(env) {
   let keys=await kvJson(env,VAPID_KEY,null);
@@ -410,6 +413,88 @@ function mediaBytesFromBase64(base64) {
   return Math.floor((String(base64 || '').length * 3) / 4);
 }
 
+/*
+ * Gift card ledger: Durable Object serializes balance checks and redemptions
+ * per card, preventing duplicate concurrent deductions. It is additive and
+ * does not replace or migrate existing GREEN_MOON_KV data.
+ */
+async function giftLedgerRequest(env, code, action, payload = {}) {
+  if (!env.GIFT_CARD_LEDGER) throw new Error('بوابة رصيد كروت الهدايا غير مهيأة. أضف ربط GIFT_CARD_LEDGER بعد إنشاء Durable Object namespace.');
+  const id = env.GIFT_CARD_LEDGER.idFromName(String(code || '').toUpperCase());
+  const stub = env.GIFT_CARD_LEDGER.get(id);
+  const response = await stub.fetch('https://gift-card-ledger.local/' + action, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ ...payload, code: String(code || '').toUpperCase(), action })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.success === false) throw new Error(data.error || 'تعذر تحديث رصيد كارت الهدية.');
+  return data;
+}
+
+export class GiftCardLedger {
+  constructor(state, env) { this.state = state; this.env = env; }
+  async fetch(request) {
+    if (request.method !== 'POST') return json({ error: 'Method Not Allowed' }, 405);
+    let body;
+    try { body = await request.json(); } catch { return json({ error: 'بيانات غير صالحة.' }, 400); }
+    const action = String(body.action || '');
+    const orderId = String(body.orderId || '').slice(0, 120);
+    const active = body.active === true;
+    const initialBalance = Math.max(0, Number(body.initialBalance) || 0);
+    try {
+      if (action === 'balance') {
+        if (!active) return json({ error: 'كارت الهدية غير نشط.' }, 409);
+        const balance = await this.state.storage.transaction(async tx => {
+          let current = await tx.get('balance');
+          if (current === undefined) {
+            current = initialBalance;
+            await tx.put('balance', current);
+          }
+          return Math.max(0, Number(current) || 0);
+        });
+        return json({ success: true, balance });
+      }
+      if (action === 'redeem') {
+        if (!active) return json({ error: 'كارت الهدية غير نشط.' }, 409);
+        if (!orderId) return json({ error: 'رقم الطلب مطلوب.' }, 400);
+        const amount = Math.max(0, Number(body.amount) || 0);
+        if (!(amount > 0)) return json({ error: 'قيمة الخصم غير صالحة.' }, 400);
+        const result = await this.state.storage.transaction(async tx => {
+          let current = await tx.get('balance');
+          if (current === undefined) current = initialBalance;
+          current = Math.max(0, Number(current) || 0);
+          const txKey = 'order:' + orderId;
+          const existing = await tx.get(txKey);
+          if (existing && !existing.refunded) {
+            if (Number(existing.amount) !== amount) throw new Error('تم استخدام رقم الطلب نفسه بمبلغ مختلف.');
+            return { balance: current, amount: Number(existing.amount), duplicate: true };
+          }
+          if (current < amount) throw new Error('رصيد كارت الهدية تغيّر أو لم يعد كافيًا. راجع الكود وحاول مرة أخرى.');
+          current = Math.round((current - amount) * 100) / 100;
+          await tx.put('balance', current);
+          await tx.put(txKey, { amount, refunded: false, createdAt: new Date().toISOString() });
+          return { balance: current, amount, duplicate: false };
+        });
+        return json({ success: true, ...result });
+      }
+      if (action === 'refund') {
+        if (!orderId) return json({ error: 'رقم الطلب مطلوب.' }, 400);
+        const result = await this.state.storage.transaction(async tx => {
+          const txKey = 'order:' + orderId;
+          const existing = await tx.get(txKey);
+          if (!existing || existing.refunded) return { refunded: false, balance: Math.max(0, Number(await tx.get('balance')) || 0) };
+          const current = Math.round(((Number(await tx.get('balance')) || 0) + Number(existing.amount || 0)) * 100) / 100;
+          await tx.put('balance', current);
+          await tx.put(txKey, { ...existing, refunded: true, refundedAt: new Date().toISOString() });
+          return { refunded: true, balance: current };
+        });
+        return json({ success: true, ...result });
+      }
+      return json({ error: 'إجراء غير معروف.' }, 400);
+    } catch (e) { return json({ success: false, error: String(e?.message || e || 'خطأ في دفتر رصيد الكارت.') }, 409); }
+  }
+}
+
 export default {
 
   async fetch(request, env, ctx) {
@@ -432,6 +517,173 @@ export default {
       });
     }
 
+
+    /* =========================
+       GREEN MOON GIFT CARDS — MANUAL INSTAPAY
+       Requests are not activated until an admin confirms receipt of funds.
+    ========================= */
+    if (url.pathname === '/api/gift-cards/config' && request.method === 'GET') {
+      const settings = await kvJson(env, SETTINGS_KEY, {}) || {};
+      const c = settings.gm_gift_cards_payment || {};
+      const amounts = Array.isArray(c.amounts) ? c.amounts.map(Number).filter(n => Number.isFinite(n) && n >= 50 && n <= 10000).slice(0, 12) : [250, 500, 1000, 1500];
+      return json({
+        enabled: c.enabled === true,
+        instapayAddress: String(c.instapayAddress || '').slice(0, 120),
+        receiverName: String(c.receiverName || '').slice(0, 120),
+        receiverPhone: String(c.receiverPhone || '').slice(0, 40),
+        instructions: String(c.instructions || 'حوّل نفس قيمة الكارت، واكتب رقم طلب الدفع في وصف التحويل إن أمكن. لا يتم تفعيل الكارت إلا بعد مراجعة التحويل فعليًا.').slice(0, 1000),
+        amounts
+      });
+    }
+
+    if (url.pathname === '/api/gift-cards/validate' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const code = String(body.code || '').trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 64);
+        if (!code) return json({ error: 'اكتب كود كارت الهدية.' }, 400);
+        const card = await kvJson(env, GIFT_CARD_PREFIX + code, null);
+        if (!card || card.status !== 'active') return json({ error: 'كود الكارت غير صحيح أو الكارت غير نشط.' }, 404);
+        const ledger = await giftLedgerRequest(env, code, 'balance', { active: true, initialBalance: Number(card.balance ?? card.amount) || 0 });
+        return json({ success: true, code, balance: ledger.balance, currency: 'EGP' });
+      } catch (e) { return json({ error: String(e?.message || e || 'تعذر التحقق من كارت الهدية.') }, 503); }
+    }
+
+    if (url.pathname === '/api/gift-cards/payment-requests' && request.method === 'POST') {
+      try {
+        const settings = await kvJson(env, SETTINGS_KEY, {}) || {};
+        const c = settings.gm_gift_cards_payment || {};
+        if (c.enabled !== true || !String(c.instapayAddress || '').trim()) return json({ error: 'شراء كروت الهدايا غير متاح مؤقتًا. يرجى المحاولة لاحقًا.' }, 503);
+        const body = await request.json();
+        const amounts = Array.isArray(c.amounts) ? c.amounts.map(Number).filter(n => Number.isFinite(n) && n >= 50 && n <= 10000).slice(0, 12) : [250, 500, 1000, 1500];
+        const amount = Number(body.amount);
+        const senderName = String(body.senderName || '').trim().slice(0, 100);
+        const recipientName = String(body.recipientName || '').trim().slice(0, 100);
+        const recipientPhone = String(body.recipientPhone || '').replace(/[^0-9+]/g, '').slice(0, 24);
+        const deliveryMethod = body.deliveryMethod === 'printed' ? 'printed' : 'digital';
+        const message = String(body.message || '').trim().slice(0, 300);
+        const senderPhone = String(body.senderPhone || '').replace(/[^0-9+]/g, '').slice(0, 24);
+        if (!amounts.includes(amount)) return json({ error: 'قيمة الكارت غير متاحة.' }, 400);
+        if (senderName.length < 2 || recipientName.length < 2) return json({ error: 'اكتب اسم المُهدي واسم المستلم.' }, 400);
+        if (recipientPhone.length < 8) return json({ error: 'اكتب رقم هاتف المستلم بشكل صحيح.' }, 400);
+        const clientIp = String(request.headers.get('CF-Connecting-IP') || '').trim();
+        if (clientIp) {
+          const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(clientIp));
+          const ipHash = [...new Uint8Array(digest)].slice(0, 12).map(v => v.toString(16).padStart(2, '0')).join('');
+          const rateKey = 'giftpayrl:' + ipHash;
+          if (await env.GREEN_MOON_KV.get(rateKey)) return json({ error: 'تم إنشاء طلب مؤخرًا من هذا الاتصال. انتظر قليلًا ثم حاول مرة أخرى.' }, 429);
+          await env.GREEN_MOON_KV.put(rateKey, new Date().toISOString(), { expirationTtl: 30 });
+        }
+        const id = 'GMP-' + Date.now().toString(36).toUpperCase() + '-' + randomToken(5).replace(/[-_]/g, '').toUpperCase().slice(0, 7);
+        const token = randomToken(24);
+        const item = {
+          id, token, amount, senderName, senderPhone, recipientName, recipientPhone,
+          deliveryMethod, message, status: 'awaiting_payment', receiptKey: '',
+          transferReference: '', giftCardCode: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+        };
+        await env.GREEN_MOON_KV.put(GIFT_PAYMENT_PREFIX + id, JSON.stringify(item));
+        return json({ success: true, request: { id, token, amount, status: item.status, createdAt: item.createdAt } }, 201);
+      } catch (e) { return json({ error: String(e?.message || e || 'تعذر إنشاء طلب الدفع.') }, 500); }
+    }
+
+    if (url.pathname === '/api/gift-cards/receipt' && request.method === 'POST') {
+      try {
+        const len = Number(request.headers.get('content-length') || 0);
+        if (len > 1800000) return json({ error: 'حجم الإيصال كبير. الحد الأقصى 1.2 ميجابايت.' }, 413);
+        const body = await request.json();
+        const id = String(body.id || '').trim().slice(0, 100);
+        const token = String(body.token || '').trim().slice(0, 100);
+        const dataUrl = String(body.receiptDataUrl || '');
+        const ref = String(body.transferReference || '').trim().slice(0, 100);
+        if (!id || !token) return json({ error: 'بيانات طلب الدفع غير مكتملة.' }, 400);
+        const item = await kvJson(env, GIFT_PAYMENT_PREFIX + id, null);
+        if (!item || item.token !== token) return json({ error: 'طلب الدفع غير موجود أو رابط المتابعة غير صحيح.' }, 404);
+        if (!['awaiting_payment', 'receipt_rejected'].includes(item.status)) return json({ error: 'لا يمكن رفع إيصال جديد في الحالة الحالية.' }, 409);
+        const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/i);
+        if (!match) return json({ error: 'ارفع صورة إيصال بصيغة JPG أو PNG أو WebP.' }, 415);
+        const mime = match[1].toLowerCase();
+        const data = match[2];
+        const bytes = mediaBytesFromBase64(data);
+        if (!bytes || bytes > 1200 * 1024) return json({ error: 'حجم الإيصال يجب ألا يتجاوز 1.2 ميجابايت.' }, 413);
+        const receiptKey = GIFT_RECEIPT_PREFIX + id;
+        await env.GREEN_MOON_KV.put(receiptKey, JSON.stringify({ mime, data, uploadedAt: new Date().toISOString() }));
+        item.receiptKey = receiptKey;
+        item.transferReference = ref;
+        item.status = 'pending_review';
+        item.updatedAt = new Date().toISOString();
+        await env.GREEN_MOON_KV.put(GIFT_PAYMENT_PREFIX + id, JSON.stringify(item));
+        return json({ success: true, status: item.status, message: 'وصل الإيصال، وطلبك بانتظار مراجعة التحويل.' });
+      } catch (e) { return json({ error: String(e?.message || e || 'تعذر حفظ الإيصال.') }, 500); }
+    }
+
+    if (url.pathname === '/api/gift-cards/status' && request.method === 'GET') {
+      const id = String(url.searchParams.get('id') || '').trim().slice(0, 100);
+      const token = String(url.searchParams.get('token') || '').trim().slice(0, 100);
+      const item = id ? await kvJson(env, GIFT_PAYMENT_PREFIX + id, null) : null;
+      if (!item || !token || item.token !== token) return json({ error: 'رابط متابعة طلب الدفع غير صحيح.' }, 404);
+      return json({
+        success: true, id: item.id, amount: item.amount, status: item.status,
+        senderName: item.senderName, recipientName: item.recipientName,
+        deliveryMethod: item.deliveryMethod, createdAt: item.createdAt,
+        transferReference: item.transferReference || '', giftCardCode: item.status === 'approved' ? item.giftCardCode : ''
+      });
+    }
+
+    if (url.pathname === '/api/admin/gift-card-payments') {
+      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
+      if (request.method === 'GET') {
+        try {
+          const listed = await env.GREEN_MOON_KV.list({ prefix: GIFT_PAYMENT_PREFIX, limit: 1000 });
+          const rows = await Promise.all((listed.keys || []).map(k => env.GREEN_MOON_KV.get(k.name, 'json')));
+          return json(rows.filter(Boolean).map(x => ({
+            id: x.id, amount: x.amount, senderName: x.senderName, senderPhone: x.senderPhone,
+            recipientName: x.recipientName, recipientPhone: x.recipientPhone, deliveryMethod: x.deliveryMethod,
+            message: x.message, status: x.status, transferReference: x.transferReference || '',
+            receiptAvailable: !!x.receiptKey, giftCardCode: x.status === 'approved' ? x.giftCardCode : '',
+            createdAt: x.createdAt, updatedAt: x.updatedAt
+          })).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))));
+        } catch (e) { return json({ error: String(e?.message || e) }, 500); }
+      }
+      if (request.method === 'PUT' || request.method === 'POST') {
+        try {
+          const body = await request.json();
+          const id = String(body.id || '').trim().slice(0, 100);
+          const action = String(body.action || '');
+          const item = id ? await kvJson(env, GIFT_PAYMENT_PREFIX + id, null) : null;
+          if (!item) return json({ error: 'طلب الدفع غير موجود.' }, 404);
+          if (action === 'approve') {
+            if (item.status === 'approved' && item.giftCardCode) return json({ success: true, item: { id, status: item.status, giftCardCode: item.giftCardCode }, message: 'تم تأكيد الطلب مسبقًا.' });
+            if (item.status !== 'pending_review' || !item.receiptKey) return json({ error: 'لا يمكن تفعيل الكارت قبل مراجعة الإيصال والتأكد فعليًا من وصول المبلغ.' }, 409);
+            const receipt = await kvJson(env, item.receiptKey, null);
+            if (!receipt?.data) return json({ error: 'صورة الإيصال غير موجودة؛ اطلب رفعها مرة أخرى.' }, 409);
+            const code = 'GM-' + randomToken(10).replace(/[-_]/g, '').toUpperCase().slice(0, 12);
+            const card = { code, amount: Number(item.amount), balance: Number(item.amount), currency: 'EGP', status: 'active', sourcePaymentId: item.id, senderName: item.senderName, recipientName: item.recipientName, recipientPhone: item.recipientPhone, message: item.message, deliveryMethod: item.deliveryMethod, createdAt: new Date().toISOString(), activatedAt: new Date().toISOString() };
+            await env.GREEN_MOON_KV.put(GIFT_CARD_PREFIX + code, JSON.stringify(card));
+            item.status = 'approved'; item.giftCardCode = code; item.approvedAt = new Date().toISOString(); item.updatedAt = item.approvedAt;
+            await env.GREEN_MOON_KV.put(GIFT_PAYMENT_PREFIX + id, JSON.stringify(item));
+            return json({ success: true, item: { id, status: item.status, giftCardCode: code }, message: 'تم تأكيد الدفع وتفعيل كارت الهدية.' });
+          }
+          if (action === 'reject') {
+            if (item.status === 'approved') return json({ error: 'لا يمكن رفض طلب تم تفعيل كارت هديته.' }, 409);
+            if (item.status !== 'pending_review') return json({ error: 'لا يمكن رفض الطلب قبل استلام الإيصال ومراجعته.' }, 409);
+            item.status = 'receipt_rejected'; item.rejectionReason = String(body.reason || 'تعذر تأكيد التحويل. راجع بيانات التحويل وارفع الإيصال مرة أخرى.').slice(0, 300); item.updatedAt = new Date().toISOString();
+            await env.GREEN_MOON_KV.put(GIFT_PAYMENT_PREFIX + id, JSON.stringify(item));
+            return json({ success: true, item: { id, status: item.status }, message: 'تم رفض الإيصال، ويمكن للعميل رفع إيصال جديد.' });
+          }
+          return json({ error: 'الإجراء غير صالح.' }, 400);
+        } catch (e) { return json({ error: String(e?.message || e || 'تعذر تحديث طلب الدفع.') }, 500); }
+      }
+      return json({ error: 'Method Not Allowed' }, 405);
+    }
+
+    if (url.pathname === '/api/admin/gift-card-receipt' && request.method === 'GET') {
+      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
+      const id = String(url.searchParams.get('id') || '').trim().slice(0, 100);
+      const item = id ? await kvJson(env, GIFT_PAYMENT_PREFIX + id, null) : null;
+      if (!item?.receiptKey) return json({ error: 'لا يوجد إيصال لهذا الطلب.' }, 404);
+      const receipt = await kvJson(env, item.receiptKey, null);
+      if (!receipt?.data || !receipt?.mime) return json({ error: 'صورة الإيصال غير موجودة.' }, 404);
+      return json({ dataUrl: `data:${receipt.mime};base64,${receipt.data}`, uploadedAt: receipt.uploadedAt || '' });
+    }
 
     /* =========================
        CUSTOMER AUTH
@@ -654,26 +906,12 @@ ${catalogText}
 {"recommendations":[{"id":"ID","reason":"سبب مصري قصير"}]}
 استخدم IDs الموجودة حرفيًا فقط.`;
 
-        // Vision models receive image bytes, not the full data-URL string.
-        const imageParts = image.match(/^data:image\/[^;]+;base64,([A-Za-z0-9+/=\r\n]+)$/);
-        if (!imageParts) {
-          return json({ error: 'تعذر قراءة الصورة. ارفع صورة JPG أو PNG أو WebP واضحة.' }, 400);
-        }
-        let imageBytes;
-        try {
-          const binary = atob(imageParts[1].replace(/[\r\n]/g, ''));
-          imageBytes = Array.from(binary, ch => ch.charCodeAt(0));
-        } catch (_) {
-          return json({ error: 'ملف الصورة غير صالح أو تالف. جرّب صورة أخرى.' }, 400);
-        }
-        if (!imageBytes.length) return json({ error: 'الصورة فارغة.' }, 400);
-
         // حد زمني يمنع الموقع من الانتظار للأبد.
         const aiPromise = env.AI.run(
           '@cf/meta/llama-3.2-11b-vision-instruct',
           {
             prompt,
-            image: imageBytes,
+            image,
             max_tokens: 500,
             temperature: 0.1
           }
@@ -836,28 +1074,11 @@ ${catalogText}
 ${userNote || 'لا توجد معلومات إضافية.'}
 `;
 
-        // Cloudflare Workers AI vision models expect image bytes, not a data-URL string.
-        // Convert the validated data URL into a byte array before invoking the model.
-        const imageParts = image.match(/^data:image\/[^;]+;base64,([A-Za-z0-9+/=\r\n]+)$/);
-        if (!imageParts) {
-          return json({ error: 'تعذر قراءة الصورة. ارفع صورة JPG أو PNG أو WebP واضحة.' }, 400);
-        }
-        let imageBytes;
-        try {
-          const binary = atob(imageParts[1].replace(/[\r\n]/g, ''));
-          imageBytes = Array.from(binary, ch => ch.charCodeAt(0));
-        } catch (_) {
-          return json({ error: 'ملف الصورة غير صالح أو تالف. جرّب صورة أخرى.' }, 400);
-        }
-        if (!imageBytes.length) {
-          return json({ error: 'الصورة فارغة. اختار صورة واضحة للنبات.' }, 400);
-        }
-
         const aiResponse = await env.AI.run(
           '@cf/meta/llama-3.2-11b-vision-instruct',
           {
             prompt,
-            image: imageBytes,
+            image,
             max_tokens: 1100,
             temperature: 0.2
           }
@@ -1200,6 +1421,18 @@ function resolveRelatedOffer(product, offerId) {
 
         const body =
           await request.json();
+        const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 120);
+        if (idempotencyKey) {
+          const priorOrders = await getOrders(env);
+          const prior = priorOrders.find(o => o.idempotencyKey === idempotencyKey);
+          if (prior) {
+            if (String(prior.phone || '') !== String(body.phone || '') || String(prior.name || '') !== String(body.name || '')) {
+              return json({ error: 'مفتاح الطلب مستخدم لطلب مختلف. حدّث الصفحة وحاول مرة أخرى.' }, 409);
+            }
+            const priorResponse = { ...prior }; delete priorResponse.idempotencyKey;
+            return json({ success: true, order: priorResponse, duplicate: true });
+          }
+        }
 
         if (
           !body.name ||
@@ -1387,7 +1620,22 @@ return {
             shippingDiscount:promoShippingDiscount
           };
         }
-        const total = Math.max(0, productsTotal - promoDiscount) + shipping;
+        const totalBeforeGiftCard = Math.max(0, productsTotal - promoDiscount) + shipping;
+        const giftCardCode = String(body.giftCardCode || '').trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 64);
+        let giftCardDiscount = 0;
+        let giftCardBalanceBefore = 0;
+        let giftCardRecord = null;
+        if (giftCardCode) {
+          giftCardRecord = await kvJson(env, GIFT_CARD_PREFIX + giftCardCode, null);
+          if (!giftCardRecord || giftCardRecord.status !== 'active') return json({ error: 'كود كارت الهدية غير صحيح أو الكارت غير نشط.' }, 400);
+          let ledger;
+          try { ledger = await giftLedgerRequest(env, giftCardCode, 'balance', { active: true, initialBalance: Number(giftCardRecord.balance ?? giftCardRecord.amount) || 0 }); }
+          catch (e) { return json({ error: String(e?.message || 'تعذر التحقق من رصيد كارت الهدية.') }, 503); }
+          giftCardBalanceBefore = Math.max(0, Number(ledger.balance) || 0);
+          if (giftCardBalanceBefore <= 0) return json({ error: 'رصيد كارت الهدية انتهى.' }, 400);
+          giftCardDiscount = Math.min(totalBeforeGiftCard, giftCardBalanceBefore);
+        }
+        const total = Math.max(0, totalBeforeGiftCard - giftCardDiscount);
 
         const customerSess = await customerSession(request, env);
         const guestKey = String(body.guestKey || '').slice(0,120);
@@ -1395,10 +1643,7 @@ return {
         const order = {
 
           id:
-            'GM-' +
-            Date.now()
-              .toString(36)
-              .toUpperCase(),
+            'GM-' + Date.now().toString(36).toUpperCase() + '-' + randomToken(5).replace(/[-_]/g, '').toUpperCase().slice(0, 7),
 
           createdAt:
             new Date().toISOString(),
@@ -1409,6 +1654,7 @@ return {
             'جديد',
 
           trackingToken,
+          idempotencyKey,
 
           accountId: customerSess?.accountId || '',
 
@@ -1477,25 +1723,47 @@ return {
 
           gifts,
 
-          total
+          total,
+          totalBeforeGiftCard,
+          giftCardCode: giftCardDiscount > 0 ? giftCardCode : '',
+          giftCardDiscount,
+          giftCardBalanceAfter: giftCardDiscount > 0 ? Math.max(0, giftCardBalanceBefore - giftCardDiscount) : null,
+          giftCardStatus: giftCardDiscount > 0 ? 'processing' : ''
         };
+
+        let giftCardDebit = null;
+        if (giftCardCode && giftCardDiscount > 0) {
+          try {
+            giftCardDebit = await giftLedgerRequest(env, giftCardCode, 'redeem', {
+              active: true, initialBalance: giftCardBalanceBefore, amount: giftCardDiscount, orderId: order.id
+            });
+            order.giftCardBalanceAfter = giftCardDebit.balance;
+            order.giftCardStatus = 'applied';
+            giftCardRecord.balance = giftCardDebit.balance;
+            try { await env.GREEN_MOON_KV.put(GIFT_CARD_PREFIX + giftCardCode, JSON.stringify(giftCardRecord)); } catch (_) { /* Durable Object ledger remains authoritative. */ }
+          } catch (e) {
+            return json({ error: String(e?.message || 'تعذر خصم رصيد الكارت بأمان. لم يتم إنشاء الطلب؛ تحقق من الرصيد وحاول مرة أخرى.') }, 409);
+          }
+        }
 
         orders.unshift(order);
 
-        await env.GREEN_MOON_KV.put(
-          ORDERS_KEY,
-          JSON.stringify(
-            orders.slice(0, 500)
-          )
-        );
+        try {
+          await env.GREEN_MOON_KV.put(ORDERS_KEY, JSON.stringify(orders.slice(0, 500)));
+        } catch (persistError) {
+          if (giftCardCode && giftCardDebit && !giftCardDebit.duplicate) {
+            try {
+              const refund = await giftLedgerRequest(env, giftCardCode, 'refund', { orderId: order.id });
+              giftCardRecord.balance = refund.balance;
+              await env.GREEN_MOON_KV.put(GIFT_CARD_PREFIX + giftCardCode, JSON.stringify(giftCardRecord));
+            } catch (_) {}
+          }
+          throw persistError;
+        }
         ctx.waitUntil(notifyOrder(env,order,'🌿 تم استلام طلبك','تم استلام طلبك من Green Moon وجاري التجهيز.'));
 
-        return json({
-          success:
-            true,
-
-          order
-        });
+        const responseOrder = { ...order }; delete responseOrder.idempotencyKey;
+        return json({ success: true, order: responseOrder });
 
       } catch (error) {
 
