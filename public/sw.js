@@ -26,33 +26,3 @@ self.addEventListener('notificationclick', event => {
     return clients.openWindow(url);
   }));
 });
-
-
-/* Green Moon PWA: cache the app shell safely while keeping API/order data network-only. */
-const GM_PWA_CACHE = 'GM_PWA_CACHE_V2';
-const GM_PWA_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/gift-cards.html', '/icons/green-moon-192.png', '/icons/green-moon-512.png'];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(GM_PWA_CACHE).then(cache => cache.addAll(GM_PWA_SHELL)).catch(() => {}).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('GM_PWA_CACHE_') && key !== GM_PWA_CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET') return;
-  const url = new URL(request.url);
-  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
-  if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).then(response => {
-      if (response && response.ok) { const copy = response.clone(); caches.open(GM_PWA_CACHE).then(cache => cache.put('/index.html', copy)).catch(() => {}); }
-      return response;
-    }).catch(async () => (await caches.match('/index.html')) || (await caches.match('/')) || Response.error()));
-    return;
-  }
-  if (/\.(?:png|jpe?g|webp|svg|css|js|woff2?)$/i.test(url.pathname) || url.pathname === '/manifest.webmanifest') {
-    event.respondWith(caches.match(request).then(cached => {
-      const update = fetch(request).then(response => { if (response && response.ok) { caches.open(GM_PWA_CACHE).then(cache => cache.put(request, response.clone())).catch(() => {}); } return response; });
-      return cached || update;
-    }));
-  }
-});
