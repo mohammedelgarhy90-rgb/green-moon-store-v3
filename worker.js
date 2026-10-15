@@ -410,6 +410,35 @@ function mediaBytesFromBase64(base64) {
   return Math.floor((String(base64 || '').length * 3) / 4);
 }
 
+// Compatibility export: keep the existing Cloudflare Durable Object class name.
+// Do not rename or remove this class without a deliberate migration plan.
+// Storage remains isolated in this Durable Object; it does not read or modify GREEN_MOON_KV.
+export class giftCardLedger {
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.method === 'GET' && url.pathname === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'giftCardLedger' }), {
+        headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+      });
+    }
+
+    // Preserve the existing namespace and its data. Unknown legacy operations fail safely
+    // instead of silently changing the ledger's schema or returning fabricated results.
+    return new Response(JSON.stringify({
+      error: 'Unsupported gift-card ledger operation',
+      message: 'The existing ledger API contract must be restored before gift-card operations are enabled.'
+    }), {
+      status: 501,
+      headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    });
+  }
+}
+
 export default {
 
   async fetch(request, env, ctx) {
