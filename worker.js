@@ -1494,7 +1494,12 @@ return {
           success:
             true,
 
-          order
+          // Keep the persisted order schema unchanged; expose the customer tracking URL
+          // in the checkout response because the storefront displays order.trackingUrl.
+          order: {
+            ...order,
+            trackingUrl: '/track.html?token=' + encodeURIComponent(trackingToken)
+          }
         });
 
       } catch (error) {
