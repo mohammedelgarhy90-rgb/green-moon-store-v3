@@ -410,9 +410,9 @@ function mediaBytesFromBase64(base64) {
   return Math.floor((String(base64 || '').length * 3) / 4);
 }
 
-// Compatibility export: preserve the existing Durable Object class name required by Cloudflare.
+// Compatibility export: keep the existing Cloudflare Durable Object class name.
 // Do not rename or remove this class without a deliberate migration plan.
-// This compatibility stub intentionally does not mutate or delete existing storage.
+// Storage remains isolated in this Durable Object; it does not read or modify GREEN_MOON_KV.
 export class giftCardLedger {
   constructor(state, env) {
     this.state = state;
@@ -426,6 +426,9 @@ export class giftCardLedger {
         headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
       });
     }
+
+    // Preserve the existing namespace and its data. Unknown legacy operations fail safely
+    // instead of silently changing the ledger's schema or returning fabricated results.
     return new Response(JSON.stringify({
       error: 'Unsupported gift-card ledger operation',
       message: 'The existing ledger API contract must be restored before gift-card operations are enabled.'
@@ -1520,7 +1523,12 @@ return {
           success:
             true,
 
-          order
+          // Keep the persisted order schema unchanged; expose the customer tracking URL
+          // in the checkout response because the storefront displays order.trackingUrl.
+          order: {
+            ...order,
+            trackingUrl: '/track.html?token=' + encodeURIComponent(trackingToken)
+          }
         });
 
       } catch (error) {
