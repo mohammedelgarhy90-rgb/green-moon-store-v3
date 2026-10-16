@@ -253,32 +253,44 @@ function promoValidation(promo, subtotal, shipping, usedCount) {
 }
 
 function normalizeDeal(deal) {
-  const oldPrice = Number(deal.oldPrice) || 0;
-  const price = Number(deal.price) || 0;
+  // Preserve admin-specific fields (startAt, endAt, popup settings, items, CTA, etc.)
+  // while also providing the canonical fields used by the storefront and deal landing page.
+  deal = deal && typeof deal === 'object' ? deal : {};
+  const oldPrice = Number(deal.oldPrice || deal.originalPrice) || 0;
+  const price = Number(deal.price || deal.dealPrice) || 0;
   const discount = Number(deal.discount) || (oldPrice > price && oldPrice > 0 ? Math.round((1 - price / oldPrice) * 100) : 0);
+  const name = String(deal.name || deal.title || 'صفقة Green Moon');
+  const description = String(deal.description || deal.text || deal.shortDescription || '');
   return {
+    ...deal,
     id: deal.id || ('DEAL-' + Date.now().toString(36).toUpperCase()),
-    name: String(deal.name || 'صفقة Green Moon'),
-    shortDescription: String(deal.shortDescription || deal.description || ''),
-    description: String(deal.description || ''),
-    image: deal.image || '/assets/logo.jpg',
+    name,
+    title: String(deal.title || name),
+    shortDescription: String(deal.shortDescription || description),
+    description,
+    text: String(deal.text || description),
+    image: deal.image || deal.imageUrl || '/assets/logo.jpg',
     price,
     oldPrice,
     discount,
-    contents: Array.isArray(deal.contents) ? deal.contents.map(x => String(x)).filter(Boolean) : [],
+    contents: Array.isArray(deal.contents) ? deal.contents.map(x => String(x)).filter(Boolean) : (Array.isArray(deal.items) ? deal.items.map(x => String(x.name || x.title || x.productName || '')).filter(Boolean) : []),
     sizes: Array.isArray(deal.sizes) ? deal.sizes.map(x => String(x)).filter(Boolean) : [],
     features: Array.isArray(deal.features) ? deal.features.map(x => String(x)).filter(Boolean) : [],
     shipping: String(deal.shipping || ''),
     notes: String(deal.notes || ''),
-    expiresAt: deal.expiresAt || '',
+    expiresAt: deal.expiresAt || deal.endAt || '',
     active: deal.active !== false,
-    productIds: Array.isArray(deal.productIds) ? deal.productIds : []
+    productIds: Array.isArray(deal.productIds) ? deal.productIds : (Array.isArray(deal.items) ? deal.items.map(x => x.productId).filter(x => x !== undefined && x !== null) : [])
   };
 }
 
 async function getDeals(env) {
-  const deals = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
-  return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
+  const stored = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
+  if (Array.isArray(stored) && stored.length) return stored.map(normalizeDeal);
+  // Backward-compatible read: older admin versions saved deals inside settings only.
+  const settings = await kvJson(env, SETTINGS_KEY, {});
+  const legacy = Array.isArray(settings?.gm_deals) ? settings.gm_deals : (Array.isArray(settings?.deals) ? settings.deals : []);
+  return legacy.map(normalizeDeal);
 }
 
 
@@ -408,35 +420,6 @@ function decodeBase64(base64) {
 
 function mediaBytesFromBase64(base64) {
   return Math.floor((String(base64 || '').length * 3) / 4);
-}
-
-// Compatibility export: keep the existing Cloudflare Durable Object class name.
-// Do not rename or remove this class without a deliberate migration plan.
-// Storage remains isolated in this Durable Object; it does not read or modify GREEN_MOON_KV.
-export class giftCardLedger {
-  constructor(state, env) {
-    this.state = state;
-    this.env = env;
-  }
-
-  async fetch(request) {
-    const url = new URL(request.url);
-    if (request.method === 'GET' && url.pathname === '/health') {
-      return new Response(JSON.stringify({ ok: true, service: 'giftCardLedger' }), {
-        headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
-      });
-    }
-
-    // Preserve the existing namespace and its data. Unknown legacy operations fail safely
-    // instead of silently changing the ledger's schema or returning fabricated results.
-    return new Response(JSON.stringify({
-      error: 'Unsupported gift-card ledger operation',
-      message: 'The existing ledger API contract must be restored before gift-card operations are enabled.'
-    }), {
-      status: 501,
-      headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
-    });
-  }
 }
 
 export default {
@@ -1523,12 +1506,7 @@ return {
           success:
             true,
 
-          // Keep the persisted order schema unchanged; expose the customer tracking URL
-          // in the checkout response because the storefront displays order.trackingUrl.
-          order: {
-            ...order,
-            trackingUrl: '/track.html?token=' + encodeURIComponent(trackingToken)
-          }
+          order
         });
 
       } catch (error) {
@@ -1759,6 +1737,11 @@ return {
         }
 
         await env.GREEN_MOON_KV.put(DEALS_KEY, JSON.stringify(deals));
+        // Keep the settings copy in sync for /deals.html and older storefront clients.
+        const settings = await kvJson(env, SETTINGS_KEY, {});
+        const nextSettings = { ...(settings && typeof settings === 'object' ? settings : {}), gm_deals: deals, deals };
+        await env.GREEN_MOON_KV.put(SETTINGS_KEY, JSON.stringify(nextSettings));
+        try { await env.GREEN_MOON_KV.put(SETTINGS_BACKUP_KEY, JSON.stringify(nextSettings)); } catch (_) {}
         return json({ success: true, deals });
       } catch (error) {
         return json({ error: String(error?.message || error) }, 500);
