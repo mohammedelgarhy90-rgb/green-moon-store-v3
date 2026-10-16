@@ -90,7 +90,7 @@ async function load(){
  const s=D.settings||{};
  const liveLogo=s.gm_site?.header?.logo||s.logo||'/assets/logo.jpg';
  ['adminLoginLogo','adminTopLogo'].forEach(id=>{const e=$(id);if(e)e.src=liveLogo});
- D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=s.gm_deals||s.deals||[]; D.bundles=Array.isArray(s.gm_bundles)?s.gm_bundles:[]; D.articles=s.gm_articles||[]; D.reviews=s.gm_reviews||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
+ D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=await api('/api/admin/deals').catch(()=>s.gm_deals||s.deals||[]); D.bundles=Array.isArray(s.gm_bundles)?s.gm_bundles:[]; D.articles=s.gm_articles||[]; D.reviews=s.gm_reviews||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
  render();
 }
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
@@ -299,11 +299,17 @@ async function saveCollection(type,id){
  }
  let a=D[type]||[];
  if(id){const i=a.findIndex(z=>String(z.id)===String(id));if(i>=0)a[i]=x}else a.push(x);
- D[type]=a;await saveContent();closeModal();toast('تم حفظ الصفقة بنجاح')
+ D[type]=a;
+ if(type==='deals'){
+   const payload={...x,title:x.title||x.name,name:x.name||x.title,description:x.text||x.description||'',shortDescription:x.text||x.description||'',image:x.image||'',active:x.active!==false,items:x.items||[],productIds:x.productIds||[],contents:x.contents||[],sizes:x.sizes||[],features:x.features||[],shipping:x.shipping||'',notes:x.notes||'',startAt:x.startAt||'',endAt:x.endAt||'',durationMinutes:x.durationMinutes||30,popupDurationSeconds:x.popupDurationSeconds||60,popupEnabled:x.popupEnabled!==false};
+   if(id){await api('/api/admin/deals',{method:'PUT',body:JSON.stringify(payload)})}
+   else {delete payload.id;const result=await api('/api/admin/deals',{method:'POST',body:JSON.stringify(payload)});D.deals=result.deals||D.deals}
+ }
+ await saveContent();closeModal();toast(type==='deals'?'تم حفظ الصفقة ونشرها بالموقع':'تم الحفظ بنجاح')
 }
 
 async function saveContent(){const s={...D.settings,gm_categories:D.categories,gm_hero:D.hero,gm_deals:D.deals,deals:D.deals,gm_articles:D.articles,gm_reviews:D.reviews||D.settings.gm_reviews||[],gm_rewards:D.rewards,gm_ticker:D.ticker,gm_bundles:D.bundles||D.settings.gm_bundles||[]};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(s)});D.settings=s;render()}
-async function collectionDelete(type,id){if(!confirm('حذف العنصر؟'))return;D[type]=(D[type]||[]).filter(x=>String(x.id)!==String(id));await saveContent();render();toast('تم الحذف')}
+async function collectionDelete(type,id){if(!confirm('حذف العنصر؟'))return;if(type==='deals'){await api('/api/admin/deals',{method:'DELETE',body:JSON.stringify({id})})}D[type]=(D[type]||[]).filter(x=>String(x.id)!==String(id));await saveContent();render();toast(type==='deals'?'تم حذف الصفقة من الموقع':'تم الحذف')}
 let dragData=null;function dragStart(e,type){dragData={type,id:e.currentTarget.dataset.id}}async function dropItem(e,type){if(!dragData||dragData.type!==type)return;const target=e.currentTarget.dataset.id,a=D[type]||[],from=a.findIndex(x=>String(x.id)===String(dragData.id)),to=a.findIndex(x=>String(x.id)===String(target));if(from<0||to<0||from===to)return;const [it]=a.splice(from,1);a.splice(to,0,it);await saveContent();render();dragData=null;toast('تم تغيير الترتيب')}
 
 function rewards(){
