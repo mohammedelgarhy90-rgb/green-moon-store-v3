@@ -253,44 +253,32 @@ function promoValidation(promo, subtotal, shipping, usedCount) {
 }
 
 function normalizeDeal(deal) {
-  // Preserve admin-specific fields (startAt, endAt, popup settings, items, CTA, etc.)
-  // while also providing the canonical fields used by the storefront and deal landing page.
-  deal = deal && typeof deal === 'object' ? deal : {};
-  const oldPrice = Number(deal.oldPrice || deal.originalPrice) || 0;
-  const price = Number(deal.price || deal.dealPrice) || 0;
+  const oldPrice = Number(deal.oldPrice) || 0;
+  const price = Number(deal.price) || 0;
   const discount = Number(deal.discount) || (oldPrice > price && oldPrice > 0 ? Math.round((1 - price / oldPrice) * 100) : 0);
-  const name = String(deal.name || deal.title || 'صفقة Green Moon');
-  const description = String(deal.description || deal.text || deal.shortDescription || '');
   return {
-    ...deal,
     id: deal.id || ('DEAL-' + Date.now().toString(36).toUpperCase()),
-    name,
-    title: String(deal.title || name),
-    shortDescription: String(deal.shortDescription || description),
-    description,
-    text: String(deal.text || description),
-    image: deal.image || deal.imageUrl || '/assets/logo.jpg',
+    name: String(deal.name || 'صفقة Green Moon'),
+    shortDescription: String(deal.shortDescription || deal.description || ''),
+    description: String(deal.description || ''),
+    image: deal.image || '/assets/logo.jpg',
     price,
     oldPrice,
     discount,
-    contents: Array.isArray(deal.contents) ? deal.contents.map(x => String(x)).filter(Boolean) : (Array.isArray(deal.items) ? deal.items.map(x => String(x.name || x.title || x.productName || '')).filter(Boolean) : []),
+    contents: Array.isArray(deal.contents) ? deal.contents.map(x => String(x)).filter(Boolean) : [],
     sizes: Array.isArray(deal.sizes) ? deal.sizes.map(x => String(x)).filter(Boolean) : [],
     features: Array.isArray(deal.features) ? deal.features.map(x => String(x)).filter(Boolean) : [],
     shipping: String(deal.shipping || ''),
     notes: String(deal.notes || ''),
-    expiresAt: deal.expiresAt || deal.endAt || '',
+    expiresAt: deal.expiresAt || '',
     active: deal.active !== false,
-    productIds: Array.isArray(deal.productIds) ? deal.productIds : (Array.isArray(deal.items) ? deal.items.map(x => x.productId).filter(x => x !== undefined && x !== null) : [])
+    productIds: Array.isArray(deal.productIds) ? deal.productIds : []
   };
 }
 
 async function getDeals(env) {
-  const stored = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
-  if (Array.isArray(stored) && stored.length) return stored.map(normalizeDeal);
-  // Backward-compatible read: older admin versions saved deals inside settings only.
-  const settings = await kvJson(env, SETTINGS_KEY, {});
-  const legacy = Array.isArray(settings?.gm_deals) ? settings.gm_deals : (Array.isArray(settings?.deals) ? settings.deals : []);
-  return legacy.map(normalizeDeal);
+  const deals = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
+  return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
 }
 
 
@@ -1506,7 +1494,12 @@ return {
           success:
             true,
 
-          order
+          // Keep the persisted order schema unchanged; expose the customer tracking URL
+          // in the checkout response because the storefront displays order.trackingUrl.
+          order: {
+            ...order,
+            trackingUrl: '/track.html?token=' + encodeURIComponent(trackingToken)
+          }
         });
 
       } catch (error) {
@@ -1737,11 +1730,6 @@ return {
         }
 
         await env.GREEN_MOON_KV.put(DEALS_KEY, JSON.stringify(deals));
-        // Keep the settings copy in sync for /deals.html and older storefront clients.
-        const settings = await kvJson(env, SETTINGS_KEY, {});
-        const nextSettings = { ...(settings && typeof settings === 'object' ? settings : {}), gm_deals: deals, deals };
-        await env.GREEN_MOON_KV.put(SETTINGS_KEY, JSON.stringify(nextSettings));
-        try { await env.GREEN_MOON_KV.put(SETTINGS_BACKUP_KEY, JSON.stringify(nextSettings)); } catch (_) {}
         return json({ success: true, deals });
       } catch (error) {
         return json({ error: String(error?.message || error) }, 500);
