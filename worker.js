@@ -2194,3 +2194,22 @@ return {
     );
   }
 };
+export class GiftCardLedger {
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/" || url.pathname === "/health") {
+      return Response.json({ ok: true });
+    }
+
+    return Response.json(
+      { error: "Gift card API is not enabled" },
+      { status: 501 }
+    );
+  }
+}
