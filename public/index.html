@@ -159,4 +159,23 @@ if ('serviceWorker' in navigator) {
   }, { once: true });
 }
 </script>
+<script>
+/* Remove any legacy in-page app-install CTA without affecting navigation or store actions. */
+(function(){
+ const isInstallCTA = el => {
+   if(!el || !el.matches || !el.matches('button,a,[role="button"]')) return false;
+   const label=((el.innerText||el.textContent||'')+' '+(el.getAttribute('aria-label')||'')+' '+(el.getAttribute('title')||'')).replace(/\s+/g,' ').trim().toLowerCase();
+   return /تثبيت التطبيق|ثبت التطبيق|تثبيت تطبيق|install app|add to home screen/.test(label);
+ };
+ const removeLegacyCTA = root => {
+   if(root.nodeType!==1 && root!==document) return;
+   if(root!==document && isInstallCTA(root)) { root.remove(); return; }
+   root.querySelectorAll?.('button,a,[role="button"]').forEach(el=>{if(isInstallCTA(el))el.remove()});
+ };
+ document.addEventListener('DOMContentLoaded',()=>{
+   removeLegacyCTA(document);
+   new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(removeLegacyCTA))).observe(document.body,{childList:true,subtree:true});
+ },{once:true});
+})();
+</script>
 </body></html>
