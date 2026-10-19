@@ -47,6 +47,7 @@
   <button class="nav" data-tab="deals"><span class="ico">🎯</span> الصفقات</button>
   <button class="nav" data-tab="bundles"><span class="ico">🛍️</span> باكدجات التوفير</button>
   <button class="nav" data-tab="articles"><span class="ico">📰</span> المقالات</button>
+  <button class="nav" data-tab="media"><span class="ico">🗂️</span> مكتبة الصور والفيديو</button>
   <button class="nav" data-tab="reviews"><span class="ico">💬</span> ماذا قالوا عنا</button>
   <button class="nav" data-tab="rewards"><span class="ico">🎁</span> المكافآت</button>
   <button class="nav" data-tab="vouchers"><span class="ico">🎟️</span> القسائم الشرائية</button>
@@ -66,7 +67,7 @@
 
 <script>
 const $=id=>document.getElementById(id), KEY='gm_admin_password_new';
-let D={products:[],orders:[],settings:{},shipping:0,categories:[],hero:[],deals:[],bundles:[],articles:[],reviews:[],rewards:{},home:{},ticker:{},voucherProducts:[]},tab='home';
+let D={products:[],orders:[],settings:{},shipping:0,categories:[],hero:[],deals:[],bundles:[],articles:[],reviews:[],rewards:{},home:{},ticker:{},media:[],voucherProducts:[]},tab='home';
 
 const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const token=()=>sessionStorage.getItem(KEY)||'';
@@ -93,8 +94,8 @@ async function load(){
  D.categories=s.gm_categories||s.categories||[]; D.hero=s.gm_hero||s.hero||[]; D.deals=s.gm_deals||s.deals||[]; D.bundles=Array.isArray(s.gm_bundles)?s.gm_bundles:[]; D.articles=s.gm_articles||[]; D.reviews=s.gm_reviews||[]; D.rewards=s.gm_rewards||{}; D.home=s.gm_home||{}; D.ticker=s.gm_ticker||{};
  render();
 }
-document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function render(){const f={home,products,categories,hero,deals,bundles,articles,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,homebuilder,spotlight};$('content').innerHTML=f[tab]();if(tab==='spotlight'){const ids=D.home.spotlight?.productIds||[];if($('sp_p1'))$('sp_p1').value=ids[0]||'';if($('sp_p2'))$('sp_p2').value=ids[1]||''}}
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(tab==='media'){loadMediaLibrary();return}render()});
+function render(){const f={home,products,categories,hero,deals,bundles,articles,media:mediaLibrary,reviews,rewards,vouchers,promos,ticker,orders,notifications,settings,builder,homebuilder,spotlight};$('content').innerHTML=f[tab]();if(tab==='spotlight'){const ids=D.home.spotlight?.productIds||[];if($('sp_p1'))$('sp_p1').value=ids[0]||'';if($('sp_p2'))$('sp_p2').value=ids[1]||''}}
 function home(){
  return `<div class="stats">
  <div class="stat"><div class="k">${D.products.length}</div><div class="l">إجمالي المنتجات</div></div>
@@ -180,7 +181,7 @@ function renderUploadPreview(id,val,type){
 }
 function uploadBox(id,val,hint,type=''){
  const t=guessMediaType(val,type);
- return `<div class="upload"><div class="uploadrow"><div id="${id}_preview" class="media-preview-wrap">${t==='video'?`<video class="preview" src="${esc(val)}" muted loop autoplay playsinline controls></video>`:`<img class="preview" src="${esc(val||'/assets/logo.jpg')}" alt="">`}</div><div><label class="btn soft dropbtn" for="${id}_file">📷 اختيار صورة / فيديو</label><input id="${id}_file" type="file" accept="image/*,video/*" onchange="handleImage(this,'${id}_preview','${id}_value','${id}_type')"><input id="${id}_value" type="hidden" value="${esc(val||'')}"><input id="${id}_type" type="hidden" value="${esc(t)}"><button type="button" class="btn danger" style="margin-top:7px" onclick="clearUpload('${id}')">🗑️ مسح الصورة الحالية</button><div class="hint">${hint}. الصور تتحول WebP، والفيديو يُرفع كما هو. الحد الأقصى للفيديو 12MB.</div></div></div></div>`;
+ return `<div class="upload"><div class="uploadrow"><div id="${id}_preview" class="media-preview-wrap">${t==='video'?`<video class="preview" src="${esc(val)}" muted loop autoplay playsinline controls></video>`:`<img class="preview" src="${esc(val||'/assets/logo.jpg')}" alt="">`}</div><div><label class="btn soft dropbtn" for="${id}_file">📷 اختيار صورة / فيديو</label><input id="${id}_file" type="file" accept="image/*,video/*" onchange="handleImage(this,'${id}_preview','${id}_value','${id}_type')"><input id="${id}_value" type="hidden" value="${esc(val||'')}"><input id="${id}_type" type="hidden" value="${esc(t)}"><button type="button" class="btn soft" style="margin-top:7px" onclick="chooseLibraryMedia('${id}')">🗂️ اختيار من المكتبة</button> <button type="button" class="btn danger" style="margin-top:7px" onclick="clearUpload('${id}')">🗑️ مسح الصورة الحالية</button><div class="hint">${hint}. الصور والفيديوهات تُرفع من الهاتف أو الكمبيوتر، والملف الأصلي يُحفظ دون قص.</div></div></div></div>`;
 }
 function clearUpload(id){const v=$(id+'_value'),t=$(id+'_type'),f=$(id+'_file'),pr=$(id+'_preview');if(v)v.value='';if(t)t.value='image';if(f)f.value='';if(pr)pr.innerHTML='<div style="padding:24px;text-align:center;color:#78857d;background:#f3f5f1;border-radius:12px">لا توجد صورة محددة</div>';toast('تم مسح الصورة من النموذج — اضغط حفظ لتأكيد التغيير');}
 async function handleImage(input,previewId,valueId,typeId){
@@ -189,8 +190,9 @@ async function handleImage(input,previewId,valueId,typeId){
  if(f.size>12*1024*1024){toast('الفيديو كبير جدًا — الحد الأقصى 12MB');return}
  try{
    toast(f.type.startsWith('video/')?'جاري رفع الفيديو...':'جاري تجهيز الصورة...');
-   const data=f.type.startsWith('image/')?await resizeImage(f,1400,1400,.84):await readDataUrl(f);
-   const r=await fetch('/api/admin/media',{method:'POST',headers:H(),body:JSON.stringify({data,mime:f.type.startsWith('image/')?'image/webp':f.type,name:f.name})});
+   // Keep the original phone photo/video unchanged; do not crop or recompress plant photography.
+   const data=await readDataUrl(f);
+   const r=await fetch('/api/admin/media',{method:'POST',headers:H(),body:JSON.stringify({data,mime:f.type,name:f.name})});
    let d={};try{d=await r.json()}catch{}
    if(!r.ok)throw Error(d.error||'تعذر رفع الوسائط');
    $(valueId).value=d.url;
@@ -200,7 +202,6 @@ async function handleImage(input,previewId,valueId,typeId){
  }catch(e){toast(e.message||'تعذر رفع الملف')}
 }
 function readDataUrl(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
-function resizeImage(file,maxW,maxH,quality){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{let w=im.width,h=im.height,s=Math.min(1,maxW/w,maxH/h);w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);resolve(c.toDataURL('image/webp',quality))};im.onerror=reject;im.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
 function mediaAdminTag(src,type,cls=''){return guessMediaType(src,type)==='video'?`<video class="${cls}" src="${esc(src)}" muted loop autoplay playsinline controls></video>`:`<img class="${cls}" src="${esc(src||'/assets/logo.jpg')}" alt="">`}
 
 function pricingInputs(){const n=id=>Math.max(0,Number($(id)?.value)||0);return {plantCost:n('cost_plant'),packagingCost:n('cost_pack'),shippingCost:n('cost_ship'),adCost:n('cost_ads'),otherCost:n('cost_other'),targetMargin:Math.min(90,n('cost_margin')),marketLow:n('market_low'),marketHigh:n('market_high'),autoPrice:!!$('price_auto')?.checked}}
@@ -215,6 +216,7 @@ async function saveProduct(id){
    shippingPrice:+$('ps').value||0,
    pricing:(()=>{const x=recalcProductPrice();return {...x}})(),
    image:$('pi_value').value,
+   imageType:$('pi_type').value||'image',
    details:$('pd').value,
    sticker:{text:$('st_text').value,color:$('st_color').value,position:$('st_pos').value,active:$('st_active').checked},
    relatedOffers:collectRelatedOffers(),
@@ -235,6 +237,58 @@ async function saveBundle(id){const selected=[...document.querySelectorAll('.bun
 async function deleteBundle(id){if(!confirm('حذف باكدج التوفير؟'))return;D.bundles=(D.bundles||[]).filter(x=>String(x.id)!==String(id));D.settings={...D.settings,gm_bundles:D.bundles};await api('/api/admin/settings',{method:'PUT',body:JSON.stringify(D.settings)});await load();go('bundles');toast('تم حذف الباكدج من الموقع')}
 
 function articles(){return collection('articles','📰 المقالات والأخبار','محتوى تثقيفي أو أخبار المتجر','article')}
+async function chooseLibraryMedia(fieldId){
+ try{
+  const d=await api('/api/admin/media?limit=120');
+  const items=Array.isArray(d.items)?d.items:[];
+  D.media=items;
+  if(!items.length){toast('مكتبة الوسائط فارغة — ارفع ملفًا أولًا من مكتبة الصور والفيديو');return;}
+  const menu=items.map((x,i)=>`${i+1}. ${x.type==='video'?'🎬':'🖼️'} ${x.name||'ملف وسائط'}`).join('\n');
+  const answer=prompt('اكتب رقم الصورة أو الفيديو:\n'+menu,'1');
+  if(answer===null)return;
+  const n=Number(answer);if(!Number.isInteger(n)||n<1||n>items.length){toast('رقم غير صحيح');return;}
+  const item=items[n-1],value=$(fieldId+'_value'),type=$(fieldId+'_type');
+  if(!value||!type){toast('خانة الوسائط غير موجودة');return;}
+  value.value=item.url;type.value=item.type||'image';renderUploadPreview(fieldId,item.url,item.type);toast('تم اختيار الملف — اضغط حفظ لنشر التغيير');
+ }catch(e){toast(e.message||'تعذر فتح مكتبة الوسائط')}
+}
+
+function mediaLibrary(){
+ const items=Array.isArray(D.media)?D.media:[];
+ const formatBytes=n=>{n=Number(n)||0;return n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'};
+ return `<div class="panel"><div class="head"><div><h2>🖼️ مكتبة الصور والفيديو</h2><p>ارفع صور أو فيديوهات من الموبايل مرة واحدة، واحفظ رابطها لاستخدامها في حقول الموقع. الرفع يحافظ على الملف الأصلي دون قص أو إعادة ضغط.</p></div><button class="btn ghost" onclick="loadMediaLibrary()">↻ تحديث</button></div>
+ <div class="upload" style="margin-bottom:15px"><div class="field"><label for="gmMediaLibraryFiles">اختيار صور / فيديوهات من الهاتف أو الكمبيوتر</label><input id="gmMediaLibraryFiles" type="file" accept="image/*,video/*" multiple style="display:block;width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;background:white" onchange="uploadMediaLibrary(this)"><div class="hint">حد أقصى 12 ميجابايت لكل ملف. اختر من المعرض أو الملفات، أو استخدم خيار الكاميرا إذا أتاحه جهازك.</div></div><div id="gmMediaUploadStatus" class="hint" role="status"></div></div>
+ <div class="cards">${items.length?items.map(x=>`<article class="card"><div class="cardmedia">${mediaAdminTag(x.url,x.type,'media-card-preview')}</div><div class="cardbody"><h3>${esc(x.name||'ملف وسائط')}</h3><p>${x.type==='video'?'🎬 فيديو':'🖼️ صورة'} · ${esc(formatBytes(x.bytes))}${x.createdAt?' · '+esc(new Date(x.createdAt).toLocaleString('ar-EG')):''}</p><div class="field"><label>رابط الملف</label><input readonly value="${esc(x.url)}" id="media_url_${esc(x.id)}" dir="ltr"></div><div class="cardactions" style="margin-top:8px"><button class="btn primary" onclick="copyMediaUrl('${esc(x.id)}')">نسخ الرابط</button><a class="btn soft" href="${esc(x.url)}" target="_blank" rel="noopener">فتح الملف</a></div></div></article>`).join(''):`<div class="empty" style="grid-column:1/-1">مكتبة الوسائط فارغة. ارفع أول صورة أو فيديو من فوق.</div>`}</div>
+ <p class="hint" style="margin-top:14px">يمكنك أيضًا رفع الملف مباشرةً من أي حقل صورة أو فيديو داخل تعديل المنتج، التصنيف، الصفقة، البانر، المقال، الريفيو، الشعار أو الـ Hero.</p></div>`;
+}
+async function loadMediaLibrary(){
+ try{const d=await api('/api/admin/media?limit=120');D.media=Array.isArray(d.items)?d.items:[];render();}
+ catch(e){toast(e.message||'تعذر تحميل مكتبة الوسائط');}
+}
+async function uploadMediaLibrary(input){
+ const files=Array.from(input.files||[]);if(!files.length)return;
+ const status=$('gmMediaUploadStatus');
+ for(let i=0;i<files.length;i++){
+  const f=files[i];
+  if(!f.type.startsWith('image/')&&!f.type.startsWith('video/')){if(status)status.textContent='تم تخطي ملف غير صورة أو فيديو: '+f.name;continue}
+  if(f.size>12*1024*1024){if(status)status.textContent='تم تخطي '+f.name+' لأن حجمه أكبر من 12 ميجابايت.';continue}
+  try{
+   if(status)status.textContent=`جاري رفع الملف ${i+1} من ${files.length}: ${f.name}`;
+   const data=await readDataUrl(f);
+   const result=await api('/api/admin/media',{method:'POST',body:JSON.stringify({data,mime:f.type,name:f.name})});
+   if(!result.url)throw Error('لم يرجع الخادم رابط الملف');
+  }catch(e){if(status)status.textContent='تعذر رفع '+f.name+': '+(e.message||'خطأ غير معروف');toast(e.message||'تعذر رفع الملف');return}
+ }
+ if(input)input.value='';
+ const d=await api('/api/admin/media?limit=120');D.media=Array.isArray(d.items)?d.items:[];render();toast('تم رفع الوسائط بنجاح');
+}
+async function copyMediaUrl(id){
+ const item=(D.media||[]).find(x=>String(x.id)===String(id));if(!item)return;
+ const fullUrl=new URL(item.url,location.origin).href;
+ try{await navigator.clipboard.writeText(fullUrl);toast('تم نسخ رابط الوسائط');}
+ catch(_){prompt('انسخ رابط الملف:',fullUrl)}
+}
+
 function collection(type,title,sub,kind){
  const a=D[type]||[];
  return `<div class="panel"><div class="head"><div><h2>${title}</h2><p>${sub}</p></div><button class="btn primary" onclick="collectionForm('${type}')">+ إضافة</button></div>
