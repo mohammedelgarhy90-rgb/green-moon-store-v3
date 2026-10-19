@@ -2103,6 +2103,38 @@ return {
     }
 
     /* =========================
+       ADMIN MEDIA LIBRARY
+       Returns metadata only; media payloads remain in KV and are never sent to the dashboard.
+    ========================= */
+    if (url.pathname === '/api/admin/media' && request.method === 'GET') {
+      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
+      try {
+        const requested = Number(url.searchParams.get('limit')) || 80;
+        const limit = Math.min(200, Math.max(1, requested));
+        const page = await env.GREEN_MOON_KV.list({ prefix: MEDIA_PREFIX, limit });
+        const items = [];
+        for (const key of (page.keys || [])) {
+          const stored = await env.GREEN_MOON_KV.get(key.name, 'json');
+          if (!stored || !stored.mime) continue;
+          const id = key.name.slice(MEDIA_PREFIX.length);
+          items.push({
+            id,
+            url: '/media/' + encodeURIComponent(id),
+            name: String(stored.name || 'media'),
+            mime: String(stored.mime || 'application/octet-stream'),
+            type: String(stored.mime || '').startsWith('video/') ? 'video' : 'image',
+            createdAt: stored.createdAt || '',
+            bytes: Math.floor(String(stored.data || '').length * 3 / 4)
+          });
+        }
+        items.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+        return json({ items, complete: !!page.list_complete });
+      } catch (e) {
+        return json({ error: String(e?.message || 'تعذر تحميل مكتبة الوسائط') }, 500);
+      }
+    }
+
+    /* =========================
        ADMIN MEDIA UPLOADS
        Supports images + videos anywhere the admin media picker is used.
     ========================= */
