@@ -1250,9 +1250,20 @@ function resolveRelatedOffer(product, offerId) {
           }
         }
 
+        const orderDeals = await getDeals(env);
         const items =
           body.items
             .map(item => {
+              const dealId = String(item.dealId || '');
+              if (dealId) {
+                const deal = orderDeals.find(d => String(d.id) === dealId && d.active !== false);
+                const end = deal ? new Date(deal.endAt || deal.expiresAt || '').getTime() : NaN;
+                if (!deal || (Number.isFinite(end) && end > 0 && end <= Date.now())) return null;
+                const quantity = Math.max(1, Math.min(99, Number(item.quantity) || 1));
+                const dealPrice = Number(deal.price || deal.dealPrice) || 0;
+                if (!(dealPrice > 0)) return null;
+                return { productId: 'deal:' + dealId, dealId, name: String(deal.title || deal.name || 'صفقة Green Moon'), price: dealPrice, quantity, lineTotal: dealPrice * quantity, isDeal: true, image: deal.image || deal.imageUrl || deal.banner || '' };
+              }
               const bundleId = String(item.bundleId || '');
               if (bundleId) {
                 const quantity = Math.max(1, Math.min(99, Number(item.quantity) || 1));
@@ -1369,7 +1380,7 @@ return {
 
         let shipping = 0;
 
-        if (items.some(item => item.isBundle)) {
+        if (items.some(item => item.isBundle || item.isDeal)) {
           shipping = generalShipping;
         } else if (
           uniqueProductIds.length === 1
