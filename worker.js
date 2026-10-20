@@ -1244,15 +1244,36 @@ function resolveRelatedOffer(product, offerId) {
             .map(item => {
               const bundleId = String(item.bundleId || '');
               if (bundleId) {
+                const quantity = Math.max(1, Math.min(99, Number(item.quantity) || 1));
+                // Auto bundles are generated from the current catalog. Recompute their price here;
+                // never trust a client-supplied amount or a stale browser price.
+                if (bundleId.startsWith('AUTO|')) {
+                  const parts = bundleId.split('|');
+                  if (parts.length !== 3) return null;
+                  let ids;
+                  try { ids = [decodeURIComponent(parts[1]), decodeURIComponent(parts[2])]; } catch { return null; }
+                  if (!ids[0] || !ids[1] || ids[0] === ids[1]) return null;
+                  const autoProducts = ids.map(id => products.find(p => String(p.id) === id && p.active !== false && p.isActive !== false));
+                  if (autoProducts.some(p => !p || !(Number(p.price) > 0))) return null;
+                  const original = autoProducts.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+                  const cost = autoProducts.reduce((sum, p) => sum + (Number(p.wholesalePrice ?? p.costPrice ?? p.cost) || 0), 0);
+                  const costFloor = cost > 0 ? Math.ceil(cost * 1.12) : 0;
+                  if (costFloor > 0 && costFloor >= original) return null;
+                  const bundlePrice = Math.max(Math.round(original * 0.92), costFloor);
+                  if (!(bundlePrice > 0 && bundlePrice < original)) return null;
+                  const bundleName = `باكدج ${autoProducts[0].name || 'Green Moon'} + ${autoProducts[1].name || 'Green Moon'}`;
+                  return { productId: 'bundle:' + bundleId, bundleId, name: bundleName, price: bundlePrice, originalPrice: original, saving: original - bundlePrice, quantity, lineTotal: bundlePrice * quantity, isBundle: true, isAutoBundle: true, bundleItems: autoProducts.map(p => ({ productId: p.id, name: p.name, quantity })) };
+                }
                 const bundle = allowedBundles.find(b => String(b.id) === bundleId && b.active !== false);
                 if (!bundle || !Array.isArray(bundle.items) || bundle.items.length < 2) return null;
                 const bundleParts = bundle.items.map(part => ({ product: products.find(p => String(p.id) === String(part.productId)), quantity: Math.max(1, Number(part.quantity) || 1) }));
                 if (bundleParts.some(part => !part.product)) return null;
-                const quantity = Math.max(1, Number(item.quantity) || 1);
+                const original = bundleParts.reduce((sum, part) => sum + (Number(part.product.price) || 0) * part.quantity, 0);
                 const bundlePrice = Math.max(0, Number(bundle.price) || 0);
-                if (!bundlePrice) return null;
+                // Reject stale or incorrectly configured bundles whose price is no longer below the live sum.
+                if (!(bundlePrice > 0 && bundlePrice < original)) return null;
                 const bundleName = String(bundle.title || bundle.name || 'باكدج Green Moon');
-                return { productId: 'bundle:' + bundleId, bundleId, name: bundleName, price: bundlePrice, quantity, lineTotal: bundlePrice * quantity, isBundle: true, bundleItems: bundleParts.map(part => ({ productId: part.product.id, name: part.product.name, quantity: part.quantity * quantity })) };
+                return { productId: 'bundle:' + bundleId, bundleId, name: bundleName, price: bundlePrice, originalPrice: original, saving: original - bundlePrice, quantity, lineTotal: bundlePrice * quantity, isBundle: true, bundleItems: bundleParts.map(part => ({ productId: part.product.id, name: part.product.name, quantity: part.quantity * quantity })) };
               }
 
               const product =
