@@ -253,15 +253,17 @@ function promoValidation(promo, subtotal, shipping, usedCount) {
 }
 
 function normalizeDeal(deal) {
-  const oldPrice = Number(deal.oldPrice) || 0;
-  const price = Number(deal.price) || 0;
+  const oldPrice = Number(deal.oldPrice ?? deal.originalPrice) || 0;
+  const price = Number(deal.price ?? deal.dealPrice) || 0;
   const discount = Number(deal.discount) || (oldPrice > price && oldPrice > 0 ? Math.round((1 - price / oldPrice) * 100) : 0);
   return {
     id: deal.id || ('DEAL-' + Date.now().toString(36).toUpperCase()),
-    name: String(deal.name || 'صفقة Green Moon'),
-    shortDescription: String(deal.shortDescription || deal.description || ''),
-    description: String(deal.description || ''),
-    image: deal.image || '/assets/logo.jpg',
+    name: String(deal.name || deal.title || 'صفقة Green Moon'),
+    title: String(deal.title || deal.name || 'صفقة Green Moon'),
+    shortDescription: String(deal.shortDescription || deal.text || deal.description || ''),
+    description: String(deal.description || deal.text || deal.shortDescription || ''),
+    image: deal.image || deal.imageUrl || deal.banner || '/assets/logo.jpg',
+    imageType: deal.imageType || 'image',
     price,
     oldPrice,
     discount,
@@ -270,13 +272,22 @@ function normalizeDeal(deal) {
     features: Array.isArray(deal.features) ? deal.features.map(x => String(x)).filter(Boolean) : [],
     shipping: String(deal.shipping || ''),
     notes: String(deal.notes || ''),
-    expiresAt: deal.expiresAt || '',
-    active: deal.active !== false,
-    productIds: Array.isArray(deal.productIds) ? deal.productIds : []
+    expiresAt: deal.expiresAt || deal.endAt || '',
+    startAt: deal.startAt || '',
+    endAt: deal.endAt || deal.expiresAt || '',
+    active: deal.active !== false && deal.active !== 0 && deal.active !== '0',
+    productIds: Array.isArray(deal.productIds) ? deal.productIds : [],
+    items: Array.isArray(deal.items) ? deal.items : []
   };
 }
 
 async function getDeals(env) {
+  // The current Admin UI saves deals inside the settings object (gm_deals/deals),
+  // while older versions used a dedicated KV key. Read the Admin UI source first.
+  const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json');
+  const settingsDeals = Array.isArray(settings?.gm_deals) ? settings.gm_deals
+    : Array.isArray(settings?.deals) ? settings.deals : null;
+  if (settingsDeals) return settingsDeals.map(normalizeDeal);
   const deals = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
   return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
 }
@@ -1751,6 +1762,10 @@ return {
         }
 
         await env.GREEN_MOON_KV.put(DEALS_KEY, JSON.stringify(deals));
+        const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
+        settings.gm_deals = deals;
+        settings.deals = deals;
+        await env.GREEN_MOON_KV.put(SETTINGS_KEY, JSON.stringify(settings));
         return json({ success: true, deals });
       } catch (error) {
         return json({ error: String(error?.message || error) }, 500);
