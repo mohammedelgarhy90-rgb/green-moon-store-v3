@@ -397,12 +397,17 @@ async function sendPush(env, sub, payload) {
 }
 async function broadcastPush(env,payload,filterFn=null){
   const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
-  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub)continue;if(filterFn&&!filterFn(sub))continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
+  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||(sub.isAdmin===true&&sub.customerSubscription!==true))continue;if(filterFn&&!filterFn(sub))continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
 }
 async function notifyOrder(env,order,title,body){
   const payload={title,body,url:'/track.html?token='+encodeURIComponent(order.trackingToken||''),tag:'order-'+order.id};
   const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
   for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||sub.orderUpdates===false)continue;if((order.accountId&&sub.accountId===order.accountId)||(order.guestKey&&sub.guestKey===order.guestKey)){const r=await sendPush(env,sub,payload);if(r==='gone')await env.GREEN_MOON_KV.delete(k.name);}}
+}
+async function notifyAdmins(env,order){
+  const payload={title:'🔔 طلب جديد من Green Moon',body:`طلب #${order.id} — ${order.name||'عميل'} — ${Number(order.total||0)} جنيه`,url:'/admin.html',tag:'gm-admin-order-'+order.id};
+  const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
+  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||!(sub.isAdmin===true||sub.role==='admin')||sub.newOrders===false)continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
 }
 
 
@@ -466,7 +471,8 @@ export default {
     if (url.pathname === '/api/account/orders' && request.method === 'GET') { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const orders=(await getOrders(env)).filter(o=>o.accountId===sess.accountId).map(publicOrder); return json(orders); }
     if (url.pathname === '/api/account/preferences' && (request.method==='GET'||request.method==='PUT')) { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const a=await accountById(env,sess.accountId); if(request.method==='GET')return json(a?.notifications||{promotions:true,newProducts:true,orderUpdates:true}); const b=await request.json(); a.notifications={promotions:b.promotions!==false,newProducts:b.newProducts!==false,orderUpdates:b.orderUpdates!==false}; await env.GREEN_MOON_KV.put(ACCOUNT_PREFIX+a.id,JSON.stringify(a)); return json({success:true,notifications:a.notifications}); }
     if (url.pathname === '/api/push/config' && request.method === 'GET') { const k=await getVapid(env); return json({publicKey:k.publicKey}); }
-    if (url.pathname === '/api/push/subscribe' && request.method === 'POST') { try { const b=await request.json(); if(!b.subscription?.endpoint)return json({error:'اشتراك الإشعارات غير صالح'},400); const sess=await customerSession(request,env); const guestKey=String(b.guestKey||'').slice(0,120); const sub={...b.subscription,accountId:sess?.accountId||'',guestKey,orderUpdates:b.orderUpdates!==false,promotions:b.promotions!==false,newProducts:b.newProducts!==false,news:b.news!==false,deals:b.deals!==false,updatedAt:new Date().toISOString()}; const key=PUSH_PREFIX+btoa(sub.endpoint).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
+    if (url.pathname === '/api/push/subscribe' && request.method === 'POST') { try { const b=await request.json(); if(!b.subscription?.endpoint)return json({error:'اشتراك الإشعارات غير صالح'},400); const sess=await customerSession(request,env); const guestKey=String(b.guestKey||'').slice(0,120); const key=PUSH_PREFIX+btoa(String(b.subscription.endpoint)).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); const previous=await kvJson(env,key,{}); const sub={...previous,...b.subscription,isAdmin:previous?.isAdmin===true,customerSubscription:true,accountId:sess?.accountId||previous?.accountId||'',guestKey,orderUpdates:b.orderUpdates!==false,promotions:b.promotions!==false,newProducts:b.newProducts!==false,news:b.news!==false,deals:b.deals!==false,updatedAt:new Date().toISOString()}; await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
+    if (url.pathname === '/api/admin/push/subscribe' && request.method === 'POST') { if(!adminOk(request,env))return json({error:'غير مصرح'},401); try { const b=await request.json(); if(!b.subscription?.endpoint||!b.subscription?.keys?.p256dh||!b.subscription?.keys?.auth)return json({error:'اشتراك الإشعارات غير صالح'},400); const key=PUSH_PREFIX+btoa(String(b.subscription.endpoint)).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); const previous=await kvJson(env,key,{}); const sub={...previous,...b.subscription,isAdmin:true,role:'admin',newOrders:b.newOrders!==false,updatedAt:new Date().toISOString()}; await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
     if (url.pathname.startsWith('/api/track/') && request.method === 'GET') { const token=decodeURIComponent(url.pathname.slice('/api/track/'.length)); const orders=await getOrders(env); const o=orders.find(x=>x.trackingToken===token); if(!o)return json({error:'رابط التتبع غير صالح أو منتهي.'},404); return json({order:publicOrder(o)}); }
     if (url.pathname === '/api/courier/login' && request.method === 'POST') { const b=await request.json(); const pass=String(b.password||''); const expected=String(env.COURIER_PASSWORD||env.ADMIN_PASSWORD||''); if(!expected||pass!==expected)return json({error:'كود شركة الشحن غير صحيح.'},401); const t=randomToken(24); await env.GREEN_MOON_KV.put(COURIER_SESSION_PREFIX+t,JSON.stringify({expiresAt:Date.now()+12*60*60*1000}),{expirationTtl:43200}); return json({success:true,token:t}); }
     async function courierOk(){ const h=String(request.headers.get('authorization')||''); const t=h.startsWith('Bearer ')?h.slice(7).trim():''; const s=t?await kvJson(env,COURIER_SESSION_PREFIX+t,null):null; return !!s&&Number(s.expiresAt||0)>Date.now(); }
@@ -1532,6 +1538,7 @@ return {
           )
         );
         ctx.waitUntil(notifyOrder(env,order,'🌿 تم استلام طلبك','تم استلام طلبك من Green Moon وجاري التجهيز.'));
+        ctx.waitUntil(notifyAdmins(env,order));
 
         return json({
           success:
@@ -1661,13 +1668,18 @@ return {
               );
             }
 
+            const previousProduct = products[index];
             products[index] =
               normalizeProduct({
-                ...products[index],
+                ...previousProduct,
                 ...body,
                 id:
-                  products[index].id
+                  previousProduct.id
               });
+            if (Number(products[index].price) > 0 && Number(previousProduct.price) > Number(products[index].price)) {
+              const discounted = products[index];
+              ctx.waitUntil(broadcastPush(env,{title:'🏷️ تخفيض سعر من Green Moon',body:`سعر ${discounted.name} انخفض من ${Number(previousProduct.price)} إلى ${Number(discounted.price)} جنيه. الحق العرض!`,url:'/index.html#products',tag:'price-drop-'+discounted.id},sub=>sub.promotions!==false));
+            }
           }
 
           await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(products));
@@ -1998,13 +2010,29 @@ return {
         );
       }
 
-      if (
-        request.method === 'GET'
-      ) {
+      if (request.method === 'GET') {
+        return json(await getOrders(env));
+      }
 
-        return json(
-          await getOrders(env)
-        );
+      if (request.method === 'DELETE') {
+        try {
+          const body = await request.json().catch(() => ({}));
+          const orders = await getOrders(env);
+          let removed = [];
+          let kept = orders;
+          if (body.action === 'delete-closed') {
+            removed = orders.filter(o => ['ملغي','مكتمل'].includes(String(o.status||'')));
+            kept = orders.filter(o => !['ملغي','مكتمل'].includes(String(o.status||'')));
+          } else {
+            const ids = new Set((Array.isArray(body.ids) ? body.ids : body.id != null ? [body.id] : []).map(String));
+            if (!ids.size) return json({error:'حدد الطلبات المراد حذفها.'},400);
+            removed = orders.filter(o => ids.has(String(o.id)));
+            kept = orders.filter(o => !ids.has(String(o.id)));
+          }
+          if (!removed.length) return json({success:true,deleted:0,orders:kept});
+          await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(kept.slice(0,500)));
+          return json({success:true,deleted:removed.length,orders:kept});
+        } catch (error) { return json({error:String(error?.message||error)},500); }
       }
 
       if (
