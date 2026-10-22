@@ -3,6 +3,7 @@ const LOGO_KEY = 'logo';
 const SETTINGS_KEY = 'settings';
 const ORDERS_KEY = 'orders';
 const SHIPPING_KEY = 'shipping';
+const SHIPPING_RULES_KEY = 'shipping_rules';
 const DEALS_KEY = 'deals';
 const MEDIA_PREFIX = 'media:';
 const MAX_MEDIA_BYTES = 12 * 1024 * 1024;
@@ -209,14 +210,81 @@ async function getLogo(env) {
 }
 
 async function getShipping(env) {
-  const value =
-    await env.GREEN_MOON_KV.get(
-      SHIPPING_KEY,
-      'json'
-    );
-
+  const value = await env.GREEN_MOON_KV.get(SHIPPING_KEY, 'json');
   return Number(value?.price) || 0;
 }
+
+function defaultShippingRules() {
+  return {
+    enabled: true,
+    courierBase: 120,
+    courierSpecial: 140,
+    customerBase: 80,
+    customerSpecial: 100,
+    halfShippingEnabled: true,
+    halfShippingThreshold: 1000,
+    thresholdEnabled: false,
+    freeShippingThreshold: 1500,
+    specialAreas: ['مدينتي', 'الشروق', 'العبور'],
+    freeShippingDealIds: [],
+    updatedAt: ''
+  };
+}
+
+async function getShippingRules(env) {
+  const saved = await kvJson(env, SHIPPING_RULES_KEY, null);
+  const d = defaultShippingRules();
+  const r = saved && typeof saved === 'object' ? { ...saved } : {};
+  // One-time migration from the previous default policy to the owner's requested customer rates.
+  if (saved && typeof saved === 'object' && !Object.prototype.hasOwnProperty.call(r, 'halfShippingEnabled')) {
+    if (Number(r.customerBase) === 70 && Number(r.customerSpecial) === 80) { r.customerBase = 80; r.customerSpecial = 100; }
+    r.halfShippingEnabled = true;
+    if (!(Number(r.halfShippingThreshold) > 0)) r.halfShippingThreshold = 1000;
+  }
+  return {
+    ...d, ...r,
+    courierBase: Math.max(0, Number(r.courierBase ?? d.courierBase) || 0),
+    courierSpecial: Math.max(0, Number(r.courierSpecial ?? d.courierSpecial) || 0),
+    customerBase: Math.max(0, Number(r.customerBase ?? d.customerBase) || 0),
+    customerSpecial: Math.max(0, Number(r.customerSpecial ?? d.customerSpecial) || 0),
+    freeShippingThreshold: Math.max(0, Number(r.freeShippingThreshold ?? d.freeShippingThreshold) || 0),
+    halfShippingEnabled: r.halfShippingEnabled !== false,
+    halfShippingThreshold: Math.max(0, Number(r.halfShippingThreshold ?? d.halfShippingThreshold) || 0),
+    thresholdEnabled: r.thresholdEnabled === true,
+    enabled: r.enabled !== false,
+    specialAreas: Array.isArray(r.specialAreas) && r.specialAreas.length ? r.specialAreas.map(String).slice(0, 30) : d.specialAreas,
+    freeShippingDealIds: Array.isArray(r.freeShippingDealIds) ? r.freeShippingDealIds.map(String).slice(0, 500) : [],
+  };
+}
+
+function shippingZoneFor(governorate, area, rules) {
+  const where = `${governorate || ''} ${area || ''}`.normalize('NFKC').toLocaleLowerCase('ar').replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/[ـ]/g, '').trim();
+  const special = (rules.specialAreas || ['مدينتي','الشروق','العبور']).some(name => {
+    const n = String(name).normalize('NFKC').toLocaleLowerCase('ar').replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/[ـ]/g, '').trim();
+    return n && where.includes(n);
+  });
+  return special ? 'special' : 'standard';
+}
+
+function dealHasFreeShipping(deal) {
+  if (!deal) return false;
+  if (deal.freeShipping === true || deal.shippingFree === true || deal.shipping === 0) return true;
+  const value = String(deal.shipping || deal.shippingType || '').normalize('NFKC').toLocaleLowerCase('ar');
+  return /مجاني|free.?shipping|free delivery|بدون شحن/.test(value);
+}
+
+function calculateShippingQuote(rules, governorate, area, subtotal, freeDeal = false) {
+  const zone = shippingZoneFor(governorate, area, rules);
+  const courierCost = zone === 'special' ? rules.courierSpecial : rules.courierBase;
+  let customerShipping = zone === 'special' ? rules.customerSpecial : rules.customerBase;
+  let freeShippingReason = '';
+  if (freeDeal) { customerShipping = 0; freeShippingReason = 'صفقة بتوصيل مجاني'; }
+  else if (rules.thresholdEnabled && rules.freeShippingThreshold > 0 && subtotal >= rules.freeShippingThreshold) { customerShipping = 0; freeShippingReason = `شحن مجاني للطلبات من ${rules.freeShippingThreshold} جنيه`; }
+  else if (rules.halfShippingEnabled && rules.halfShippingThreshold > 0 && subtotal >= rules.halfShippingThreshold) { customerShipping = Math.ceil(customerShipping / 2); freeShippingReason = `خصم 50% على الشحن للطلبات من ${rules.halfShippingThreshold} جنيه`; }
+  customerShipping = Math.min(courierCost, Math.max(0, customerShipping));
+  return { zone, courierCost, shipping: customerShipping, shippingSupport: Math.max(0, courierCost - customerShipping), freeShippingReason };
+}
+
 
 async function getOrders(env) {
   return (
@@ -563,10 +631,8 @@ export default {
       request.method === 'GET'
     ) {
 
-      return json({
-        shipping:
-          await getShipping(env)
-      });
+      const rules = await getShippingRules(env);
+      return json({ shipping: rules.customerBase, config: rules });
     }
 
     /* =========================
@@ -1451,46 +1517,21 @@ return {
             0
           );
 
-        const generalShipping =
-          await getShipping(env);
-
-        const uniqueProductIds =
-          [
-            ...new Set(
-              items.map(
-                item =>
-                  String(
-                    item.productId
-                  )
-              )
-            )
-          ];
-
-        let shipping = 0;
-
-        if (items.some(item => item.isBundle || item.isDeal)) {
-          shipping = generalShipping;
-        } else if (
-          uniqueProductIds.length === 1
-        ) {
-
-          const product =
-            products.find(
-              p =>
-                String(p.id) ===
-                uniqueProductIds[0]
-            );
-
-          shipping =
-            Number(
-              product?.shippingPrice
-            ) || 0;
-
-        } else {
-
-          shipping =
-            generalShipping;
-        }
+        const shippingRules = await getShippingRules(env);
+        const orderDealsForShipping = await getDeals(env);
+        const hasFreeShippingDeal = items.some(item => {
+          if (!item.isDeal || !item.dealId) return false;
+          const deal = orderDealsForShipping.find(d => String(d.id) === String(item.dealId));
+          return dealHasFreeShipping(deal) || shippingRules.freeShippingDealIds.includes(String(item.dealId));
+        });
+        const shippingQuote = calculateShippingQuote(
+          shippingRules,
+          body.governorate || '',
+          body.area || '',
+          productsTotal,
+          hasFreeShippingDeal
+        );
+        let shipping = shippingQuote.shipping;
 
         const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
         const orders = await getOrders(env);
@@ -1505,10 +1546,45 @@ return {
           if (!result.ok) return json({error:result.error},400);
           if (result.type === 'free_shipping') {
             // Free shipping affects shipping only; never subtract it from the products subtotal.
+            if (promo.protectProfit !== false) {
+              const costById = new Map(products.map(p => [String(p.id), Number(p.wholesalePrice ?? p.costPrice)]));
+              let knownCosts = true;
+              const costTotal = items.reduce((sum, item) => {
+                if (String(item.productId).startsWith('deal:')) { knownCosts = false; return sum; }
+                const cost = costById.get(String(item.productId));
+                if (!Number.isFinite(cost) || cost < 0) { knownCosts = false; return sum; }
+                return sum + cost * Math.max(1, Number(item.quantity) || 1);
+              }, 0);
+              if (!knownCosts) return json({error:'لا يمكن تطبيق الشحن المجاني بهذا الكود قبل إدخال تكلفة الشراء لكل منتج.'},400);
+              const minProfit = Math.max(0, Number(promo.minProfit ?? 100));
+              const projectedProfit = productsTotal - costTotal - (Number(shippingQuote.courierCost) || 0);
+              if (projectedProfit < minProfit) return json({error:`لا يمكن تطبيق الشحن المجاني؛ لأنه سيقلل الربح المتوقع عن ${minProfit} جنيه.`},400);
+            }
             promoShippingDiscount = Math.max(0, Number(shipping) || 0);
             shipping = 0;
           } else {
             promoDiscount = Math.max(0, Number(result.discount) || 0);
+            const eligibleIds = Array.isArray(promo.productIds) ? promo.productIds.map(String) : [];
+            if (eligibleIds.length) {
+              const eligibleSubtotal = items.reduce((sum, item) => eligibleIds.includes(String(item.productId)) ? sum + (Number(item.lineTotal) || 0) : sum, 0);
+              if (eligibleSubtotal <= 0) return json({error:'البروموكود لا ينطبق على المنتجات الموجودة في سلتك.'},400);
+              promoDiscount = Math.min(promoDiscount, eligibleSubtotal);
+            }
+            if (promo.protectProfit !== false) {
+              const costById = new Map(products.map(p => [String(p.id), Number(p.wholesalePrice ?? p.costPrice)]));
+              let knownCosts = true;
+              const costTotal = items.reduce((sum, item) => {
+                if (String(item.productId).startsWith('deal:')) { knownCosts = false; return sum; }
+                const cost = costById.get(String(item.productId));
+                if (!Number.isFinite(cost) || cost < 0) { knownCosts = false; return sum; }
+                return sum + cost * Math.max(1, Number(item.quantity) || 1);
+              }, 0);
+              if (!knownCosts) return json({error:'لا يمكن تطبيق الكود بأمان قبل إدخال تكلفة الشراء لكل منتج في لوحة التحكم.'},400);
+              const minProfit = Math.max(0, Number(promo.minProfit ?? 100));
+              const maxSafeDiscount = Math.max(0, productsTotal - costTotal - (Number(shippingQuote.shippingSupport) || 0) - minProfit);
+              promoDiscount = Math.min(promoDiscount, maxSafeDiscount);
+              if (promoDiscount <= 0) return json({error:`لا يمكن تطبيق الخصم؛ لأنه سيقلل الربح المتوقع عن ${minProfit} جنيه.`},400);
+            }
           }
           appliedPromo = {
             code:result.code,
@@ -1593,6 +1669,11 @@ return {
           productsTotal,
 
           shipping,
+
+          shippingCost: shippingQuote.courierCost,
+          shippingSupport: Math.max(0, shippingQuote.courierCost - shipping),
+          shippingZone: shippingQuote.zone,
+          shippingFreeReason: shippingQuote.freeShippingReason || (appliedPromo?.type === 'free_shipping' ? 'كود شحن مجاني' : ''),
 
           promoCode: appliedPromo?.code || '',
 
@@ -2031,8 +2112,8 @@ return {
       ) {
 
         return json({
-          price:
-            await getShipping(env)
+          price: await getShipping(env),
+          config: await getShippingRules(env)
         });
       }
 
@@ -2051,19 +2132,27 @@ return {
             0
           ) || 0;
 
-        await env.GREEN_MOON_KV.put(
-          SHIPPING_KEY,
-          JSON.stringify({
-            price
-          })
-        );
-
-        return json({
-          success:
-            true,
-
-          price
-        });
+        await env.GREEN_MOON_KV.put(SHIPPING_KEY, JSON.stringify({ price }));
+        const input = body.config && typeof body.config === 'object' ? body.config : body;
+        const defaults = defaultShippingRules();
+        const rules = {
+          ...defaults,
+          ...input,
+          enabled: input.enabled !== false,
+          courierBase: Math.max(0, Number(input.courierBase ?? defaults.courierBase) || 0),
+          courierSpecial: Math.max(0, Number(input.courierSpecial ?? defaults.courierSpecial) || 0),
+          customerBase: Math.max(0, Number(input.customerBase ?? defaults.customerBase) || 0),
+          customerSpecial: Math.max(0, Number(input.customerSpecial ?? defaults.customerSpecial) || 0),
+          thresholdEnabled: input.thresholdEnabled === true,
+          freeShippingThreshold: Math.max(0, Number(input.freeShippingThreshold ?? defaults.freeShippingThreshold) || 0),
+          halfShippingEnabled: input.halfShippingEnabled !== false,
+          halfShippingThreshold: Math.max(0, Number(input.halfShippingThreshold ?? defaults.halfShippingThreshold) || 0),
+          specialAreas: Array.isArray(input.specialAreas) && input.specialAreas.length ? input.specialAreas.map(String).slice(0, 30) : defaults.specialAreas,
+          freeShippingDealIds: Array.isArray(input.freeShippingDealIds) ? input.freeShippingDealIds.map(String).slice(0, 500) : [],
+          updatedAt: new Date().toISOString()
+        };
+        await env.GREEN_MOON_KV.put(SHIPPING_RULES_KEY, JSON.stringify(rules));
+        return json({ success: true, price, config: rules });
       }
     }
 
