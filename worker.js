@@ -570,6 +570,88 @@ export default {
     }
 
     /* =========================
+       GREEN MOON AI CUSTOMER CHAT
+       Uses live store data and optional plant-photo vision.
+    ========================= */
+    if (url.pathname === '/api/ai/chat' && request.method === 'POST') {
+      try {
+        if (!env.AI || typeof env.AI.run !== 'function') {
+          return json({ error: 'مساعد الذكاء الاصطناعي غير متاح حاليًا. جرّب مرة تانية بعد شوية.' }, 503);
+        }
+
+        const body = await request.json();
+        const message = String(body.message || '').trim().slice(0, 1800);
+        const image = String(body.image || '');
+        const history = Array.isArray(body.history) ? body.history.slice(-8) : [];
+        if (!message && !image) return json({ error: 'اكتب سؤالك أو اختار صورة الأول.' }, 400);
+        if (image && !/^data:image\/(?:jpeg|png|webp);base64,/i.test(image)) {
+          return json({ error: 'صيغة الصورة غير مدعومة. اختار صورة JPG أو PNG أو WebP.' }, 400);
+        }
+        if (image.length > 4_500_000) {
+          return json({ error: 'حجم الصورة كبير. اختار صورة أصغر.' }, 413);
+        }
+
+        const products = (await getProducts(env)).slice(0, 100).map(p => ({
+          id: String(p.id), name: String(p.name || '').slice(0, 100),
+          price: Number(p.price) || 0, stock: Number(p.stock ?? p.quantity ?? 0) || 0,
+          category: String(p.category || p.categoryName || '').slice(0, 80),
+          details: String(p.details || p.description || '').slice(0, 220),
+          image: String(p.image || p.image_url || '').slice(0, 300)
+        }));
+        const deals = (await getDeals(env)).filter(d => d && d.active !== false && d.isActive !== false).slice(0, 30).map(d => ({
+          title: String(d.title || d.name || 'صفقة Green Moon').slice(0, 120),
+          price: Number(d.price ?? d.dealPrice) || 0,
+          oldPrice: Number(d.oldPrice ?? d.originalPrice) || 0,
+          description: String(d.description || d.subtitle || '').slice(0, 220),
+          endAt: String(d.endAt || d.expiresAt || '').slice(0, 40)
+        }));
+        const catalogText = `\nبيانات المنتجات الحالية من المتجر (استخدمها فقط ولا تخترع منتجات أو أسعار):\n${JSON.stringify(products.map(({id,name,price,stock,category,details})=>({id,name,price,stock,category,details})).slice(0,70))}\nالعروض الحالية من لوحة المتجر:\n${JSON.stringify(deals)}\n`;
+        const system = `أنت Green Moon Assistant، مساعد خدمة العملاء والمبيعات لمتجر Green Moon Plants and Flowers في مصر. رد باللهجة المصرية الواضحة والمهذبة وباختصار مفيد. ساعد في اختيار النباتات والعناية بها، المنتجات، الأسعار، العروض، السلة والطلب. لا تخترع سعرًا أو مخزونًا أو عرضًا أو سياسة توصيل غير موجودة في البيانات. لو السعر غير متاح قل إن العميل يراجع صفحة المنتج أو يتواصل مع خدمة العملاء. لا تكشف بيانات خاصة أو معلومات داخلية. لا تدّع أنك نفذت طلبًا أو حجزًا. في تشخيص النبات، اذكر العلامات الظاهرة والاحتمالات فقط ولا تدّع دقة 100%؛ لو الصورة غير واضحة اطلب صورة أفضل أو معلومات إضافية. لا تعطِ جرعات مبيدات غير موثقة ولا تقترح خلط مواد كيميائية. إذا كان السؤال خارج نطاق المتجر، وضح بلطف إنك متخصص في نباتات Green Moon وخدمة المتجر.\n${catalogText}`;
+
+        let result = '';
+        if (image) {
+          const match = image.match(/^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=\r\n]+)$/i);
+          if (!match) return json({ error: 'تعذر قراءة الصورة. جرّب صورة JPG أو PNG أو WebP.' }, 400);
+          let imageBytes;
+          try {
+            const binary = atob(match[2].replace(/[\r\n]/g, ''));
+            imageBytes = Array.from(binary, ch => ch.charCodeAt(0));
+          } catch (_) { return json({ error: 'ملف الصورة تالف. جرّب صورة تانية.' }, 400); }
+          if (!imageBytes.length) return json({ error: 'الصورة فارغة. اختار صورة واضحة.' }, 400);
+          const prior = history.map(x => `${x.role === 'assistant' ? 'المساعد' : 'العميل'}: ${String(x.content || '').slice(0, 700)}`).join('\n');
+          const prompt = `${system}\nمحادثة سابقة مختصرة:\n${prior}\nسؤال العميل الحالي: ${message || 'حلل صورة النبات وقل لي ما الذي يمكن ملاحظته.'}\nحلل ما يظهر فقط. إذا لم تكن الصورة لنبات أو كانت غير واضحة، اذكر ذلك صراحة. فرّق بين الملاحظة والاحتمال، واطلب صورة إضافية عند الحاجة. أجب باللهجة المصرية.`;
+          const aiPromise = env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct', {
+            prompt, image: imageBytes, max_tokens: 900, temperature: 0.15
+          });
+          const timeout = new Promise(resolve => setTimeout(() => resolve(null), 25000));
+          const ai = await Promise.race([aiPromise, timeout]);
+          if (!ai) return json({ error: 'التحليل أخد وقت أطول من المتوقع. جرّب صورة أصغر أو أعد المحاولة.' }, 504);
+          result = String(ai?.response || ai?.result || '').trim();
+        } else {
+          const messages = [{ role: 'system', content: system }];
+          for (const item of history) {
+            if (!item || !['user','assistant'].includes(item.role)) continue;
+            const content = String(item.content || '').trim().slice(0, 700);
+            if (content) messages.push({ role: item.role, content });
+          }
+          messages.push({ role: 'user', content: message });
+          const aiPromise = env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
+            messages, max_tokens: 650, temperature: 0.25
+          });
+          const timeout = new Promise(resolve => setTimeout(() => resolve(null), 25000));
+          const ai = await Promise.race([aiPromise, timeout]);
+          if (!ai) return json({ error: 'الرد اتأخر شوية. جرّب تبعت سؤالك تاني.' }, 504);
+          result = String(ai?.response || ai?.result || '').trim();
+        }
+        if (!result) return json({ error: 'المساعد لم يُرجع ردًا واضحًا. جرّب صياغة السؤال مرة تانية.' }, 502);
+        return json({ success: true, reply: result.slice(0, 7000) });
+      } catch (error) {
+        // Do not expose provider internals or credentials to visitors.
+        return json({ error: 'حصل عطل مؤقت في المساعد. منتجات المتجر شغالة عادي؛ جرّب مرة تانية.' }, 500);
+      }
+    }
+
+    /* =========================
        GREEN MOON DOCTOR
     ========================= */
     if (url.pathname === '/api/visualizer/analyze' && request.method === 'POST') {
