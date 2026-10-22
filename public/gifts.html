@@ -35,4 +35,4 @@ const occasion={family:'لشخص عزيز',birthday:'عيد ميلاد',home:'ب
 const budget=b>=1000?'1000 جنيه أو أكثر':'حتى '+b+' جنيه';
 let note=document.getElementById('giftNote').value.trim();
 let el=document.getElementById('giftResult');el.innerHTML='<span class="tag">اقتراحك الشخصي</span><h2>🎁 '+title+'</h2><p>'+desc+'</p><p><b>المناسبة:</b> '+occasion+' · <b>الميزانية:</b> '+budget+'</p>'+(note?'<blockquote>رسالة الكارت: '+note.replace(/[<>&]/g,'')+'</blockquote>':'')+'<div class="btnrow"><a class="btn" href="/#products">تصفّح المنتجات ←</a><button class="btn light" onclick="nextGift(1)">جرّب اختيار تاني</button></div><p class="small">ده اقتراح مبدئي؛ اختار المنتج المتاح والسعر المعروض في المتجر قبل تأكيد الطلب.</p>';el.classList.remove('hidden');el.scrollIntoView({behavior:'smooth',block:'start'})}
-</script></body></html>
+</script><script src="/green-moon-ai-chat.js?v=20261022" defer></script></body></html>
