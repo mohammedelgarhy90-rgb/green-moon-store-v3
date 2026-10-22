@@ -10,7 +10,7 @@
   #gm-ai-panel{position:fixed;z-index:1201;left:14px;bottom:calc(145px + env(safe-area-inset-bottom));width:min(390px,calc(100vw - 28px));height:min(610px,calc(100dvh - 180px));min-height:350px;display:none;flex-direction:column;overflow:hidden;border:1px solid #d8c47c;border-radius:20px;background:#fbfcf8;box-shadow:0 22px 70px #00180f55;direction:rtl;font-family:Cairo,Tahoma,sans-serif;color:#193b2d}
   #gm-ai-panel.gm-ai-open{display:flex}
   #gm-ai-head{display:flex;align-items:center;gap:10px;padding:13px 14px;background:linear-gradient(120deg,#073b2c,#0d6044);color:#fff}
-  #gm-ai-avatar{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border:1px solid #d8b45c;border-radius:50%;background:#fff;color:#073b2c;font-size:22px}
+  #gm-ai-avatar{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border:1px solid #d8b45c;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff 0 20%,#e8f4d9 21% 100%);overflow:hidden;box-shadow:0 3px 12px #00180f30}#gm-ai-avatar svg{width:42px;height:42px;animation:gmMascotBob 2.8s ease-in-out infinite;transform-origin:50% 80%}@keyframes gmMascotBob{0%,100%{transform:translateY(1px) rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}}
   #gm-ai-title{flex:1;min-width:0}#gm-ai-title b{display:block;font-size:14px}#gm-ai-title small{display:block;color:#e9d99c;font-size:10px;margin-top:2px}
   #gm-ai-close{border:1px solid #ffffff42;background:#ffffff12;color:#fff;border-radius:10px;width:34px;height:34px;font-size:22px;line-height:1}
   #gm-ai-messages{flex:1;overflow:auto;padding:13px;background:linear-gradient(#f9fbf6,#f1f6f0);overscroll-behavior:contain}
@@ -18,7 +18,7 @@
   .gm-ai-msg.gm-ai-bot{background:#fff;border:1px solid #e0e9df;border-top-right-radius:4px;box-shadow:0 2px 6px #173b2b08}
   .gm-ai-msg.gm-ai-user{margin-right:auto;background:#0b5840;color:#fff;border-top-left-radius:4px}
   .gm-ai-msg.gm-ai-error{background:#fff1ee;border-color:#f1c7bf;color:#8c2d20}
-  #gm-ai-typing{display:none;font-size:11px;color:#62786a;padding:0 14px 8px}
+  #gm-ai-typing{display:none;align-items:center;gap:8px;font-size:11px;color:#456a52;padding:8px 13px 10px;background:#f4f8ef;border-top:1px solid #e0e9df}#gm-ai-typing.gm-ai-typing-active{display:flex}#gm-ai-thinking-face{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border-radius:50%;background:#e5f0d9;border:1px solid #c8dbbd;animation:gmThinkBob 1.2s ease-in-out infinite}#gm-ai-thinking-face svg{width:25px;height:25px}#gm-ai-thinking-copy{font-weight:800;min-height:20px;display:flex;align-items:center}#gm-ai-thinking-dots{display:inline-flex;gap:2px;margin-right:3px}#gm-ai-thinking-dots i{width:4px;height:4px;border-radius:50%;background:#628a60;animation:gmDot 1s infinite}#gm-ai-thinking-dots i:nth-child(2){animation-delay:.15s}#gm-ai-thinking-dots i:nth-child(3){animation-delay:.3s}@keyframes gmDot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}@keyframes gmThinkBob{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
   #gm-ai-attach-preview{display:none;align-items:center;gap:9px;padding:8px 12px;border-top:1px solid #e4ebe3;background:#fff}
   #gm-ai-attach-preview img{width:48px;height:48px;object-fit:cover;border-radius:9px;border:1px solid #d8e2d7}
   #gm-ai-attach-name{flex:1;min-width:0;font-size:11px;color:#4c6657;overflow-wrap:anywhere}
@@ -47,9 +47,9 @@
   panel.id = 'gm-ai-panel';
   panel.setAttribute('aria-label', 'مساعد Green Moon الذكي');
   panel.innerHTML = `
-    <header id="gm-ai-head"><div id="gm-ai-avatar" aria-hidden="true">🌿</div><div id="gm-ai-title"><b>Green Moon Assistant</b><small>مساعد النباتات وخدمة العملاء</small></div><button id="gm-ai-close" type="button" aria-label="إغلاق الشات">×</button></header>
+    <header id="gm-ai-head"><div id="gm-ai-avatar" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 38V20" stroke="#356b42" stroke-width="3.2" stroke-linecap="round"/><path d="M24 25C7 25 7 11 8 8c13 0 20 5 16 17Z" fill="#78ad59" stroke="#356b42" stroke-width="1.6"/><path d="M24 20C24 7 35 5 41 6c1 12-5 20-17 19Z" fill="#a4ca69" stroke="#356b42" stroke-width="1.6"/><path d="M13 12l8 9M37 10l-10 11" stroke="#e7f2c7" stroke-width="1.5" stroke-linecap="round"/><circle cx="20" cy="31" r="10" fill="#f0cf76" stroke="#356b42" stroke-width="1.6"/><circle cx="17" cy="30" r="1.3" fill="#234b31"/><circle cx="23" cy="30" r="1.3" fill="#234b31"/><path d="M17 34q3 3 6 0" stroke="#234b31" stroke-width="1.4" stroke-linecap="round"/></svg></div><div id="gm-ai-title"><b>Green Moon Assistant</b><small>مساعد النباتات وخدمة العملاء</small></div><button id="gm-ai-close" type="button" aria-label="إغلاق الشات">×</button></header>
     <div id="gm-ai-messages" aria-live="polite" aria-relevant="additions text"></div>
-    <div id="gm-ai-typing">المساعد بيجهز الرد…</div>
+    <div id="gm-ai-typing" role="status" aria-live="polite"><span id="gm-ai-thinking-face" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="17" r="11" fill="#f0cf76" stroke="#356b42" stroke-width="1.4"/><path d="M16 7C10 7 8 2 8 2c7-1 11 2 8 5Z" fill="#78ad59" stroke="#356b42" stroke-width="1.2"/><circle cx="12.5" cy="16" r="1.2" fill="#234b31"/><circle cx="19.5" cy="16" r="1.2" fill="#234b31"/><path d="M12.5 20q3.5 3 7 0" stroke="#234b31" stroke-width="1.3" stroke-linecap="round"/></svg></span><span id="gm-ai-thinking-copy">بفكرلك…</span><span id="gm-ai-thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
     <div id="gm-ai-attach-preview"><img id="gm-ai-preview-img" alt="معاينة الصورة المرفقة"><span id="gm-ai-attach-name"></span><button id="gm-ai-remove-image" type="button">إزالة</button></div>
     <div id="gm-ai-compose"><div id="gm-ai-input-row"><input id="gm-ai-file" type="file" accept="image/jpeg,image/png,image/webp,image/*"><button class="gm-ai-tool" id="gm-ai-attach" type="button" aria-label="إرفاق صورة" title="ارفع صورة من الموبايل">＋</button><textarea id="gm-ai-text" rows="1" maxlength="1800" placeholder="اكتب سؤالك عن النباتات أو العروض…"></textarea><button class="gm-ai-tool" id="gm-ai-send" type="button" aria-label="إرسال">➤</button></div><div id="gm-ai-note">تقدر ترفق صورة من الموبايل. تحليل الصور إرشادي وليس تشخيصًا مؤكدًا.</div></div>`;
   document.body.append(launch, panel);
@@ -62,6 +62,11 @@
   const attachName = panel.querySelector('#gm-ai-attach-name');
   const sendBtn = panel.querySelector('#gm-ai-send');
   const typing = panel.querySelector('#gm-ai-typing');
+  const thinkingCopy = panel.querySelector('#gm-ai-thinking-copy');
+  const thinkingPhrases = ['بفكرلك…','لسه بفكرلك…','ماتستعجلنيش، عايز أقولك الصح ومن الآخر…','ثواني بس، براجعلك أفضل إجابة…','لسه بفكرلك…'];
+  let thinkingTimer = null; let thinkingIndex = 0;
+  function startThinking(){thinkingIndex=0;thinkingCopy.textContent=thinkingPhrases[0];typing.classList.add('gm-ai-typing-active');clearInterval(thinkingTimer);thinkingTimer=setInterval(()=>{thinkingIndex=(thinkingIndex+1)%thinkingPhrases.length;thinkingCopy.textContent=thinkingPhrases[thinkingIndex]},2200)}
+  function stopThinking(){clearInterval(thinkingTimer);thinkingTimer=null;typing.classList.remove('gm-ai-typing-active')}
   let selectedImage = '';
   let selectedFileName = '';
   let sending = false;
@@ -136,7 +141,7 @@
     if (!message && !selectedImage) { input.focus(); return; }
     const imageToSend = selectedImage;
     const imageName = selectedFileName;
-    sending = true; sendBtn.disabled = true; typing.style.display = 'block';
+    sending = true; sendBtn.disabled = true; startThinking();
     addMessage('user', `${message || 'حلل صورة النبات لو سمحت.'}${imageToSend ? `\n[صورة مرفقة: ${imageName || 'صورة النبات'}]` : ''}`);
     input.value = ''; input.style.height = 'auto';
     selectedImage = ''; selectedFileName = ''; fileInput.value = ''; attachPreview.style.display = 'none'; previewImg.removeAttribute('src');
@@ -163,7 +168,7 @@
       const msg = error && error.name === 'AbortError' ? 'الرد اتأخر بسبب الاتصال. جرّب صورة أصغر أو ابعت السؤال مرة تانية.' : (error.message || 'حصل عطل مؤقت. جرّب مرة تانية.');
       addMessage('assistant', msg, true);
     } finally {
-      sending = false; sendBtn.disabled = false; typing.style.display = 'none'; input.focus();
+      sending = false; sendBtn.disabled = false; stopThinking(); input.focus();
     }
   }
   launch.addEventListener('click', () => panel.classList.contains('gm-ai-open') ? closePanel() : openPanel());
