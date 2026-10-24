@@ -51,6 +51,128 @@ body{background:#fbfaf6;color:#152f25}
 .gm-editorial-copy{padding:15px}.gm-editorial-copy h3{font-size:16px;margin:0 0 8px;color:var(--green)}.gm-editorial-copy p{font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 10px;white-space:pre-line}.gm-review-stars{color:#b38a2f;letter-spacing:2px;font-size:15px;margin-bottom:8px}
 @media(max-width:700px){.gm-finder-panel{grid-template-columns:1fr}.gm-finder-panel .btn{grid-column:auto;width:100%}.gm-editorial-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.gm-editorial-copy{padding:11px}.gm-editorial-copy h3{font-size:13px}.gm-editorial-copy p{font-size:11px}}
 @media(max-width:420px){.gm-editorial-grid{grid-template-columns:1fr}}
+
+/* GREEN MOON RANEEN-INSPIRED STOREFRONT REFRESH — v1 */
+:root{--gm-surface:#fff;--gm-soft:#f7f8f4;--gm-border:#e8ece5;--gm-text:#203b2e;--gm-green:#07513a;--gm-accent:#e5bd5b}
+body{background:#fff;color:var(--gm-text)}
+.announce{background:#e8f1e8;color:#174b32;font-weight:800;padding:8px 12px}
+.header{background:#fff;color:#18372d;border-bottom:1px solid #e8ece5;box-shadow:0 3px 18px #163d2510;backdrop-filter:blur(14px)}
+.headrow{min-height:78px}
+.brand strong{color:#0b4a35}
+.brand small{color:#718273}
+.brand img{border-color:#e7d39b;box-shadow:0 2px 8px #0000000a}
+.search input{background:#f5f7f3;color:#18372d;border:1px solid #e3e8df;border-radius:999px}
+.search input::placeholder{color:#89968b}
+.search:before{color:#597263}
+.iconbtn{background:#f5f7f3;color:#174b32;border-color:#e3e8df;border-radius:50%;min-width:44px;height:44px}
+.counter{background:#d9b65e;color:#16372b}
+.nav{border-top:1px solid #edf0e9}
+.navrow{min-height:42px;gap:26px}
+.navrow a{color:#385a47;font-weight:700}
+.navrow .sale{color:#b33d2c}
+.hero{min-height:430px;border-radius:0 0 24px 24px}
+.hero-content{min-height:430px}
+.hero:before{background:linear-gradient(90deg,#05291fe8 0%,#073c2bc4 48%,#073c2b1a 100%)}
+.hero h1{letter-spacing:-.5px}
+.trustbar{background:#f5f7f1;border-bottom:1px solid #edf0e8}
+.trustrow{padding:17px 0}
+.trust{font-size:11px}
+.section{padding:42px 0}
+.section.soft{background:#f7f8f4}
+.section-head{margin-bottom:20px}
+.section-head h2{font-size:clamp(22px,2.3vw,31px);letter-spacing:-.3px}
+.section-head p{color:#718075}
+.category-card{border:1px solid #e9eee6;box-shadow:0 5px 18px #173d2410}
+.category-card:after{background:linear-gradient(0deg,#092c20d9,transparent 78%)}
+.deal-card,.product-card{border:1px solid #e8ece5;box-shadow:0 5px 18px #173d240b;border-radius:16px}
+.deal-card:hover,.product-card:hover{box-shadow:0 12px 28px #173d2418;transform:translateY(-2px)}
+.product-media{background:#f5f6f1}
+.product-info h3{color:#213d2f}
+.product-price,.price{color:#0b5539}
+.chip{border-color:#e0e8de;background:#fff;color:#385947}
+.chip.active{background:#0b5539;color:#fff;border-color:#0b5539}
+.promo-banner{border-radius:20px}
+.gm-reference-promo{border-radius:16px}
+.footer{background:#062e22}
+.gm-mobile-nav{display:none}
+@media(max-width:760px){
+ body{padding-bottom:70px}
+ .announce{font-size:11px;padding:7px 10px}
+ .headrow{min-height:unset;padding:12px 0 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+ .brand{min-width:0;gap:8px}
+ .brand img{width:42px;height:42px}
+ .brand strong{font-size:20px}
+ .brand small{font-size:8px;letter-spacing:.7px}
+ #brandOwner{font-size:9px!important}
+ .head-actions{gap:6px}
+ .iconbtn{min-width:40px;height:40px}
+ .search{grid-column:1/-1;grid-row:2;max-width:none;width:100%}
+ .search input{height:42px}
+ .navrow{gap:19px;min-height:39px;padding:0 0 1px}
+ .navrow a{font-size:11px}
+ .hero{min-height:310px;border-radius:0 0 18px 18px}
+ .hero-content{min-height:310px;padding-top:22px;padding-bottom:25px}
+ .hero-copy{max-width:85%}
+ .eyebrow{font-size:10px}
+ .hero h1{font-size:clamp(28px,7vw,39px);line-height:1.25;margin:10px 0}
+ .hero p{font-size:12px;line-height:1.9;margin-bottom:14px;max-width:340px}
+ .hero .btn{padding:10px 13px;font-size:11px;border-radius:9px}
+ .hero-pills{gap:9px;margin-top:14px;font-size:9px}
+ .trustrow{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:13px 0}
+ .trust{font-size:10px;justify-content:flex-start;gap:7px}
+ .trust b{font-size:10px}
+ .trust .ico{font-size:18px}
+ .section{padding:25px 0}
+ .section-head{align-items:center;margin-bottom:14px;gap:8px}
+ .section-head h2{font-size:20px;margin:5px 0}
+ .section-head p{font-size:11px;line-height:1.7;margin:4px 0 0}
+ .section-head .over{font-size:8px;letter-spacing:1px}
+ .textlink{font-size:10px}
+ #categories .section-head{margin-bottom:14px}
+ .category-grid{display:flex;gap:15px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;scrollbar-width:none}
+ .category-grid::-webkit-scrollbar{display:none}
+ .category-card{flex:0 0 88px;min-height:unset;height:auto;aspect-ratio:1/1;scroll-snap-align:start;border-radius:50%;overflow:visible;background:transparent;box-shadow:none;border:0}
+ .category-card:after{display:none}
+ .category-card img{width:88px;height:88px;object-fit:cover;border-radius:50%;border:2px solid #e4ebdf;box-shadow:0 3px 10px #173d2412}
+ .category-card .cattext{position:static;padding:0;background:none;text-align:center;color:#2e4a39}
+ .category-card h3{font-size:10px;line-height:1.45;margin:7px -5px 0;font-weight:800}
+ .category-card p{display:none}
+ .deals-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .deal-card{display:block;border-radius:13px;overflow:hidden}
+ .deal-card .deal-media{min-height:unset}
+ .deal-card img{height:auto;aspect-ratio:1/1;object-fit:cover}
+ .deal-card .deal-body{padding:10px}
+ .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .product-card{border-radius:13px}
+ .product-media{aspect-ratio:1/1}
+ .product-info{padding:10px}
+ .product-info h3{font-size:12px;line-height:1.55;min-height:36px}
+ .product-info p,.product-info .details{font-size:10px;line-height:1.6}
+ .product-price,.price{font-size:15px}
+ .product-card .btn,.deal-card .btn{font-size:11px;padding:9px 10px}
+ .product-tools{gap:7px;overflow-x:auto;padding-bottom:5px;scrollbar-width:none}
+ .chip{font-size:10px;padding:7px 10px}
+ .gm-reference-promos-grid{grid-template-columns:1fr;gap:9px}
+ .gm-reference-promo{height:116px;border-radius:13px}
+ .gm-reference-promo b{font-size:16px}
+ .gm-reference-promo small{font-size:10px}
+ .gm-reference-promo em{font-size:10px}
+ .feature-grid{display:none}
+ .footer{padding:24px 0 14px}
+ .footer-grid{display:none}
+ .gm-mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;gap:3px;z-index:100;bottom:0;left:0;right:0;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #e3e9e0;box-shadow:0 -5px 20px #153c2512}
+ .gm-mobile-nav a,.gm-mobile-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;border:0;background:transparent;color:#54705e;font:700 9px Cairo,Tahoma,sans-serif;padding:2px}
+ .gm-mobile-nav .gm-nav-icon{font-size:19px;line-height:1.1}
+ .gm-mobile-nav .gm-nav-cart{position:relative}
+ .gm-mobile-nav .counter{top:-5px;left:-9px}
+}
+@media(min-width:761px) and (max-width:1050px){
+ .category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .headrow{gap:12px}
+ .brand{min-width:170px}
+}
+
 </style>
 </head>
 <body>
@@ -465,4 +587,24 @@ if ('serviceWorker' in navigator) {
   }, { once: true });
 }
 </script>
-<script src="/remove-install-app.js?v=20261019"></script><script src="/green-moon-ai-chat.js?v=20261022" defer></script></body></html>
+<script src="/remove-install-app.js?v=20261019"></script><script src="/green-moon-ai-chat.js?v=20261022" defer></script>
+<nav class="gm-mobile-nav" aria-label="التنقل السريع">
+ <a href="/" aria-label="الرئيسية"><span class="gm-nav-icon">⌂</span><span>الرئيسية</span></a>
+ <a href="#categories" aria-label="الأقسام"><span class="gm-nav-icon">▦</span><span>الأقسام</span></a>
+ <a href="#deals" aria-label="العروض"><span class="gm-nav-icon">٪</span><span>العروض</span></a>
+ <button type="button" id="gmMobileCart" aria-label="سلة المشتريات" onclick="document.getElementById('cartBtn')?.click()"><span class="gm-nav-icon gm-nav-cart">🛒<span class="counter" id="gmMobileCartCount">0</span></span><span>السلة</span></button>
+</nav>
+
+
+<script>
+(function(){
+ const source=document.getElementById('cartCount');
+ const target=document.getElementById('gmMobileCartCount');
+ if(!source||!target)return;
+ const sync=()=>{target.textContent=source.textContent||'0';};
+ sync();
+ new MutationObserver(sync).observe(source,{childList:true,characterData:true,subtree:true});
+})();
+</script>
+
+</body></html>
