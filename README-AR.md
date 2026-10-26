@@ -1,57 +1,14 @@
-# Green Moon Store v3
+# Green Moon — Rebuilt Storefront Phase 1
 
-## النشر
-- المشروع يستخدم Cloudflare Workers مع الملفات الثابتة داخل `public/`.
-- لا تغيّر `wrangler.toml` أو معرّف مساحة KV.
-- انشر من جذر هذا المجلد باستخدام Wrangler بعد تثبيت الاعتمادات.
+## What's included
+- A newly rebuilt Arabic RTL storefront with a luxury forest-green / gold visual system.
+- Responsive desktop/mobile navigation, hero, category tiles, product cards, search, favorites, deals section, cart, checkout form and customer footer.
+- Storefront reads existing live data through the current Worker APIs: `/api/products`, `/api/deals`, `/api/settings`, `/api/shipping`, `/api/logo`, and submits orders to `/api/orders`.
+- Existing `worker.js`, `wrangler.toml`, admin/account/tracking/courier/deals pages and public assets are carried forward from the supplied project archive. They were not rewritten in this phase.
+- No KV namespace IDs, Durable Object bindings, or product/order data are deleted or reset.
 
-## إصلاحات هذه النسخة
-- إزالة أرشيفات ZIP القديمة وتقارير/ملفات اختبار متراكمة من داخل المشروع؛ لم تُحذف أي ملفات تشغيل من `public/`.
-- إزالة زر تثبيت التطبيق الظاهر داخل واجهات العملاء مع الإبقاء على خدمة الإشعارات.
-- إضافة مكتبة صور وفيديو في لوحة التحكم، وإتاحة اختيار وسائط مرفوعة من أي حقل رفع عام.
-- الحفاظ على الملف الأصلي المرفوع من الهاتف دون قص أو إعادة ضغط، ودعم عرض الفيديو في المنتجات والتصنيفات والصفقات والبانرات والمقالات حيث يتوفر نوع الوسيط.
-- إضافة `imageType` لحفظ نوع صورة/فيديو المنتج بشكل صحيح.
-
-## ملاحظة
-الوسائط الجديدة تُحفظ في مساحة KV الحالية؛ حد الرفع 12 ميجابايت للملف. يجب نشر `worker.js` وملفات `public/` معًا حتى تعمل مكتبة الوسائط.
-
-
-## إضافات نسخة العروض والفيديو والدكتور
-- استبدال صورة البانر الرئيسية بفيديو توصيل مربع 1080×1080 مدته 60 ثانية، مع التشغيل الصامت والتكرار على الهاتف.
-- إزالة بانرات الواجهة المرتبطة بصورة البنت/بانر اختيار النبات من العرض الديناميكي حتى لا تظهر من إعدادات قديمة مطابقة.
-- تحديث صورة دكتور جرين مون بالصورة المرفقة.
-- توليد باكدجات تلقائيًا من أسعار المنتجات الحية: السعر الأصلي = مجموع سعرَي المنتجين، والخصم الافتراضي 8%، مع احترام حد أدنى محسوب من تكلفة الجملة عندما تكون متاحة.
-- يعيد الخادم احتساب سعر الباكدج التلقائي من الأسعار الحالية عند إرسال الطلب، ويرفض الباكدج إذا لم يعد سعره أقل من مجموع المنتجات أو لم يعد يحقق حد التكلفة.
-- الباكدجات اليدوية المفعّلة تظل مدعومة، ويجري التحقق من سعرها مقابل مجموع أسعار المنتجات الحالية عند تسجيل الطلب.
-
-## النشر
-ارفع مجلد المشروع كاملًا، بما فيه `worker.js` و`public/Green-Moon-Online-Delivery-Square-1080.mp4` و`public/green-moon-doctor.png`. لم يتم نشر هذه التعديلات تلقائيًا على Cloudflare.
-
-## تحديث الاقتراحات التلقائية (20 أكتوبر 2026)
-- أزلنا قائمة باكدجات التوفير المتتالية من الصفحة الرئيسية.
-- أصبحت اقتراحات التجميع تظهر في نافذة واحدة أثناء التصفح كل دقيقتين افتراضيًا، مع احترام إعداد تعطيل العروض في `gm_upsell` وتوقيت `browseIntervalMinutes` عند ضبطه.
-- كل منتج داخل الاقتراح له صورة مستقلة قابلة للضغط، وزر لفتح التفاصيل، وسعره المنفرد؛ كما يظهر إجمالي السعر الأصلي وسعر الباكدج والتوفير.
-- سعر الباكدج يُعاد حسابه داخل `worker.js` من أسعار المنتجات الحية عند إرسال الطلب، ولا يُقبل السعر المرسل من المتصفح.
-- هذه التعديلات مدمجة فوق النسخة السابقة التي تتضمن فيديو التوصيل المربّع وصورة دكتور جرين مون. لم يتم نشرها إلى Cloudflare من هذه الحزمة.
-
-## مساعد Green Moon بالذكاء الاصطناعي (22 أكتوبر 2026)
-- إضافة شات عائم على صفحات المتجر وخدمة العملاء ودليل العناية ودكتور النبات.
-- يدعم الأسئلة النصية باللهجة المصرية، ويربط الإجابات ببيانات المنتجات والعروض الحالية المقروءة من مساحة KV.
-- يدعم اختيار صورة من الهاتف أو الكاميرا، ومعاينتها وضغطها محليًا قبل الإرسال، ثم تحليلها بنموذج الرؤية الموجود ضمن Cloudflare Workers AI.
-- يحدّ حجم الرسالة والصورة وسجل المحادثة، ويتعامل برسائل مفهومة مع الصورة غير الصالحة أو بطء الخدمة أو تعذر الرد.
-- تحليل الصور إرشادي ولا يمكن ضمان دقة 100% لكل صورة أو تشخيص من الصورة وحدها.
-- يحتاج إلى نشر `worker.js` وملفات `public/` معًا، والتأكد من تفعيل ربط Workers AI (`AI`) في إعدادات الـ Worker. لم يتم النشر إلى Cloudflare من هذه الحزمة.
-
-
-## إصلاحات نسخة التطوير (23 أكتوبر 2026)
-- إصلاح خطأ JavaScript في دالة تحميل الصفحة الرئيسية: أصبحت `boot` دالة `async` لأن بداخلها `await`، وكان الخطأ يمنع تحليل سكريبت الصفحة.
-- إضافة أقسام ظاهرة للمقالات وآراء العملاء، وتقرأ المحتوى المنشور من `gm_articles` و`gm_reviews` في إعدادات المتجر.
-- إضافة أداة «اختارلي نبات» بثلاثة أسئلة، تعرض ترشيحات من المنتجات المتاحة في المتجر.
-- توحيد صياغة تأكيد الطلب: «جاري تأكيد طلبك»، ثم «تم استلام طلبك بنجاح» مع زر «تتبع طلبي».
-- تسمية مساعد المتجر «لونا — Luna» وتحديث تعليمات الرد الخاصة به.
-- إيقاف تخزين استجابة `/api/products` مؤقتًا حتى تظهر تحديثات المنتجات من لوحة الإدارة في الزيارات التالية دون انتظار مدة التخزين المؤقت.
-- إزالة تكرار معرّفات اسم العلامة التجارية في التذييل، ومزامنة الاسم والوصف واسم المالك في الرأس والتذييل.
-- إضافة قسم مستقل لـ Green Friday ضمن أقسام العروض القابلة للإدارة.
-- فحص صياغة JavaScript للواجهة ولوحة الإدارة وملف العامل وملف الشات وخدمة الإشعارات باستخدام `node --check`.
-
-**مهم:** هذه التعديلات موجودة في الحزمة المعدلة فقط ولم تُنشر تلقائيًا إلى Cloudflare. يجب نشر `worker.js` ومجلد `public/` معًا بعد مراجعة إعدادات النشر.
+## Important notes
+- This is a rebuild package for review, not a claim that the live site has been deployed.
+- The storefront uses the existing API contract; checkout, product schema compatibility, admin integration, mobile layout, and order persistence must be tested in a staging/development Worker before production deployment.
+- Existing project assets and administrative pages are included to preserve continuity. A later phase should rebuild and validate admin UX separately, then test all workflows end-to-end.
+- Do not run any KV reset or database deletion commands.

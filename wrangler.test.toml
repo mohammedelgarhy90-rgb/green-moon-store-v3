@@ -1,0 +1,17 @@
+name = "green-moon-store-v3-local-test"
+main = "worker.js"
+compatibility_date = "2026-09-20"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+# LOCAL TEST ONLY: dummy ID, intentionally not the production namespace.
+[[kv_namespaces]]
+binding = "GREEN_MOON_KV"
+id = "00000000000000000000000000000001"
+
+[ai]
+binding = "AI"

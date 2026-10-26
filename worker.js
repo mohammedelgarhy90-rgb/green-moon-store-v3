@@ -3,7 +3,6 @@ const LOGO_KEY = 'logo';
 const SETTINGS_KEY = 'settings';
 const ORDERS_KEY = 'orders';
 const SHIPPING_KEY = 'shipping';
-const SHIPPING_RULES_KEY = 'shipping_rules';
 const DEALS_KEY = 'deals';
 const MEDIA_PREFIX = 'media:';
 const MAX_MEDIA_BYTES = 12 * 1024 * 1024;
@@ -210,81 +209,14 @@ async function getLogo(env) {
 }
 
 async function getShipping(env) {
-  const value = await env.GREEN_MOON_KV.get(SHIPPING_KEY, 'json');
+  const value =
+    await env.GREEN_MOON_KV.get(
+      SHIPPING_KEY,
+      'json'
+    );
+
   return Number(value?.price) || 0;
 }
-
-function defaultShippingRules() {
-  return {
-    enabled: true,
-    courierBase: 120,
-    courierSpecial: 140,
-    customerBase: 80,
-    customerSpecial: 100,
-    halfShippingEnabled: true,
-    halfShippingThreshold: 1000,
-    thresholdEnabled: false,
-    freeShippingThreshold: 1500,
-    specialAreas: ['مدينتي', 'الشروق', 'العبور'],
-    freeShippingDealIds: [],
-    updatedAt: ''
-  };
-}
-
-async function getShippingRules(env) {
-  const saved = await kvJson(env, SHIPPING_RULES_KEY, null);
-  const d = defaultShippingRules();
-  const r = saved && typeof saved === 'object' ? { ...saved } : {};
-  // One-time migration from the previous default policy to the owner's requested customer rates.
-  if (saved && typeof saved === 'object' && !Object.prototype.hasOwnProperty.call(r, 'halfShippingEnabled')) {
-    if (Number(r.customerBase) === 70 && Number(r.customerSpecial) === 80) { r.customerBase = 80; r.customerSpecial = 100; }
-    r.halfShippingEnabled = true;
-    if (!(Number(r.halfShippingThreshold) > 0)) r.halfShippingThreshold = 1000;
-  }
-  return {
-    ...d, ...r,
-    courierBase: Math.max(0, Number(r.courierBase ?? d.courierBase) || 0),
-    courierSpecial: Math.max(0, Number(r.courierSpecial ?? d.courierSpecial) || 0),
-    customerBase: Math.max(0, Number(r.customerBase ?? d.customerBase) || 0),
-    customerSpecial: Math.max(0, Number(r.customerSpecial ?? d.customerSpecial) || 0),
-    freeShippingThreshold: Math.max(0, Number(r.freeShippingThreshold ?? d.freeShippingThreshold) || 0),
-    halfShippingEnabled: r.halfShippingEnabled !== false,
-    halfShippingThreshold: Math.max(0, Number(r.halfShippingThreshold ?? d.halfShippingThreshold) || 0),
-    thresholdEnabled: r.thresholdEnabled === true,
-    enabled: r.enabled !== false,
-    specialAreas: Array.isArray(r.specialAreas) && r.specialAreas.length ? r.specialAreas.map(String).slice(0, 30) : d.specialAreas,
-    freeShippingDealIds: Array.isArray(r.freeShippingDealIds) ? r.freeShippingDealIds.map(String).slice(0, 500) : [],
-  };
-}
-
-function shippingZoneFor(governorate, area, rules) {
-  const where = `${governorate || ''} ${area || ''}`.normalize('NFKC').toLocaleLowerCase('ar').replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/[ـ]/g, '').trim();
-  const special = (rules.specialAreas || ['مدينتي','الشروق','العبور']).some(name => {
-    const n = String(name).normalize('NFKC').toLocaleLowerCase('ar').replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/[ـ]/g, '').trim();
-    return n && where.includes(n);
-  });
-  return special ? 'special' : 'standard';
-}
-
-function dealHasFreeShipping(deal) {
-  if (!deal) return false;
-  if (deal.freeShipping === true || deal.shippingFree === true || deal.shipping === 0) return true;
-  const value = String(deal.shipping || deal.shippingType || '').normalize('NFKC').toLocaleLowerCase('ar');
-  return /مجاني|free.?shipping|free delivery|بدون شحن/.test(value);
-}
-
-function calculateShippingQuote(rules, governorate, area, subtotal, freeDeal = false) {
-  const zone = shippingZoneFor(governorate, area, rules);
-  const courierCost = zone === 'special' ? rules.courierSpecial : rules.courierBase;
-  let customerShipping = zone === 'special' ? rules.customerSpecial : rules.customerBase;
-  let freeShippingReason = '';
-  if (freeDeal) { customerShipping = 0; freeShippingReason = 'صفقة بتوصيل مجاني'; }
-  else if (rules.thresholdEnabled && rules.freeShippingThreshold > 0 && subtotal >= rules.freeShippingThreshold) { customerShipping = 0; freeShippingReason = `شحن مجاني للطلبات من ${rules.freeShippingThreshold} جنيه`; }
-  else if (rules.halfShippingEnabled && rules.halfShippingThreshold > 0 && subtotal >= rules.halfShippingThreshold) { customerShipping = Math.ceil(customerShipping / 2); freeShippingReason = `خصم 50% على الشحن للطلبات من ${rules.halfShippingThreshold} جنيه`; }
-  customerShipping = Math.min(courierCost, Math.max(0, customerShipping));
-  return { zone, courierCost, shipping: customerShipping, shippingSupport: Math.max(0, courierCost - customerShipping), freeShippingReason };
-}
-
 
 async function getOrders(env) {
   return (
@@ -321,17 +253,15 @@ function promoValidation(promo, subtotal, shipping, usedCount) {
 }
 
 function normalizeDeal(deal) {
-  const oldPrice = Number(deal.oldPrice ?? deal.originalPrice) || 0;
-  const price = Number(deal.price ?? deal.dealPrice) || 0;
+  const oldPrice = Number(deal.oldPrice) || 0;
+  const price = Number(deal.price) || 0;
   const discount = Number(deal.discount) || (oldPrice > price && oldPrice > 0 ? Math.round((1 - price / oldPrice) * 100) : 0);
   return {
     id: deal.id || ('DEAL-' + Date.now().toString(36).toUpperCase()),
-    name: String(deal.name || deal.title || 'صفقة Green Moon'),
-    title: String(deal.title || deal.name || 'صفقة Green Moon'),
-    shortDescription: String(deal.shortDescription || deal.text || deal.description || ''),
-    description: String(deal.description || deal.text || deal.shortDescription || ''),
-    image: deal.image || deal.imageUrl || deal.banner || '/assets/logo.jpg',
-    imageType: deal.imageType || 'image',
+    name: String(deal.name || 'صفقة Green Moon'),
+    shortDescription: String(deal.shortDescription || deal.description || ''),
+    description: String(deal.description || ''),
+    image: deal.image || '/assets/logo.jpg',
     price,
     oldPrice,
     discount,
@@ -340,22 +270,13 @@ function normalizeDeal(deal) {
     features: Array.isArray(deal.features) ? deal.features.map(x => String(x)).filter(Boolean) : [],
     shipping: String(deal.shipping || ''),
     notes: String(deal.notes || ''),
-    expiresAt: deal.expiresAt || deal.endAt || '',
-    startAt: deal.startAt || '',
-    endAt: deal.endAt || deal.expiresAt || '',
-    active: deal.active !== false && deal.active !== 0 && deal.active !== '0',
-    productIds: Array.isArray(deal.productIds) ? deal.productIds : [],
-    items: Array.isArray(deal.items) ? deal.items : []
+    expiresAt: deal.expiresAt || '',
+    active: deal.active !== false,
+    productIds: Array.isArray(deal.productIds) ? deal.productIds : []
   };
 }
 
 async function getDeals(env) {
-  // The current Admin UI saves deals inside the settings object (gm_deals/deals),
-  // while older versions used a dedicated KV key. Read the Admin UI source first.
-  const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json');
-  const settingsDeals = Array.isArray(settings?.gm_deals) ? settings.gm_deals
-    : Array.isArray(settings?.deals) ? settings.deals : null;
-  if (settingsDeals) return settingsDeals.map(normalizeDeal);
   const deals = await env.GREEN_MOON_KV.get(DEALS_KEY, 'json');
   return Array.isArray(deals) ? deals.map(normalizeDeal) : [];
 }
@@ -465,17 +386,12 @@ async function sendPush(env, sub, payload) {
 }
 async function broadcastPush(env,payload,filterFn=null){
   const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
-  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||(sub.isAdmin===true&&sub.customerSubscription!==true))continue;if(filterFn&&!filterFn(sub))continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
+  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub)continue;if(filterFn&&!filterFn(sub))continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
 }
 async function notifyOrder(env,order,title,body){
   const payload={title,body,url:'/track.html?token='+encodeURIComponent(order.trackingToken||''),tag:'order-'+order.id};
   const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
   for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||sub.orderUpdates===false)continue;if((order.accountId&&sub.accountId===order.accountId)||(order.guestKey&&sub.guestKey===order.guestKey)){const r=await sendPush(env,sub,payload);if(r==='gone')await env.GREEN_MOON_KV.delete(k.name);}}
-}
-async function notifyAdmins(env,order){
-  const payload={title:'🔔 طلب جديد من Green Moon',body:`طلب #${order.id} — ${order.name||'عميل'} — ${Number(order.total||0)} جنيه`,url:'/admin.html',tag:'gm-admin-order-'+order.id};
-  const list=await env.GREEN_MOON_KV.list({prefix:PUSH_PREFIX,limit:1000});
-  for(const k of list.keys){const sub=await kvJson(env,k.name,null);if(!sub||!(sub.isAdmin===true||sub.role==='admin')||sub.newOrders===false)continue;const r=await sendPush(env,sub,payload);if(r==='gone'){try{await env.GREEN_MOON_KV.delete(k.name)}catch(_){}}}
 }
 
 
@@ -492,6 +408,35 @@ function decodeBase64(base64) {
 
 function mediaBytesFromBase64(base64) {
   return Math.floor((String(base64 || '').length * 3) / 4);
+}
+
+// Compatibility export: keep the existing Cloudflare Durable Object class name.
+// Do not rename or remove this class without a deliberate migration plan.
+// Storage remains isolated in this Durable Object; it does not read or modify GREEN_MOON_KV.
+export class giftCardLedger {
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.method === 'GET' && url.pathname === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'giftCardLedger' }), {
+        headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+      });
+    }
+
+    // Preserve the existing namespace and its data. Unknown legacy operations fail safely
+    // instead of silently changing the ledger's schema or returning fabricated results.
+    return new Response(JSON.stringify({
+      error: 'Unsupported gift-card ledger operation',
+      message: 'The existing ledger API contract must be restored before gift-card operations are enabled.'
+    }), {
+      status: 501,
+      headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    });
+  }
 }
 
 export default {
@@ -539,8 +484,7 @@ export default {
     if (url.pathname === '/api/account/orders' && request.method === 'GET') { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const orders=(await getOrders(env)).filter(o=>o.accountId===sess.accountId).map(publicOrder); return json(orders); }
     if (url.pathname === '/api/account/preferences' && (request.method==='GET'||request.method==='PUT')) { const sess=await customerSession(request,env); if(!sess)return json({error:'غير مسجل الدخول'},401); const a=await accountById(env,sess.accountId); if(request.method==='GET')return json(a?.notifications||{promotions:true,newProducts:true,orderUpdates:true}); const b=await request.json(); a.notifications={promotions:b.promotions!==false,newProducts:b.newProducts!==false,orderUpdates:b.orderUpdates!==false}; await env.GREEN_MOON_KV.put(ACCOUNT_PREFIX+a.id,JSON.stringify(a)); return json({success:true,notifications:a.notifications}); }
     if (url.pathname === '/api/push/config' && request.method === 'GET') { const k=await getVapid(env); return json({publicKey:k.publicKey}); }
-    if (url.pathname === '/api/push/subscribe' && request.method === 'POST') { try { const b=await request.json(); if(!b.subscription?.endpoint)return json({error:'اشتراك الإشعارات غير صالح'},400); const sess=await customerSession(request,env); const guestKey=String(b.guestKey||'').slice(0,120); const key=PUSH_PREFIX+btoa(String(b.subscription.endpoint)).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); const previous=await kvJson(env,key,{}); const sub={...previous,...b.subscription,isAdmin:previous?.isAdmin===true,customerSubscription:true,accountId:sess?.accountId||previous?.accountId||'',guestKey,orderUpdates:b.orderUpdates!==false,promotions:b.promotions!==false,newProducts:b.newProducts!==false,news:b.news!==false,deals:b.deals!==false,updatedAt:new Date().toISOString()}; await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
-    if (url.pathname === '/api/admin/push/subscribe' && request.method === 'POST') { if(!adminOk(request,env))return json({error:'غير مصرح'},401); try { const b=await request.json(); if(!b.subscription?.endpoint||!b.subscription?.keys?.p256dh||!b.subscription?.keys?.auth)return json({error:'اشتراك الإشعارات غير صالح'},400); const key=PUSH_PREFIX+btoa(String(b.subscription.endpoint)).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); const previous=await kvJson(env,key,{}); const sub={...previous,...b.subscription,isAdmin:true,role:'admin',newOrders:b.newOrders!==false,updatedAt:new Date().toISOString()}; await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
+    if (url.pathname === '/api/push/subscribe' && request.method === 'POST') { try { const b=await request.json(); if(!b.subscription?.endpoint)return json({error:'اشتراك الإشعارات غير صالح'},400); const sess=await customerSession(request,env); const guestKey=String(b.guestKey||'').slice(0,120); const sub={...b.subscription,accountId:sess?.accountId||'',guestKey,orderUpdates:b.orderUpdates!==false,promotions:b.promotions!==false,newProducts:b.newProducts!==false,news:b.news!==false,deals:b.deals!==false,updatedAt:new Date().toISOString()}; const key=PUSH_PREFIX+btoa(sub.endpoint).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,120); await env.GREEN_MOON_KV.put(key,JSON.stringify(sub)); return json({success:true}); }catch(e){return json({error:String(e?.message||e)},500)} }
     if (url.pathname.startsWith('/api/track/') && request.method === 'GET') { const token=decodeURIComponent(url.pathname.slice('/api/track/'.length)); const orders=await getOrders(env); const o=orders.find(x=>x.trackingToken===token); if(!o)return json({error:'رابط التتبع غير صالح أو منتهي.'},404); return json({order:publicOrder(o)}); }
     if (url.pathname === '/api/courier/login' && request.method === 'POST') { const b=await request.json(); const pass=String(b.password||''); const expected=String(env.COURIER_PASSWORD||env.ADMIN_PASSWORD||''); if(!expected||pass!==expected)return json({error:'كود شركة الشحن غير صحيح.'},401); const t=randomToken(24); await env.GREEN_MOON_KV.put(COURIER_SESSION_PREFIX+t,JSON.stringify({expiresAt:Date.now()+12*60*60*1000}),{expirationTtl:43200}); return json({success:true,token:t}); }
     async function courierOk(){ const h=String(request.headers.get('authorization')||''); const t=h.startsWith('Bearer ')?h.slice(7).trim():''; const s=t?await kvJson(env,COURIER_SESSION_PREFIX+t,null):null; return !!s&&Number(s.expiresAt||0)>Date.now(); }
@@ -559,7 +503,7 @@ export default {
         await getProducts(env);
 
       const out = json(products.map(({wholesalePrice, ...product}) => product));
-      out.headers.set('cache-control','no-store, max-age=0');
+      out.headers.set('cache-control','public, max-age=20, stale-while-revalidate=60');
       return out;
     }
 
@@ -631,90 +575,10 @@ export default {
       request.method === 'GET'
     ) {
 
-      const rules = await getShippingRules(env);
-      return json({ shipping: rules.customerBase, config: rules });
-    }
-
-    /* =========================
-       GREEN MOON AI CUSTOMER CHAT
-       Uses live store data and optional plant-photo vision.
-    ========================= */
-    if (url.pathname === '/api/ai/chat' && request.method === 'POST') {
-      try {
-        if (!env.AI || typeof env.AI.run !== 'function') {
-          return json({ error: 'مساعد الذكاء الاصطناعي غير متاح حاليًا. جرّب مرة تانية بعد شوية.' }, 503);
-        }
-
-        const body = await request.json();
-        const message = String(body.message || '').trim().slice(0, 1800);
-        const image = String(body.image || '');
-        const history = Array.isArray(body.history) ? body.history.slice(-8) : [];
-        if (!message && !image) return json({ error: 'اكتب سؤالك أو اختار صورة الأول.' }, 400);
-        if (image && !/^data:image\/(?:jpeg|png|webp);base64,/i.test(image)) {
-          return json({ error: 'صيغة الصورة غير مدعومة. اختار صورة JPG أو PNG أو WebP.' }, 400);
-        }
-        if (image.length > 4_500_000) {
-          return json({ error: 'حجم الصورة كبير. اختار صورة أصغر.' }, 413);
-        }
-
-        const products = (await getProducts(env)).slice(0, 100).map(p => ({
-          id: String(p.id), name: String(p.name || '').slice(0, 100),
-          price: Number(p.price) || 0, stock: Number(p.stock ?? p.quantity ?? 0) || 0,
-          category: String(p.category || p.categoryName || '').slice(0, 80),
-          details: String(p.details || p.description || '').slice(0, 220),
-          image: String(p.image || p.image_url || '').slice(0, 300)
-        }));
-        const deals = (await getDeals(env)).filter(d => d && d.active !== false && d.isActive !== false).slice(0, 30).map(d => ({
-          title: String(d.title || d.name || 'صفقة Green Moon').slice(0, 120),
-          price: Number(d.price ?? d.dealPrice) || 0,
-          oldPrice: Number(d.oldPrice ?? d.originalPrice) || 0,
-          description: String(d.description || d.subtitle || '').slice(0, 220),
-          endAt: String(d.endAt || d.expiresAt || '').slice(0, 40)
-        }));
-        const catalogText = `\nبيانات المنتجات الحالية من المتجر (استخدمها فقط ولا تخترع منتجات أو أسعار):\n${JSON.stringify(products.map(({id,name,price,stock,category,details})=>({id,name,price,stock,category,details})).slice(0,70))}\nالعروض الحالية من لوحة المتجر:\n${JSON.stringify(deals)}\n`;
-        const system = `أنت لونا (Luna)، المساعدة الذكية الرسمية لمتجر Green Moon Plants and Flowers في مصر. قدّمي نفسك باسم لونا عند الحاجة، وتحدثي بصيغة مؤنثة مهذبة واحترافية. رد باللهجة المصرية الواضحة والمهذبة وباختصار مفيد. ساعد في اختيار النباتات والعناية بها، المنتجات، الأسعار، العروض، السلة والطلب. لا تخترع سعرًا أو مخزونًا أو عرضًا أو سياسة توصيل غير موجودة في البيانات. لو السعر غير متاح قل إن العميل يراجع صفحة المنتج أو يتواصل مع خدمة العملاء. لا تكشف بيانات خاصة أو معلومات داخلية. لا تدّع أنك نفذت طلبًا أو حجزًا. في تشخيص النبات، اذكر العلامات الظاهرة والاحتمالات فقط ولا تدّع دقة 100%؛ لو الصورة غير واضحة اطلب صورة أفضل أو معلومات إضافية. لا تعطِ جرعات مبيدات غير موثقة ولا تقترح خلط مواد كيميائية. إذا كان السؤال خارج نطاق المتجر، وضح بلطف إنك متخصص في نباتات Green Moon وخدمة المتجر.\n${catalogText}`;
-
-        let result = '';
-        if (image) {
-          const match = image.match(/^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=\r\n]+)$/i);
-          if (!match) return json({ error: 'تعذر قراءة الصورة. جرّب صورة JPG أو PNG أو WebP.' }, 400);
-          let imageBytes;
-          try {
-            const binary = atob(match[2].replace(/[\r\n]/g, ''));
-            imageBytes = Array.from(binary, ch => ch.charCodeAt(0));
-          } catch (_) { return json({ error: 'ملف الصورة تالف. جرّب صورة تانية.' }, 400); }
-          if (!imageBytes.length) return json({ error: 'الصورة فارغة. اختار صورة واضحة.' }, 400);
-          const prior = history.map(x => `${x.role === 'assistant' ? 'المساعد' : 'العميل'}: ${String(x.content || '').slice(0, 700)}`).join('\n');
-          const prompt = `${system}\nمحادثة سابقة مختصرة:\n${prior}\nسؤال العميل الحالي: ${message || 'حلل صورة النبات وقل لي ما الذي يمكن ملاحظته.'}\nحلل ما يظهر فقط. إذا لم تكن الصورة لنبات أو كانت غير واضحة، اذكر ذلك صراحة. فرّق بين الملاحظة والاحتمال، واطلب صورة إضافية عند الحاجة. أجب باللهجة المصرية.`;
-          const aiPromise = env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct', {
-            prompt, image: imageBytes, max_tokens: 900, temperature: 0.15
-          });
-          const timeout = new Promise(resolve => setTimeout(() => resolve(null), 25000));
-          const ai = await Promise.race([aiPromise, timeout]);
-          if (!ai) return json({ error: 'التحليل أخد وقت أطول من المتوقع. جرّب صورة أصغر أو أعد المحاولة.' }, 504);
-          result = String(ai?.response || ai?.result || '').trim();
-        } else {
-          const messages = [{ role: 'system', content: system }];
-          for (const item of history) {
-            if (!item || !['user','assistant'].includes(item.role)) continue;
-            const content = String(item.content || '').trim().slice(0, 700);
-            if (content) messages.push({ role: item.role, content });
-          }
-          messages.push({ role: 'user', content: message });
-          const aiPromise = env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
-            messages, max_tokens: 650, temperature: 0.25
-          });
-          const timeout = new Promise(resolve => setTimeout(() => resolve(null), 25000));
-          const ai = await Promise.race([aiPromise, timeout]);
-          if (!ai) return json({ error: 'الرد اتأخر شوية. جرّب تبعت سؤالك تاني.' }, 504);
-          result = String(ai?.response || ai?.result || '').trim();
-        }
-        if (!result) return json({ error: 'المساعد لم يُرجع ردًا واضحًا. جرّب صياغة السؤال مرة تانية.' }, 502);
-        return json({ success: true, reply: result.slice(0, 7000) });
-      } catch (error) {
-        // Do not expose provider internals or credentials to visitors.
-        return json({ error: 'حصل عطل مؤقت في المساعد. منتجات المتجر شغالة عادي؛ جرّب مرة تانية.' }, 500);
-      }
+      return json({
+        shipping:
+          await getShipping(env)
+      });
     }
 
     /* =========================
@@ -1404,52 +1268,20 @@ function resolveRelatedOffer(product, offerId) {
           }
         }
 
-        const orderDeals = await getDeals(env);
         const items =
           body.items
             .map(item => {
-              const dealId = String(item.dealId || '');
-              if (dealId) {
-                const deal = orderDeals.find(d => String(d.id) === dealId && d.active !== false);
-                const end = deal ? new Date(deal.endAt || deal.expiresAt || '').getTime() : NaN;
-                if (!deal || (Number.isFinite(end) && end > 0 && end <= Date.now())) return null;
-                const quantity = Math.max(1, Math.min(99, Number(item.quantity) || 1));
-                const dealPrice = Number(deal.price || deal.dealPrice) || 0;
-                if (!(dealPrice > 0)) return null;
-                return { productId: 'deal:' + dealId, dealId, name: String(deal.title || deal.name || 'صفقة Green Moon'), price: dealPrice, quantity, lineTotal: dealPrice * quantity, isDeal: true, image: deal.image || deal.imageUrl || deal.banner || '' };
-              }
               const bundleId = String(item.bundleId || '');
               if (bundleId) {
-                const quantity = Math.max(1, Math.min(99, Number(item.quantity) || 1));
-                // Auto bundles are generated from the current catalog. Recompute their price here;
-                // never trust a client-supplied amount or a stale browser price.
-                if (bundleId.startsWith('AUTO|')) {
-                  const parts = bundleId.split('|');
-                  if (parts.length !== 3) return null;
-                  let ids;
-                  try { ids = [decodeURIComponent(parts[1]), decodeURIComponent(parts[2])]; } catch { return null; }
-                  if (!ids[0] || !ids[1] || ids[0] === ids[1]) return null;
-                  const autoProducts = ids.map(id => products.find(p => String(p.id) === id && p.active !== false && p.isActive !== false));
-                  if (autoProducts.some(p => !p || !(Number(p.price) > 0))) return null;
-                  const original = autoProducts.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
-                  const cost = autoProducts.reduce((sum, p) => sum + (Number(p.wholesalePrice ?? p.costPrice ?? p.cost) || 0), 0);
-                  const costFloor = cost > 0 ? Math.ceil(cost * 1.12) : 0;
-                  if (costFloor > 0 && costFloor >= original) return null;
-                  const bundlePrice = Math.max(Math.round(original * 0.92), costFloor);
-                  if (!(bundlePrice > 0 && bundlePrice < original)) return null;
-                  const bundleName = `باكدج ${autoProducts[0].name || 'Green Moon'} + ${autoProducts[1].name || 'Green Moon'}`;
-                  return { productId: 'bundle:' + bundleId, bundleId, name: bundleName, price: bundlePrice, originalPrice: original, saving: original - bundlePrice, quantity, lineTotal: bundlePrice * quantity, isBundle: true, isAutoBundle: true, bundleItems: autoProducts.map(p => ({ productId: p.id, name: p.name, quantity })) };
-                }
                 const bundle = allowedBundles.find(b => String(b.id) === bundleId && b.active !== false);
                 if (!bundle || !Array.isArray(bundle.items) || bundle.items.length < 2) return null;
                 const bundleParts = bundle.items.map(part => ({ product: products.find(p => String(p.id) === String(part.productId)), quantity: Math.max(1, Number(part.quantity) || 1) }));
                 if (bundleParts.some(part => !part.product)) return null;
-                const original = bundleParts.reduce((sum, part) => sum + (Number(part.product.price) || 0) * part.quantity, 0);
+                const quantity = Math.max(1, Number(item.quantity) || 1);
                 const bundlePrice = Math.max(0, Number(bundle.price) || 0);
-                // Reject stale or incorrectly configured bundles whose price is no longer below the live sum.
-                if (!(bundlePrice > 0 && bundlePrice < original)) return null;
+                if (!bundlePrice) return null;
                 const bundleName = String(bundle.title || bundle.name || 'باكدج Green Moon');
-                return { productId: 'bundle:' + bundleId, bundleId, name: bundleName, price: bundlePrice, originalPrice: original, saving: original - bundlePrice, quantity, lineTotal: bundlePrice * quantity, isBundle: true, bundleItems: bundleParts.map(part => ({ productId: part.product.id, name: part.product.name, quantity: part.quantity * quantity })) };
+                return { productId: 'bundle:' + bundleId, bundleId, name: bundleName, price: bundlePrice, quantity, lineTotal: bundlePrice * quantity, isBundle: true, bundleItems: bundleParts.map(part => ({ productId: part.product.id, name: part.product.name, quantity: part.quantity * quantity })) };
               }
 
               const product =
@@ -1517,21 +1349,46 @@ return {
             0
           );
 
-        const shippingRules = await getShippingRules(env);
-        const orderDealsForShipping = await getDeals(env);
-        const hasFreeShippingDeal = items.some(item => {
-          if (!item.isDeal || !item.dealId) return false;
-          const deal = orderDealsForShipping.find(d => String(d.id) === String(item.dealId));
-          return dealHasFreeShipping(deal) || shippingRules.freeShippingDealIds.includes(String(item.dealId));
-        });
-        const shippingQuote = calculateShippingQuote(
-          shippingRules,
-          body.governorate || '',
-          body.area || '',
-          productsTotal,
-          hasFreeShippingDeal
-        );
-        let shipping = shippingQuote.shipping;
+        const generalShipping =
+          await getShipping(env);
+
+        const uniqueProductIds =
+          [
+            ...new Set(
+              items.map(
+                item =>
+                  String(
+                    item.productId
+                  )
+              )
+            )
+          ];
+
+        let shipping = 0;
+
+        if (items.some(item => item.isBundle)) {
+          shipping = generalShipping;
+        } else if (
+          uniqueProductIds.length === 1
+        ) {
+
+          const product =
+            products.find(
+              p =>
+                String(p.id) ===
+                uniqueProductIds[0]
+            );
+
+          shipping =
+            Number(
+              product?.shippingPrice
+            ) || 0;
+
+        } else {
+
+          shipping =
+            generalShipping;
+        }
 
         const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
         const orders = await getOrders(env);
@@ -1546,45 +1403,10 @@ return {
           if (!result.ok) return json({error:result.error},400);
           if (result.type === 'free_shipping') {
             // Free shipping affects shipping only; never subtract it from the products subtotal.
-            if (promo.protectProfit !== false) {
-              const costById = new Map(products.map(p => [String(p.id), Number(p.wholesalePrice ?? p.costPrice)]));
-              let knownCosts = true;
-              const costTotal = items.reduce((sum, item) => {
-                if (String(item.productId).startsWith('deal:')) { knownCosts = false; return sum; }
-                const cost = costById.get(String(item.productId));
-                if (!Number.isFinite(cost) || cost < 0) { knownCosts = false; return sum; }
-                return sum + cost * Math.max(1, Number(item.quantity) || 1);
-              }, 0);
-              if (!knownCosts) return json({error:'لا يمكن تطبيق الشحن المجاني بهذا الكود قبل إدخال تكلفة الشراء لكل منتج.'},400);
-              const minProfit = Math.max(0, Number(promo.minProfit ?? 100));
-              const projectedProfit = productsTotal - costTotal - (Number(shippingQuote.courierCost) || 0);
-              if (projectedProfit < minProfit) return json({error:`لا يمكن تطبيق الشحن المجاني؛ لأنه سيقلل الربح المتوقع عن ${minProfit} جنيه.`},400);
-            }
             promoShippingDiscount = Math.max(0, Number(shipping) || 0);
             shipping = 0;
           } else {
             promoDiscount = Math.max(0, Number(result.discount) || 0);
-            const eligibleIds = Array.isArray(promo.productIds) ? promo.productIds.map(String) : [];
-            if (eligibleIds.length) {
-              const eligibleSubtotal = items.reduce((sum, item) => eligibleIds.includes(String(item.productId)) ? sum + (Number(item.lineTotal) || 0) : sum, 0);
-              if (eligibleSubtotal <= 0) return json({error:'البروموكود لا ينطبق على المنتجات الموجودة في سلتك.'},400);
-              promoDiscount = Math.min(promoDiscount, eligibleSubtotal);
-            }
-            if (promo.protectProfit !== false) {
-              const costById = new Map(products.map(p => [String(p.id), Number(p.wholesalePrice ?? p.costPrice)]));
-              let knownCosts = true;
-              const costTotal = items.reduce((sum, item) => {
-                if (String(item.productId).startsWith('deal:')) { knownCosts = false; return sum; }
-                const cost = costById.get(String(item.productId));
-                if (!Number.isFinite(cost) || cost < 0) { knownCosts = false; return sum; }
-                return sum + cost * Math.max(1, Number(item.quantity) || 1);
-              }, 0);
-              if (!knownCosts) return json({error:'لا يمكن تطبيق الكود بأمان قبل إدخال تكلفة الشراء لكل منتج في لوحة التحكم.'},400);
-              const minProfit = Math.max(0, Number(promo.minProfit ?? 100));
-              const maxSafeDiscount = Math.max(0, productsTotal - costTotal - (Number(shippingQuote.shippingSupport) || 0) - minProfit);
-              promoDiscount = Math.min(promoDiscount, maxSafeDiscount);
-              if (promoDiscount <= 0) return json({error:`لا يمكن تطبيق الخصم؛ لأنه سيقلل الربح المتوقع عن ${minProfit} جنيه.`},400);
-            }
           }
           appliedPromo = {
             code:result.code,
@@ -1670,11 +1492,6 @@ return {
 
           shipping,
 
-          shippingCost: shippingQuote.courierCost,
-          shippingSupport: Math.max(0, shippingQuote.courierCost - shipping),
-          shippingZone: shippingQuote.zone,
-          shippingFreeReason: shippingQuote.freeShippingReason || (appliedPromo?.type === 'free_shipping' ? 'كود شحن مجاني' : ''),
-
           promoCode: appliedPromo?.code || '',
 
           promoType: appliedPromo?.type || '',
@@ -1701,7 +1518,6 @@ return {
           )
         );
         ctx.waitUntil(notifyOrder(env,order,'🌿 تم استلام طلبك','تم استلام طلبك من Green Moon وجاري التجهيز.'));
-        ctx.waitUntil(notifyAdmins(env,order));
 
         return json({
           success:
@@ -1831,18 +1647,13 @@ return {
               );
             }
 
-            const previousProduct = products[index];
             products[index] =
               normalizeProduct({
-                ...previousProduct,
+                ...products[index],
                 ...body,
                 id:
-                  previousProduct.id
+                  products[index].id
               });
-            if (Number(products[index].price) > 0 && Number(previousProduct.price) > Number(products[index].price)) {
-              const discounted = products[index];
-              ctx.waitUntil(broadcastPush(env,{title:'🏷️ تخفيض سعر من Green Moon',body:`سعر ${discounted.name} انخفض من ${Number(previousProduct.price)} إلى ${Number(discounted.price)} جنيه. الحق العرض!`,url:'/index.html#products',tag:'price-drop-'+discounted.id},sub=>sub.promotions!==false));
-            }
           }
 
           await env.GREEN_MOON_KV.put(PRODUCTS_KEY, JSON.stringify(products));
@@ -1948,10 +1759,6 @@ return {
         }
 
         await env.GREEN_MOON_KV.put(DEALS_KEY, JSON.stringify(deals));
-        const settings = await env.GREEN_MOON_KV.get(SETTINGS_KEY, 'json') || {};
-        settings.gm_deals = deals;
-        settings.deals = deals;
-        await env.GREEN_MOON_KV.put(SETTINGS_KEY, JSON.stringify(settings));
         return json({ success: true, deals });
       } catch (error) {
         return json({ error: String(error?.message || error) }, 500);
@@ -2112,8 +1919,8 @@ return {
       ) {
 
         return json({
-          price: await getShipping(env),
-          config: await getShippingRules(env)
+          price:
+            await getShipping(env)
         });
       }
 
@@ -2132,27 +1939,19 @@ return {
             0
           ) || 0;
 
-        await env.GREEN_MOON_KV.put(SHIPPING_KEY, JSON.stringify({ price }));
-        const input = body.config && typeof body.config === 'object' ? body.config : body;
-        const defaults = defaultShippingRules();
-        const rules = {
-          ...defaults,
-          ...input,
-          enabled: input.enabled !== false,
-          courierBase: Math.max(0, Number(input.courierBase ?? defaults.courierBase) || 0),
-          courierSpecial: Math.max(0, Number(input.courierSpecial ?? defaults.courierSpecial) || 0),
-          customerBase: Math.max(0, Number(input.customerBase ?? defaults.customerBase) || 0),
-          customerSpecial: Math.max(0, Number(input.customerSpecial ?? defaults.customerSpecial) || 0),
-          thresholdEnabled: input.thresholdEnabled === true,
-          freeShippingThreshold: Math.max(0, Number(input.freeShippingThreshold ?? defaults.freeShippingThreshold) || 0),
-          halfShippingEnabled: input.halfShippingEnabled !== false,
-          halfShippingThreshold: Math.max(0, Number(input.halfShippingThreshold ?? defaults.halfShippingThreshold) || 0),
-          specialAreas: Array.isArray(input.specialAreas) && input.specialAreas.length ? input.specialAreas.map(String).slice(0, 30) : defaults.specialAreas,
-          freeShippingDealIds: Array.isArray(input.freeShippingDealIds) ? input.freeShippingDealIds.map(String).slice(0, 500) : [],
-          updatedAt: new Date().toISOString()
-        };
-        await env.GREEN_MOON_KV.put(SHIPPING_RULES_KEY, JSON.stringify(rules));
-        return json({ success: true, price, config: rules });
+        await env.GREEN_MOON_KV.put(
+          SHIPPING_KEY,
+          JSON.stringify({
+            price
+          })
+        );
+
+        return json({
+          success:
+            true,
+
+          price
+        });
       }
     }
 
@@ -2181,29 +1980,13 @@ return {
         );
       }
 
-      if (request.method === 'GET') {
-        return json(await getOrders(env));
-      }
+      if (
+        request.method === 'GET'
+      ) {
 
-      if (request.method === 'DELETE') {
-        try {
-          const body = await request.json().catch(() => ({}));
-          const orders = await getOrders(env);
-          let removed = [];
-          let kept = orders;
-          if (body.action === 'delete-closed') {
-            removed = orders.filter(o => ['ملغي','مكتمل'].includes(String(o.status||'')));
-            kept = orders.filter(o => !['ملغي','مكتمل'].includes(String(o.status||'')));
-          } else {
-            const ids = new Set((Array.isArray(body.ids) ? body.ids : body.id != null ? [body.id] : []).map(String));
-            if (!ids.size) return json({error:'حدد الطلبات المراد حذفها.'},400);
-            removed = orders.filter(o => ids.has(String(o.id)));
-            kept = orders.filter(o => !ids.has(String(o.id)));
-          }
-          if (!removed.length) return json({success:true,deleted:0,orders:kept});
-          await env.GREEN_MOON_KV.put(ORDERS_KEY,JSON.stringify(kept.slice(0,500)));
-          return json({success:true,deleted:removed.length,orders:kept});
-        } catch (error) { return json({error:String(error?.message||error)},500); }
+        return json(
+          await getOrders(env)
+        );
       }
 
       if (
@@ -2349,38 +2132,6 @@ return {
     }
 
     /* =========================
-       ADMIN MEDIA LIBRARY
-       Returns metadata only; media payloads remain in KV and are never sent to the dashboard.
-    ========================= */
-    if (url.pathname === '/api/admin/media' && request.method === 'GET') {
-      if (!adminOk(request, env)) return json({ error: 'غير مصرح' }, 401);
-      try {
-        const requested = Number(url.searchParams.get('limit')) || 80;
-        const limit = Math.min(200, Math.max(1, requested));
-        const page = await env.GREEN_MOON_KV.list({ prefix: MEDIA_PREFIX, limit });
-        const items = [];
-        for (const key of (page.keys || [])) {
-          const stored = await env.GREEN_MOON_KV.get(key.name, 'json');
-          if (!stored || !stored.mime) continue;
-          const id = key.name.slice(MEDIA_PREFIX.length);
-          items.push({
-            id,
-            url: '/media/' + encodeURIComponent(id),
-            name: String(stored.name || 'media'),
-            mime: String(stored.mime || 'application/octet-stream'),
-            type: String(stored.mime || '').startsWith('video/') ? 'video' : 'image',
-            createdAt: stored.createdAt || '',
-            bytes: Math.floor(String(stored.data || '').length * 3 / 4)
-          });
-        }
-        items.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
-        return json({ items, complete: !!page.list_complete });
-      } catch (e) {
-        return json({ error: String(e?.message || 'تعذر تحميل مكتبة الوسائط') }, 500);
-      }
-    }
-
-    /* =========================
        ADMIN MEDIA UPLOADS
        Supports images + videos anywhere the admin media picker is used.
     ========================= */
@@ -2472,22 +2223,3 @@ return {
     );
   }
 };
-export class GiftCardLedger {
-  constructor(state, env) {
-    this.state = state;
-    this.env = env;
-  }
-
-  async fetch(request) {
-    const url = new URL(request.url);
-
-    if (url.pathname === "/" || url.pathname === "/health") {
-      return Response.json({ ok: true });
-    }
-
-    return Response.json(
-      { error: "Gift card API is not enabled" },
-      { status: 501 }
-    );
-  }
-}
