@@ -504,18 +504,33 @@ function gmFindPlant(){
  if(ranked.length)host.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 async function boot(){
+ // Render cached catalog immediately so a slow API never leaves the storefront blank.
+ try{renderProducts()}catch(e){console.warn('Green Moon cached products render failed',e)}
+ try{renderDeals()}catch(e){console.warn('Green Moon cached deals render failed',e)}
  const results=await Promise.allSettled([api('/api/products'),api('/api/deals'),api('/api/settings'),api('/api/shipping')]);
  const [products,deals,settings,shipping]=results;
  if(products.status==='fulfilled'&&Array.isArray(products.value)){
    state.products=products.value;
    try{localStorage.setItem('gmPublicProductsCache',JSON.stringify(products.value))}catch{}
  }else{
-   const grid=$('#productGrid');
-   if(grid)grid.innerHTML=state.products.length?state.products.map(card).join(''):'<div class="empty">مش قادرين نوصل للمنتجات دلوقتي. اتأكد من الاتصال وحاول تحديث الصفحة.</div>';
+   // Keep the last successful catalog from local storage when the live endpoint is unavailable.
+   try{const cached=JSON.parse(localStorage.getItem('gmPublicProductsCache')||'[]');if(Array.isArray(cached)&&cached.length)state.products=cached}catch{}
    console.error('Green Moon products API failed',products.reason||products.value);
  }
- if(deals.status==='fulfilled'&&Array.isArray(deals.value)){state.deals=deals.value;try{localStorage.setItem('gmPublicDealsCache',JSON.stringify(deals.value))}catch{}}
- if(settings.status==='fulfilled'&&settings.value&&typeof settings.value==='object')state.settings=settings.value;
+ if(deals.status==='fulfilled'&&Array.isArray(deals.value)){
+   state.deals=deals.value;
+   try{localStorage.setItem('gmPublicDealsCache',JSON.stringify(deals.value))}catch{}
+ }else{
+   try{const cached=JSON.parse(localStorage.getItem('gmPublicDealsCache')||'[]');if(Array.isArray(cached)&&cached.length)state.deals=cached}catch{}
+   console.error('Green Moon deals API failed',deals.reason||deals.value);
+ }
+ if(settings.status==='fulfilled'&&settings.value&&typeof settings.value==='object'){
+   state.settings=settings.value;
+   try{localStorage.setItem('gmPublicSettingsCache',JSON.stringify(settings.value))}catch{}
+ }else{
+   try{const cached=JSON.parse(localStorage.getItem('gmPublicSettingsCache')||'{}');if(cached&&typeof cached==='object')state.settings=cached}catch{}
+   console.error('Green Moon settings API failed',settings.reason||settings.value);
+ }
  if(shipping.status==='fulfilled'){state.shippingRules=shipping.value.config||state.shippingRules;state.shipping=Number(state.shippingRules.customerBase)||80;}
  // Render the product and deal grids before optional sections so one broken widget
  // cannot leave the main catalog stuck on its loading placeholder.
@@ -540,6 +555,8 @@ async function boot(){
  safeRun('browse offer',()=>scheduleBrowseOffer());
  api('/api/logo').then(logo=>{if(logo?.logo&&$('#brandLogo'))$('#brandLogo').src=logo.logo}).catch(e=>console.warn('Green Moon logo API failed',e));
 }
+// Keep the hero visible even if a stale or broken remote banner URL was saved in settings.
+(()=>{const hero=document.getElementById('heroImage');if(hero){hero.addEventListener('error',function(){if(this.dataset.gmFallbackApplied)return;this.dataset.gmFallbackApplied='1';this.src='/product-3.jpg'});if(!hero.getAttribute('src'))hero.src='/product-3.jpg'}})();
 document.addEventListener('click',e=>{const t=e.target.closest('button,[data-category]');if(!t)return;if(t.dataset.addbundle){addBundleToCart(t.dataset.addbundle);return}if(t.dataset.bundleView){close('bundleOfferOverlay');openProduct(t.dataset.bundleView);return}if(t.dataset.add){const q=document.querySelector(`[data-cardqty="${CSS.escape(String(t.dataset.add))}"]`);const qty=q?Math.max(1,Number(q.value)||1):1;addToCart(t.dataset.add,qty,true);return}if(t.dataset.cartRecommend){addToCart(t.dataset.cartRecommend,1,false);return}if(t.dataset.cardstep){const q=document.querySelector(`[data-cardqty="${CSS.escape(String(t.dataset.cardid))}"]`);if(q)q.value=Math.max(0,Math.min(99,(Number(q.value)||0)+Number(t.dataset.cardstep)));return}if(t.dataset.care){openCare(t.dataset.care);return}if(t.dataset.visualizer){gmStartVisualizer(t.dataset.visualizer);return}if(t.dataset.view){openProduct(t.dataset.view);return}if(t.dataset.fav){const id=String(t.dataset.fav);if(state.favorites.has(id))state.favorites.delete(id);else state.favorites.add(id);localStorage.setItem('gmRebuildFavorites',JSON.stringify([...state.favorites]));renderProducts();toast(state.favorites.has(id)?'اتضاف للمفضلة':'اتشال من المفضلة');return}if(t.dataset.qty){changeQty(t.dataset.qty,Number(t.dataset.delta));return}if(t.dataset.remove){state.cart=state.cart.filter(i=>String(i.bundleId?'bundle:'+i.bundleId:i.productId)!==String(t.dataset.remove));saveCart();renderCart();return}if(t.dataset.close){close(t.dataset.close);if(t.dataset.close==='upsellOverlay'){clearInterval(upsellTimer);pendingUpsell=null;if(pendingCartOpen){pendingCartOpen=false;openCartNow()}}if(t.dataset.close==='productOverlay')clearTimeout(detailOfferTimer);if(t.dataset.close==='bundleOfferOverlay')scheduleBrowseOffer();return}if(t.id==='cartBtn'||t.id==='mobileCartBtn'){openCartNow();return}if(t.id==='backToStore'){close('cartOverlay');$('#products').scrollIntoView({behavior:'smooth',block:'start'});return}if(t.id==='copyPromoToCheckout'){const v=$('#cartPromoCode')?.value.trim()||'';const target=$('#checkoutForm')?.elements?.namedItem('promoCode');if(target)target.value=v;toast(v?'تم نقل كود الخصم لبيانات الطلب':'اكتب كود الخصم الأول');return}if(t.id==='startCheckout'){if(!state.cart.length)return;const cartCode=$('#cartPromoCode')?.value.trim()||'';const promoTarget=$('#checkoutForm')?.elements?.namedItem('promoCode');if(promoTarget)promoTarget.value=cartCode;$('#checkoutWrap').classList.remove('hidden');renderShippingReview();$('#checkoutWrap').scrollIntoView({behavior:'smooth',block:'start'});return}if(t.id==='favoritesBtn'){state.filter='all';state.category='';state.categoryProductIds=null;state.search='';$('#searchInput').value='';$('#productsTitle').textContent='منتجاتك المفضلة';const ps=state.products.filter(p=>state.favorites.has(String(p.id)));$('#productGrid').innerHTML=ps.length?ps.map(card).join(''):'<div class="empty">لسه ما ضفتش منتجات للمفضلة.</div>';$('#products').scrollIntoView({behavior:'smooth'});return}if(t.dataset.filter){state.category='';state.categoryProductIds=null;state.filter=t.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===t));renderProducts();return}if(t.dataset.category){state.category=t.dataset.category;const cats=Array.isArray(state.settings.gm_categories)?state.settings.gm_categories:[];const selected=cats.find(c=>normCat(c?.name||c?.title)===normCat(state.category));state.categoryProductIds=selected&&Array.isArray(selected.productIds)&&selected.productIds.length?selected.productIds.map(String):null;state.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));renderProducts();$('#products').scrollIntoView({behavior:'smooth'});return}if(t.dataset.dealDetails!==undefined){openDealDetails(t.dataset.dealDetails);return}if(t.dataset.dealOrder!==undefined){orderDeal(t.dataset.dealOrder);return}if(t.dataset.dealShare!==undefined){shareDeal(t.dataset.dealShare);return}if(t.dataset.deal){openDealDetails(t.dataset.deal);return}});
 $('#searchInput').addEventListener('input',e=>{state.search=e.target.value.trim();renderProducts();if(state.search)$('#products').scrollIntoView({behavior:'smooth',block:'start'})});
 $('#bundleOfferAdd').addEventListener('click',()=>{const id=$('#bundleOfferAdd').dataset.bundleOfferAdd;if(!id)return;close('bundleOfferOverlay');addBundleToCart(id);});$('#bundleOfferSkip').addEventListener('click',()=>{close('bundleOfferOverlay');scheduleBrowseOffer();});
