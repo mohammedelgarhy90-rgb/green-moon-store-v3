@@ -1236,14 +1236,46 @@ function resolveRelatedOffer(product, offerId) {
           !Array.isArray(body.items) ||
           !body.items.length
         ) {
-
           return json(
-            {
-              error:
-                'بيانات الطلب غير مكتملة'
-            },
+            { error: 'بيانات الطلب غير مكتملة' },
             400
           );
+        }
+
+        // Reject malformed or abusive cart payloads before reading/writing order data.
+        // Omitted quantities remain backward-compatible and default to one below.
+        if (body.items.length > 50) {
+          return json({ error: 'الطلب يحتوي على عدد منتجات أكبر من المسموح.' }, 400);
+        }
+        const invalidItem = body.items.some(item =>
+          !item ||
+          typeof item !== 'object' ||
+          Array.isArray(item) ||
+          (item.quantity !== undefined &&
+            (!Number.isSafeInteger(Number(item.quantity)) ||
+             Number(item.quantity) < 1 ||
+             Number(item.quantity) > 99))
+        );
+        if (invalidItem) {
+          return json({ error: 'كمية أحد المنتجات غير صحيحة. الكمية المسموح بها من 1 إلى 99.' }, 400);
+        }
+
+        if (Array.isArray(body.gifts)) {
+          if (body.gifts.length > 50) {
+            return json({ error: 'عدد الهدايا في الطلب أكبر من المسموح.' }, 400);
+          }
+          const invalidGift = body.gifts.some(gift =>
+            !gift ||
+            typeof gift !== 'object' ||
+            Array.isArray(gift) ||
+            (gift.mainQuantity !== undefined &&
+              (!Number.isSafeInteger(Number(gift.mainQuantity)) ||
+               Number(gift.mainQuantity) < 1 ||
+               Number(gift.mainQuantity) > 99))
+          );
+          if (invalidGift) {
+            return json({ error: 'كمية إحدى الهدايا غير صحيحة.' }, 400);
+          }
         }
 
         const products =
