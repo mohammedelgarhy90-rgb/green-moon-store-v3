@@ -413,7 +413,7 @@ function mediaBytesFromBase64(base64) {
 // Compatibility export: keep the existing Cloudflare Durable Object class name.
 // Do not rename or remove this class without a deliberate migration plan.
 // Storage remains isolated in this Durable Object; it does not read or modify GREEN_MOON_KV.
-export class giftCardLedger {
+export class GiftCardLedger {
   constructor(state, env) {
     this.state = state;
     this.env = env;
@@ -441,7 +441,8 @@ export class giftCardLedger {
 
 // Cloudflare Durable Object binding uses this exact case-sensitive export name.
 // Keep the legacy lowercase export as an alias for backward compatibility.
-export { giftCardLedger as GiftCardLedger };
+// Preserve the legacy lowercase export while exposing the exact Cloudflare binding name.
+export { GiftCardLedger as giftCardLedger };
 
 export default {
 
