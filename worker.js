@@ -439,6 +439,10 @@ export class giftCardLedger {
   }
 }
 
+// Cloudflare Durable Object binding uses this exact case-sensitive export name.
+// Keep the legacy lowercase export as an alias for backward compatibility.
+export { giftCardLedger as GiftCardLedger };
+
 export default {
 
   async fetch(request, env, ctx) {
